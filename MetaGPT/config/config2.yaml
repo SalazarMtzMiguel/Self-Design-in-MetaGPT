@@ -1,0 +1,51 @@
+# Full Example: https://github.com/geekan/MetaGPT/blob/main/config/config2.example.yaml
+# Reflected Code: https://github.com/geekan/MetaGPT/blob/main/metagpt/config2.py
+# Config Docs: https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html
+llm:
+  api_type: "ollama"  
+  model: "deepseek-r1:14b"  
+  base_url: "http://10.0.5.171:11434/api"  
+  model_id: "ds14b"  
+  timeout: 7200.0  
+
+llms:
+  ds14b:
+    api_type: "ollama"
+    model: "deepseek-r1:14b"
+    base_url: "http://10.0.5.171:11434/api"
+    timeout: 7200.0
+
+  ds8b:
+    api_type: "ollama"
+    model: "deepseek-r1:8b"
+    base_url: "http://10.0.5.171:11434/api"
+    timeout: 7200.0
+
+  gemma4:
+    api_type: "ollama"
+    model: "gemma4:12b"
+    base_url: "http://10.0.5.171:11434/api"
+    timeout: 7200.0
+
+  qwen3.5:
+    api_type: "ollama"
+    model: "qwen3.5:9b"
+    base_url: "http://10.0.5.171:11434/api"
+    timeout: 7200.0
+
+  qwen2.5_7b:
+    api_type: "ollama"
+    model: "qwen2.5:7b"
+    base_url: "http://10.0.5.171:11434/api"
+    timeout: 7200.0
+
+  qwen2.5_14b:
+    api_type: "ollama"
+    model: "qwen2.5:14b"
+    base_url: "http://10.0.5.171:11434/api"
+    timeout: 7200.0
+
+mermaid:
+  engine: "nodejs"
+  path: "mmdc.cmd"  
+  output_format: "svg"
