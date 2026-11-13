@@ -1,0 +1,31 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant C as ClientApplicationRuntime
+    participant AuthI as AuthenticationContract
+    participant PresI as PresenceContract
+    participant MsgI as MessagingContract
+    participant FileI as FileTransferContract
+    participant SessionI as SessionManagementContract
+    participant AuditI as AuditAdministrationContract
+
+    Note over C, AuditI: Interface Communication Flow
+    C->>AuthI: LoginRequest(credentials)
+    AuthI-->>C: SessionContext + AuthResult
+    C->>PresI: SubscribePresence(clientID)
+    PresI-->>C: ActiveUserSnapshot
+    
+    C->>MsgI: RouteMessage(EncryptedPayload)
+    MsgI-->>C: DistributionEvent + PushedMessage
+    C->>SessionI: AppendBuffer(messageChunk)
+    SessionI-->>C: BufferSnapshot + MemoryUsageReport
+    
+    C->>FileI: InitiateTransfer(fileMetadata)
+    FileI-->>C: TransferSessionToken
+    C->>MsgI: RouteMessage(TransferNotification)
+    
+    C->>AuditI: AdminInventoryRequest(adminToken)
+    AuditI-->>C: ActiveUserReport + LogRecords
+    
+    C->>AuthI: RevokeSession(LogoutRequest)
+    AuthI-->>C: TokenRevocationEvent
+    PresI-->>C: PresenceBroadcast(OfflineUpdate)

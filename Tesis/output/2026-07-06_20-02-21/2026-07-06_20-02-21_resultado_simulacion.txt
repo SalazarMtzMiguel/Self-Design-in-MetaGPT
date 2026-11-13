@@ -1,0 +1,917 @@
+================================================================
+REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-07-06_20-02-21)
+================================================================
+
+### 1. INITIAL REQUIREMENT:
+We are going to develop a university management platform.
+1. Functional Requirements (FR)
+1.1 User Management
+FR01: The system must allow registration of students, professors, administrators, and administrative staff.
+FR02: The system must support rolebased authentication (RBAC).
+FR03: The system must support login using institutional email and password.
+FR04: The system must allow password recovery via institutional email.
+FR05: The system must allow assigning multiple roles to a single user (e.g., professor + coordinator).
+1.2 Academic Management
+FR06: The system must allow creation, editing, and deletion of study programs.
+FR07: The system must allow defining courses with prerequisites.
+FR08: The system must allow assigning courses to semesters or modules.
+FR09: The system must allow assigning professors to specific courses.
+FR10: The system must allow a professor to teach multiple groups per course.
+1.3 Enrollment and Academic Control
+FR11: The system must allow student enrollment per academic period.
+FR12: The system must validate prerequisites before enrollment.
+FR13: The system must prevent overcapacity in course groups.
+FR14: The system must allow temporary or permanent course withdrawal.
+FR15: The system must maintain a complete academic history for each student.
+1.4 Evaluations and Grades
+FR16: The system must allow creation of course evaluations.
+FR17: The system must support different evaluation types (exam, assignment, project, participation).
+FR18: The system must calculate weighted final grades.
+FR19: The system must allow grade entry by professors.
+FR20: The system must allow students to review their grades.
+1.5 Scheduling and Resource Allocation
+FR21: The system must generate schedules while avoiding conflicts between classrooms, professors, and students.
+FR22: The system must allow assignment of physical or virtual classrooms.
+FR23: The system must support classroom reservations for academic events.
+FR24: The system must automatically detect scheduling conflicts.
+1.6 Communication
+FR25: The system must allow internal messaging between students and professors.
+FR26: The system must allow global institutional announcements.
+FR27: The system must send notifications via email or internal system.
+FR28: The system must allow classbased communication groups.
+1.7 Institutional Administration
+FR29: The system must generate academic reports by student, group, and program.
+FR30: The system must generate academic performance statistics.
+FR31: The system must allow auditing of grade changes.
+FR32: The system must allow management of academic periods.
+1.8 Payments (optional but useful for system stress testing)
+FR33: The system must record enrollment or tuition payments.
+FR34: The system must generate student account statements.
+FR35: The system must block enrollment if outstanding debts exist.
+2. NonFunctional Requirements (NFR)
+2.1 Performance
+NFR01: The system must support at least 50,000 concurrent users.
+NFR02: Academic history queries must respond in less than 2 seconds.
+NFR03: Schedule generation must not exceed 30 seconds per academic period.
+NFR04: The system must handle peak loads during enrollment periods without critical degradation.
+2.2 Scalability
+NFR05: The system must be horizontally scalable by modules (users, academics, payments).
+NFR06: The system must support domainbased service separation (microservicesready).
+NFR07: The system must handle data growth without requiring database restructuring.
+2.3 Security
+NFR08: All communications must be encrypted (TLS 1.2 or higher).
+NFR09: The system must implement rolebased access control (RBAC).
+NFR10: Passwords must be stored using secure hashing (bcrypt or equivalent).
+NFR11: The system must log audit trails for critical access and modifications.
+NFR12: The system must prevent SQL injection and common OWASP Top 10 attacks.
+2.4 Availability
+NFR13: The system must guarantee at least 99.5% uptime.
+NFR14: The system must provide fault tolerance for critical modules (users, enrollment).
+NFR15: The system must support disaster recovery with daily automatic backups.
+2.5 Maintainability
+NFR16: The system must be modularized by functional domains.
+NFR17: The code must follow clean architecture standards.
+NFR18: There must be a clear separation between business logic and persistence.
+NFR19: Changes in one module must not affect others (low coupling).
+2.6 Usability
+NFR20: The interface must be intuitive for nontechnical users.
+NFR21: The system must be accessible from mobile devices.
+NFR22: The system must comply with basic accessibility standards (WCAG 2.1 AA level).
+2.7 Interoperability
+NFR23: The system must expose REST or GraphQL APIs for external integration.
+NFR24: The system must support integration with external systems (library, payments, LMS).
+NFR25: The system must support data export in CSV, JSON, and PDF formats.
+2.8 Data Consistency
+NFR26: Critical operations (enrollment, grading) must be transactional.
+NFR27: The system must ensure strong consistency in academic data.
+NFR28: No data loss must occur under concurrent operations.
+
+----------------------------------------------------------------
+
+### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner - ds32b):
+
+
+### 1. SYSTEM OVERVIEW:
+
+The university management platform aims to streamline academic operations, user management, enrollment processes, evaluations, scheduling, communication, institutional administration, and optional payment handling. It is designed for scalability, security, performance, maintainability, and usability, ensuring seamless interaction across various functional domains.
+
+### 2. ARCHITECTURAL STYLE:
+
+**Microservices Architecture**
+
+This choice supports scalability by allowing horizontal scaling of modules (users, academics, payments), aligns with domain separation, and facilitates modular development and deployment. It ensures low coupling between services, enhancing maintainability and fault isolation.
+
+### 3. SYSTEM SUBSYSTEMS:
+
+- **User Management Service**: Manages user registration, RBAC, login, and password recovery.
+- **Academic Management Service**: Handles study programs, courses, prerequisites, and professor assignments.
+- **Enrollment Service**: Manages student enrollment, validates prerequisites, and handles withdrawals.
+- **Evaluation Service**: Manages course evaluations, grade entry, and calculation.
+- **Scheduling Service**: Generates schedules, assigns classrooms, detects conflicts.
+- **Communication Service**: Facilitates internal messaging, announcements, notifications.
+- **Institutional Administration Service**: Generates reports, statistics, audits, manages periods.
+- **Payment Service (Optional)**: Manages tuition payments, statements, and enrollment blocking.
+
+### 4. SYSTEM BOUNDARIES:
+
+**Core System Components:**
+- University Management Platform
+
+**External Actors/Services:**
+- Users (students, professors)
+- External Systems (library, LMS, payment gateways)
+- Email Services
+- Databases
+
+### 5. COMMUNICATION AND DATA FLOW:
+
+During enrollment:
+1. Student initiates enrollment via UI.
+2. Enrollment Service checks prerequisites with Academic Management Service.
+3. Verifies capacity with Scheduling Service.
+4. Confirms availability and creates enrollment record.
+5. Updates schedule in Scheduling Service.
+6. Triggers notifications via Communication Service.
+
+### 6. ARCHITECTURE INTERACTION DIAGRAM:
+
+```mermaid
+sequenceDiagram
+    Student ->> EnrollmentService: Initiate Enrollment
+    EnrollmentService ->> AcademicManagementService: Check Prerequisites
+    AcademicManagementService --> EnrollmentService: Return Prerequisite Status
+    EnrollmentService ->> SchedulingService: Check Capacity
+    SchedulingService --> EnrollmentService: Return Availability
+    EnrollmentService ->> AcademicManagementService: Create Enrollment Record
+    AcademicManagementService --> EnrollmentService: Confirm Enrollment
+    EnrollmentService ->> SchedulingService: Update Schedule
+    SchedulingService --> EnrollmentService: Confirm Update
+    EnrollmentService ->> CommunicationService: Send Notification
+    CommunicationService --> EnrollmentService: Confirm Notification Sent
+```
+
+This architecture ensures each subsystem operates independently, maintaining scalability and modularity while efficiently handling critical operations.
+
+----------------------------------------------------------------
+
+### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner - ds32b):
+
+
+### COMPONENT OVERVIEW:
+
+The university management platform is decomposed into eight core microservices, each focusing on distinct functional areas. These services are designed to operate independently, allowing for horizontal scaling and modular development. Each service owns its data storage, ensuring loose coupling and high maintainability.
+
+---
+
+### COMPONENT SPECIFICATION:
+
+#### 1. User Management Service (UMS)
+- **Responsibility**: Manages user registration, authentication, RBAC, password recovery.
+- **Internal Behavior**:
+  - Registers users with roles (student, professor, admin).
+  - Authenticates users via institutional email and password.
+  - Manages password reset processes.
+  - Assigns multiple roles to users.
+- **Dependencies**:
+  - Database for user storage.
+  - Email service for notifications.
+- **Inputs**:
+  - User registration details.
+  - Login credentials.
+  - Password recovery requests.
+- **Outputs**:
+  - Authenticated user sessions.
+  - Role assignments.
+
+#### 2. Academic Management Service (AMS)
+- **Responsibility**: Manages study programs, courses, prerequisites, professor assignments.
+- **Internal Behavior**:
+  - Creates, edits, deletes study programs.
+  - Defines courses with prerequisites and assignments.
+  - Assigns professors to courses.
+- **Dependencies**:
+  - Database for academic data.
+  - UMS for user roles (professors).
+- **Inputs**:
+  - Program/course details.
+  - Professor assignments.
+- **Outputs**:
+  - Academic program structures.
+
+#### 3. Enrollment Service (ES)
+- **Responsibility**: Manages student enrollment, validates prerequisites, handles withdrawals.
+- **Internal Behavior**:
+  - Enrolls students in courses.
+  - Validates prerequisites and capacity.
+  - Maintains academic history.
+- **Dependencies**:
+  - AMS for prerequisite checks.
+  - Scheduling Service for room availability.
+  - Academic History Repository.
+- **Inputs**:
+  - Student enrollment requests.
+  - Withdrawal requests.
+- **Outputs**:
+  - Enrollment confirmations.
+
+#### 4. Evaluation Service (EVS)
+- **Responsibility**: Manages evaluations, grade entry, calculations.
+- **Internal Behavior**:
+  - Creates course evaluations.
+  - Calculates final grades.
+  - Allows professors to enter grades.
+- **Dependencies**:
+  - UMS for professor access.
+  - ES for enrollment data.
+- **Inputs**:
+  - Evaluation types and scores.
+  - Grade entries.
+- **Outputs**:
+  - Calculated grades.
+
+#### 5. Scheduling Service (SS)
+- **Responsibility**: Generates schedules, assigns classrooms, detects conflicts.
+- **Internal Behavior**:
+  - Generates conflict-free schedules.
+  - Assigns classrooms (physical/virtual).
+  - Detects scheduling conflicts.
+- **Dependencies**:
+  - AMS for course data.
+  - ES for enrollment numbers.
+- **Inputs**:
+  - Course and professor availability.
+  - Classroom reservations.
+- **Outputs**:
+  - Generated schedules.
+
+#### 6. Communication Service (CS)
+- **Responsibility**: Facilitates internal messaging, announcements, notifications.
+- **Internal Behavior**:
+  - Manages internal messaging between users.
+  - Sends global announcements.
+  - Notifies via email or system alerts.
+- **Dependencies**:
+  - UMS for user details.
+  - Email service.
+- **Inputs**:
+  - Messages, announcements, notifications.
+- **Outputs**:
+  - Delivered communications.
+
+#### 7. Institutional Administration Service (IAS)
+- **Responsibility**: Generates reports, statistics, audits, manages periods.
+- **Internal Behavior**:
+  - Produces academic reports and stats.
+  - Manages audit logs for critical changes.
+  - Oversees academic periods.
+- **Dependencies**:
+  - UMS for user roles.
+  - AMS, ES, EVS, SS for data.
+- **Inputs**:
+  - Report generation requests.
+  - Period management actions.
+- **Outputs**:
+  - Reports and statistics.
+
+#### 8. Payment Service (PS) [Optional]
+- **Responsibility**: Manages tuition payments, statements, enrollment blocking.
+- **Internal Behavior**:
+  - Records payments.
+  - Generates account statements.
+  - Blocks enrollments with outstanding debts.
+- **Dependencies**:
+  - UMS for user details.
+  - ES for enrollment eligibility.
+  - External payment gateways.
+- **Inputs**:
+  - Payment records, statements.
+  - Enrollment requests.
+- **Outputs**:
+  - Payment confirmations.
+
+---
+
+### COMPONENT RESPONSIBILITY BOUNDARIES:
+
+Each service owns specific responsibilities without overlap. For example:
+- UMS handles user authentication but doesn't manage academic enrollments (handled by ES).
+- AMS manages course structures but doesn't handle user roles beyond its own operations.
+- IAS generates reports using data from other services but doesn't modify that data.
+
+---
+
+### COMPONENT COMMUNICATION:
+
+Services collaborate via well-defined APIs or event-driven communication. For example:
+- During enrollment, ES checks prerequisites with AMS and capacity with SS.
+- Grade entry in EVS triggers updates in ES and notifications via CS.
+- Scheduling changes in SS notify affected users through CS.
+
+---
+
+### COMPONENT INTERACTION DIAGRAM:
+
+```mermaid
+sequenceDiagram
+    Student ->> UMS: Login
+    UMS ->> Student: Authenticated Session
+    Student ->> ES: Enroll in Course
+    ES ->> AMS: Check Prerequisites
+    AMS --> ES: Return Prerequisite Status
+    ES ->> SS: Check Capacity
+    SS --> ES: Return Availability
+    ES ->> EVS: Create Enrollment Record
+    EVS --> ES: Confirm Enrollment
+    ES ->> SS: Update Schedule
+    SS --> ES: Confirm Update
+    ES ->> CS: Send Notification
+    CS --> Student: Enrollment Confirmation
+```
+
+This diagram illustrates the flow of enrollment, showcasing how services collaborate to fulfill a user request.
+
+----------------------------------------------------------------
+
+### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner - ds32b):
+
+
+### Interface Design for University Management Platform
+
+The university management platform is structured as a microservices architecture, with each service handling distinct responsibilities. The interfaces between these services ensure seamless communication and data flow while maintaining modularity and scalability.
+
+---
+
+#### 1. **Interface Overview**
+
+The system employs RESTful APIs for most interactions due to their simplicity and scalability. Real-time notifications or event-driven scenarios may use messaging protocols like Kafka, but the primary focus here is on REST for clarity and consistency.
+
+---
+
+#### 2. **Interface Contracts**
+
+Each interface defines the operations, parameters, responses, and error handling between services.
+
+**a. User Authentication Interface**
+- **Provider:** User Management Service (UMS)
+- **Consumer:** Academic Management Service (AMS), Enrollment Service (ES), Evaluation Service (EVS), Scheduling Service (SS), Communication Service (CS), Institutional Administration Service (IAS), Payment Service (PS)
+- **Operations:**
+  - `authenticateUser(email, password)`
+    - **Input Parameters:** Email (string), Password (string)
+    - **Output Responses:** User details or session token
+    - **Error Rules:** Returns error if credentials are invalid.
+  
+**b. Academic Prerequisites Check Interface**
+- **Provider:** Academic Management Service (AMS)
+- **Consumer:** Enrollment Service (ES)
+- **Operations:**
+  - `checkPrerequisites(studentId, courseId)`
+    - **Input Parameters:** Student ID (string), Course ID (string)
+    - **Output Responses:** Boolean indicating eligibility
+    - **Error Rules:** Returns error if prerequisites are not met.
+
+**c. Course Capacity Check Interface**
+- **Provider:** Scheduling Service (SS)
+- **Consumer:** Enrollment Service (ES)
+- **Operations:**
+  - `checkCapacity(courseId, academicPeriod)`
+    - **Input Parameters:** Course ID (string), Academic Period (string)
+    - **Output Responses:** Available slots count
+    - **Error Rules:** Returns error if course is full.
+
+**d. Grade Entry Interface**
+- **Provider:** Evaluation Service (EVS)
+- **Consumer:** Professor via UI, Institutional Administration Service (IAS)
+- **Operations:**
+  - `submitGrade(studentId, courseId, grade)`
+    - **Input Parameters:** Student ID (string), Course ID (string), Grade (float)
+    - **Output Responses:** Success confirmation
+    - **Error Rules:** Returns error for invalid grades or unauthorized access.
+
+**e. Schedule Update Interface**
+- **Provider:** Scheduling Service (SS)
+- **Consumer:** Enrollment Service (ES), Communication Service (CS)
+- **Operations:**
+  - `updateSchedule(courseId, academicPeriod, scheduleData)`
+    - **Input Parameters:** Course ID (string), Academic Period (string), Schedule Data (object)
+    - **Output Responses:** Updated schedule confirmation
+    - **Error Rules:** Returns error if conflicts arise.
+
+**f. Notification Interface**
+- **Provider:** Communication Service (CS)
+- **Consumer:** Enrollment Service (ES), Scheduling Service (SS), Institutional Administration Service (IAS)
+- **Operations:**
+  - `sendNotification(userId, message)`
+    - **Input Parameters:** User ID (string), Message (string)
+    - **Output Responses:** Notification status
+    - **Error Rules:** Returns error if notification fails.
+
+**g. Report Generation Interface**
+- **Provider:** Institutional Administration Service (IAS)
+- **Consumer:** Administrator via UI, External Systems
+- **Operations:**
+  - `generateReport(reportType, parameters)`
+    - **Input Parameters:** Report Type (string), Parameters (object)
+    - **Output Responses:** Generated report in specified format
+    - **Error Rules:** Returns error if invalid parameters are provided.
+
+**h. Payment Status Check Interface**
+- **Provider:** Payment Service (PS)
+- **Consumer:** Enrollment Service (ES)
+- **Operations:**
+  - `checkPaymentStatus(studentId)`
+    - **Input Parameters:** Student ID (string)
+    - **Output Responses:** Payment status
+    - **Error Rules:** Returns error if payment is overdue.
+
+---
+
+#### 3. **Communication Protocols**
+
+- **RESTful APIs:** Used for most service-to-service interactions due to their simplicity and scalability.
+- **Messaging Protocol (e.g., Kafka):** Considered for real-time notifications or event-driven scenarios but not implemented here for simplicity.
+
+---
+
+#### 4. **Error and Validation Rules**
+
+Each interface includes specific error handling:
+- **Authentication Errors:** Invalid credentials return a 401 Unauthorized response.
+- **Validation Errors:** Invalid input parameters result in a 400 Bad Request.
+- **Resource Not Found:** Operations returning no results use a 404 Not Found status.
+- **Conflict Errors:** Such as overcapacity during enrollment, return a 409 Conflict.
+
+---
+
+#### 5. **Interface Interaction Diagram**
+
+```mermaid
+sequenceDiagram
+    Student ->> UMS: authenticateUser(email, password)
+    UMS ->> Student: returns session token or user details
+    Student ->> ES: enroll(studentId, courseId, academicPeriod)
+    ES ->> AMS: checkPrerequisites(studentId, courseId)
+    AMS --> ES: returns prerequisite status
+    ES ->> SS: checkCapacity(courseId, academicPeriod)
+    SS --> ES: returns available slots
+    ES ->> EVS: createEnrollmentRecord(studentId, courseId, academicPeriod)
+    EVS --> ES: confirms enrollment
+    ES ->> SS: updateSchedule(courseId, academicPeriod, scheduleData)
+    SS --> ES: confirms schedule update
+    ES ->> CS: sendNotification(userId, "Course Enrollment Confirmation")
+    CS --> Student: sends notification
+```
+
+This diagram illustrates the flow of a student enrolling in a course, showcasing how services interact through defined interfaces.
+
+---
+
+### Conclusion
+
+The interface design ensures that each microservice operates independently while maintaining efficient communication. By defining clear contracts and error handling, the system remains robust and scalable, adhering to the specified requirements and constraints.
+
+----------------------------------------------------------------
+
+### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner - ds32b):
+
+
+### DATA MODEL OVERVIEW:
+
+The university management platform employs a microservices architecture, where each service manages its own data storage. The data model is designed to support scalability, maintainability, and strong consistency across critical operations such as enrollment and grading. Each service's data storage strategy aligns with its responsibilities, ensuring loose coupling and efficient interaction through well-defined interfaces.
+
+---
+
+### DOMAIN ENTITIES:
+
+#### 1. User
+- **Attributes**:
+  - `userId` (string, unique)
+  - `email` (string, unique)
+  - `passwordHash` (string)
+  - `roles` (array of strings)
+  - `createdOn` (timestamp)
+  - `lastLogin` (timestamp)
+- **Relationships**:
+  - Has many Enrollments
+  - Belongs to multiple Roles
+  - Can have multiple Evaluations
+- **Constraints**:
+  - Email must be unique across all users.
+  - Password must be hashed using bcrypt or equivalent.
+
+#### 2. Role
+- **Attributes**:
+  - `roleId` (string, unique)
+  - `roleName` (string, unique)
+  - `permissions` (array of strings)
+- **Relationships**:
+  - Assigned to many Users
+- **Constraints**:
+  - Role names must be unique.
+
+#### 3. StudyProgram
+- **Attributes**:
+  - `programId` (string, unique)
+  - `programName` (string)
+  - `duration` (integer, years)
+  - `description` (string)
+- **Relationships**:
+  - Composed of many Courses
+  - Has many Enrollments
+- **Constraints**:
+  - Program name must be unique.
+
+#### 4. Course
+- **Attributes**:
+  - `courseId` (string, unique)
+  - `courseName` (string)
+  - `credits` (integer)
+  - `description` (string)
+- **Relationships**:
+  - Belongs to a StudyProgram
+  - Has many Prerequisites
+  - Taught by Professors
+  - Enrolled by Students
+  - Has Evaluations
+- **Constraints**:
+  - Course name must be unique within a program.
+
+#### 5. Prerequisite
+- **Attributes**:
+  - `prereqId` (string, unique)
+  - `courseId` (string)
+  - `prerequisiteCourseId` (string)
+- **Relationships**:
+  - Links Courses to their prerequisites
+- **Constraints**:
+  - A course cannot be its own prerequisite.
+
+#### 6. Enrollment
+- **Attributes**:
+  - `enrollmentId` (string, unique)
+  - `studentId` (string)
+  - `courseId` (string)
+  - `academicPeriod` (string)
+  - `status` (enum: ENROLLED, WITHDRAWN)
+- **Relationships**:
+  - Belongs to a Student
+  - Enrolled in a Course
+  - Has Evaluations
+- **Constraints**:
+  - A student can only enroll once per course and period.
+
+#### 7. Evaluation
+- **Attributes**:
+  - `evaluationId` (string, unique)
+  - `enrollmentId` (string)
+  - `evaluationType` (enum: EXAM, ASSIGNMENT, PROJECT, PARTICIPATION)
+  - `score` (float)
+  - `weight` (float)
+- **Relationships**:
+  - Belongs to an Enrollment
+- **Constraints**:
+  - Scores must be within valid ranges.
+
+#### 8. Schedule
+- **Attributes**:
+  - `scheduleId` (string, unique)
+  - `courseId` (string)
+  - `academicPeriod` (string)
+  - `classroomId` (string)
+  - `startTime` (datetime)
+  - `endTime` (datetime)
+- **Relationships**:
+  - Belongs to a Course
+  - Assigned to a Classroom
+- **Constraints**:
+  - No overlapping time slots for the same classroom.
+
+#### 9. Communication
+- **Attributes**:
+  - `messageId` (string, unique)
+  - `senderId` (string)
+  - `receiverId` (string)
+  - `content` (string)
+  - `sentOn` (timestamp)
+- **Relationships**:
+  - Sent by a User
+  - Received by a User or Group
+- **Constraints**:
+  - Message content must adhere to length limits.
+
+#### 10. AcademicPeriod
+- **Attributes**:
+  - `periodId` (string, unique)
+  - `name` (string)
+  - `startDate` (date)
+  - `endDate` (date)
+- **Relationships**:
+  - Contains Enrollments and Schedules
+- **Constraints**:
+  - Period names must be unique.
+
+#### 11. Classroom
+- **Attributes**:
+  - `classroomId` (string, unique)
+  - `name` (string)
+  - `type` (enum: PHYSICAL, VIRTUAL)
+  - `capacity` (integer)
+- **Relationships**:
+  - Assigned to Schedules
+- **Constraints**:
+  - Capacity must be a positive integer.
+
+#### 12. Payment
+- **Attributes**:
+  - `paymentId` (string, unique)
+  - `studentId` (string)
+  - `amount` (float)
+  - `status` (enum: PENDING, PAID, OVERDUE)
+  - `dueDate` (date)
+- **Relationships**:
+  - Belongs to a Student
+- **Constraints**:
+  - Amount must be non-negative.
+
+---
+
+### DATA STORAGE DESIGN:
+
+1. **User Management Service Database**:
+   - Tables/Collections: User, Role, Permission.
+   - Relationships: Users have roles; roles have permissions.
+
+2. **Academic Management Service Database**:
+   - Tables/Collections: StudyProgram, Course, Prerequisite.
+   - Relationships: Programs contain courses; courses have prerequisites.
+
+3. **Enrollment Service Database**:
+   - Tables/Collections: Enrollment, AcademicPeriod.
+   - Relationships: Enrollments link students to courses within periods.
+
+4. **Evaluation Service Database**:
+   - Tables/Collections: Evaluation.
+   - Relationships: Evaluations belong to enrollments.
+
+5. **Scheduling Service Database**:
+   - Tables/Collections: Schedule, Classroom.
+   - Relationships: Schedules assign classrooms to courses.
+
+6. **Communication Service Database**:
+   - Tables/Collections: Communication.
+   - Relationships: Messages link senders and receivers.
+
+7. **Payment Service Database** (Optional):
+   - Tables/Collections: Payment.
+   - Relationships: Payments belong to students.
+
+---
+
+### DATA CONSISTENCY RULES:
+
+1. **Transactions**:
+   - Enrollment must be atomic: check prerequisites, capacity, and update schedule in a single transaction.
+   - Grade entry must validate professor access before updating the evaluation.
+
+2. **Validation**:
+   - Course prerequisites must be validated before enrollment.
+   - Classroom capacity must not exceed during scheduling.
+
+3. **Integrity Constraints**:
+   - Foreign keys ensure that enrollments reference valid courses and students.
+   - Unique constraints enforce one enrollment per student-course-period.
+
+---
+
+### DATA MODEL DIAGRAM:
+
+```mermaid
+erDiagram
+
+    User {
+        userId STRING
+        email STRING
+        passwordHash STRING
+        roles STRING[]
+        createdOn TIMESTAMP
+        lastLogin TIMESTAMP
+    }
+
+    Role {
+        roleId STRING
+        roleName STRING
+        permissions STRING[]
+    }
+
+    StudyProgram {
+        programId STRING
+        programName STRING
+        duration INTEGER
+        description STRING
+    }
+
+    Course {
+        courseId STRING
+        courseName STRING
+        credits INTEGER
+        description STRING
+    }
+
+    Prerequisite {
+        prereqId STRING
+        courseId STRING
+        prerequisiteCourseId STRING
+    }
+
+    Enrollment {
+        enrollmentId STRING
+        studentId STRING
+        courseId STRING
+        academicPeriod STRING
+        status STRING
+    }
+
+    Evaluation {
+        evaluationId STRING
+        enrollmentId STRING
+        evaluationType STRING
+        score FLOAT
+        weight FLOAT
+    }
+
+    Schedule {
+        scheduleId STRING
+        courseId STRING
+        academicPeriod STRING
+        classroomId STRING
+        startTime DATETIME
+        endTime DATETIME
+    }
+
+    Communication {
+        messageId STRING
+        senderId STRING
+        receiverId STRING
+        content STRING
+        sentOn TIMESTAMP
+    }
+
+    AcademicPeriod {
+        periodId STRING
+        name STRING
+        startDate DATE
+        endDate DATE
+    }
+
+    Classroom {
+        classroomId STRING
+        name STRING
+        type STRING
+        capacity INTEGER
+    }
+
+    Payment {
+        paymentId STRING
+        studentId STRING
+        amount FLOAT
+        status STRING
+        dueDate DATE
+    }
+
+    User }o--|{ Role : "has"
+    StudyProgram }o--|{ Course : "contains"
+    Course }o--|{ Prerequisite : "has"
+    Enrollment }o--|{ User : "enrolled by"
+    Enrollment }o--|{ Course : "enrolled in"
+    Evaluation }o--|{ Enrollment : "belongs to"
+    Schedule }o--|{ Course : "assigned to"
+    Schedule }o--|{ Classroom : "uses"
+    Communication }o--|{ User : "sent by"
+    Communication }o--|{ User : "received by"
+    AcademicPeriod }o--|{ Enrollment : "contains"
+    AcademicPeriod }o--|{ Schedule : "contains"
+    Payment }o--|{ User : "paid by"
+```
+
+----------------------------------------------------------------
+
+### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner - ds32b):
+
+
+### Algorithm Design for University Management Platform
+
+#### 1. COMPUTATIONAL PROBLEM IDENTIFICATION:
+
+The university management platform requires solving two primary computational problems:
+
+- **Prerequisite Validation**: Ensuring that a student has completed all necessary prerequisites before enrolling in a course.
+  
+- **Scheduling without Conflicts**: Generating a schedule where courses are assigned time slots and classrooms without any conflicts (e.g., same professor, overlapping students, or room overbooking).
+
+#### 2. ALGORITHM CANDIDATES:
+
+For each problem, several algorithms were considered based on their suitability.
+
+**Prerequisite Validation:**
+
+- **Graph Traversal Algorithms**: Depth-First Search (DFS) and Breadth-First Search (BFS). These are suitable for checking dependencies in a directed acyclic graph (DAG) of courses and prerequisites.
+  
+**Scheduling without Conflicts:**
+
+- **Constraint Satisfaction Problem (CSP) Solvers**: Designed to handle multiple constraints, making them ideal for scheduling with various conditions like room availability, professor schedules, and student enrollments.
+  
+#### 3. MCTS SEARCH STRATEGY:
+
+Monte Carlo Tree Search was used to evaluate the suitability of each algorithm based on factors such as performance, scalability, ease of implementation, and adherence to system constraints.
+
+- **Prerequisite Validation**: Both BFS and DFS were evaluated. BFS was chosen for its level-order traversal, which ensures that all prerequisites are checked in a structured manner.
+  
+- **Scheduling without Conflicts**: CSP solvers were deemed more suitable due to their ability to handle multiple constraints efficiently, despite higher computational demands.
+
+#### 4. SELECTED ALGORITHMS:
+
+**A. Prerequisite Validation using BFS**
+
+- **Purpose**: To check if all prerequisites for a course are satisfied by the student.
+  
+- **Inputs**:
+  - Student's academic history (list of completed courses).
+  - Target course ID to enroll in.
+  
+- **Outputs**:
+  - Boolean value: `true` if all prerequisites are met, `false` otherwise.
+  
+- **Complexity Analysis**:
+  - Time Complexity: O(V + E), where V is the number of vertices (courses) and E is the number of edges (prerequisites). This ensures efficient traversal even for a large number of courses.
+  
+- **Advantages**:
+  - Efficient in checking prerequisites level by level, ensuring all dependencies are met.
+  - Easy to implement and understand.
+  
+- **Limitations**:
+  - Assumes that the prerequisite graph is acyclic. Cycles would lead to incorrect results or infinite loops.
+
+**B. Scheduling without Conflicts using CSP Solver**
+
+- **Purpose**: To assign time slots and classrooms to courses such that no conflicts arise (e.g., same professor teaching two courses at the same time, classroom overbooking).
+  
+- **Inputs**:
+  - List of courses with their details.
+  - Available time slots.
+  - Classrooms with capacities.
+  - Professor availability.
+  
+- **Outputs**:
+  - A schedule where each course is assigned a time slot and classroom without conflicts. If no valid assignment exists, it detects the unsolvable constraints.
+  
+- **Complexity Analysis**:
+  - Time Complexity: Varies depending on the implementation of the CSP solver. Generally, it can be high (exponential in the worst case) but manageable with optimizations like forward checking and heuristics.
+  
+- **Advantages**:
+  - Flexibility to handle multiple constraints beyond just pairwise conflicts.
+  - Can incorporate various heuristics for efficient solving, such as Most Constrained Variable (MCV) or Least Constraining Value (LCV).
+  
+- **Limitations**:
+  - Higher computational complexity compared to simpler scheduling algorithms, which may require optimization techniques for larger datasets.
+
+#### 5. ALGORITHM FLOW DIAGRAM:
+
+**A. Prerequisite Validation using BFS**
+
+```mermaid
+graph TD
+    A[Start with target course] --> B{Check if student has completed the course}
+    B -->|Yes| C{All prerequisites met?}
+    C -->|No| D[Traverse each prerequisite]
+    D --> E{Check if prerequisite is in academic history}
+    E -->|No| F[Mark as not eligible]
+    E -->|Yes| G{Continue until all prerequisites are checked}
+    G --> H{Return true}
+    B -->|No| I{Add course to queue for traversal}
+    I --> J{Process next course in queue}
+    J --> K{Check if student has completed the course}
+    K -->|No| L[Mark as not eligible]
+    K -->|Yes| M{Continue until all prerequisites are checked}
+```
+
+**B. Scheduling without Conflicts using CSP Solver**
+
+```mermaid
+graph TD
+    A[Define variables: courses] --> B[Define domains: time slots and classrooms]
+    C[Define constraints: no overlapping professors, students, rooms] --> D[Choose a variable (course)]
+    E{Is the domain empty?} -->|Yes| F[Backtrack]
+    G{Select a value from the domain} --> H{Assign the value to the variable}
+    I{Check if assignment violates any constraints} -->|Yes| J{Remove the value and try next}
+    K{Proceed to next variable} --> L{Repeat until all variables are assigned or backtrack}
+    M{If all assignments are valid, return the schedule}
+```
+
+### Conclusion
+
+The selected algorithms efficiently address the key computational challenges in the university management platform. BFS ensures that prerequisite checks are thorough and efficient, while the CSP solver handles the complexity of scheduling with multiple constraints, ensuring a conflict-free timetable. These solutions align well with the system's performance and scalability requirements.
+
+----------------------------------------------------------------
+
+================================================================
+                      FIN DEL REPORTE                           
+================================================================

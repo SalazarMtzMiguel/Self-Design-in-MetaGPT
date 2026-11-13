@@ -1,0 +1,338 @@
+Caso de estudio 3: Metamorfosis
+
+ Documento: Sistema autónomo IoT de gestión inteligente de una red de agua agrícola
+
+ 1. Contexto del sistema
+
+Se requiere transformar el sistema IoT de monitoreo y riego de un invernadero en una plataforma autónoma para gestionar una red de distribución de agua agrícola compuesta por múltiples instalaciones, depósitos, bombas, válvulas y zonas de cultivo.
+
+El nuevo problema ya no consiste únicamente en monitorear un invernadero ni en generar recomendaciones de riego. El sistema debe coordinar recursos distribuidos, detectar fallas, administrar restricciones de disponibilidad de agua y tomar decisiones en diferentes niveles de la infraestructura.
+
+La magnitud del cambio supera los límites evolutivos de la arquitectura anterior. Por lo tanto, el sistema debe descartar la arquitectura previa y generar un nuevo SDD.
+
+Este caso representa un punto de quiebre.
+
+ 2. Punto de quiebre
+
+La arquitectura anterior se considera insuficiente por las siguientes razones:
+
+1. Estaba diseñada para una instalación individual.
+2. Utilizaba un gateway principal por invernadero.
+3. No soportaba coordinación entre múltiples instalaciones.
+4. No administraba una red de bombas y depósitos.
+5. No resolvía conflictos entre instalaciones con recursos compartidos.
+6. No contemplaba decisiones autónomas distribuidas.
+7. No podía operar con diferentes niveles de autonomía.
+8. No soportaba una representación global del estado hidráulico.
+9. No podía integrar información meteorológica, energética y productiva.
+10. No garantizaba decisiones consistentes en una red distribuida.
+
+A partir de este punto, los artefactos anteriores no deben actualizarse incrementalmente. El sistema debe generar una nueva arquitectura y un nuevo SDD.
+
+ 3. Objetivo del sistema
+
+El sistema debe gestionar de manera autónoma una red IoT agrícola que incluya:
+
+- Múltiples invernaderos.
+- Depósitos de agua.
+- Bombas.
+- Válvulas.
+- Sensores de presión.
+- Sensores de caudal.
+- Sensores de humedad.
+- Medidores de energía.
+- Gateways locales.
+- Nodos de coordinación.
+- Plataforma de supervisión humana.
+
+El sistema debe predecir necesidades de agua, planear su distribución, detectar conflictos y coordinar las acciones de los diferentes nodos.
+
+ 4. Clasificación ontológica
+
+ Objetivo
+
+- Predicción de demanda de agua.
+- Optimización de distribución del recurso.
+- Planeación de riego entre múltiples instalaciones.
+- Resolución de conflictos entre zonas y depósitos.
+- Predicción de fallas en bombas y válvulas.
+- Clasificación de niveles de riesgo operacional.
+
+ Procesamiento
+
+- Procesamiento descentralizado en gateways y nodos de control.
+- Procesamiento centralizado para supervisión, análisis histórico y coordinación global.
+- Cooperación entre nodos para decisiones distribuidas.
+
+ Capa de procesamiento
+
+- Percepción: sensores de caudal, presión, nivel, humedad, energía y estado de actuadores.
+- Middleware: gestión de dispositivos, comunicación entre nodos, sincronización y distribución de eventos.
+- Aplicación: predicción, planeación, resolución de conflictos, optimización y supervisión.
+
+ Interacción
+
+- Sistema-sistema: sensores, actuadores, gateways, nodos coordinadores y plataforma central.
+- Sistema-humano: operador, administrador y responsable de la infraestructura.
+- Sistema-actuador: bombas, válvulas y sistemas de distribución.
+- Sistema-sistema externo: servicio meteorológico y sistema energético, si se encuentran disponibles.
+
+ Incertidumbre
+
+- Incertidumbre de las mediciones de presión, caudal y humedad.
+- Incertidumbre de los parámetros hidráulicos.
+- Incertidumbre de la demanda futura.
+- Incertidumbre del modelo de predicción.
+- Incertidumbre de la disponibilidad energética.
+- Incertidumbre provocada por pérdida de comunicación entre nodos.
+
+ Representación del conocimiento
+
+- Datos: telemetría, estados, históricos, órdenes y eventos.
+- Simbólica: restricciones, reglas, prioridades y políticas de seguridad.
+- Matemática: demanda, caudal, presión, consumo y disponibilidad.
+- Híbrida: combinación de reglas, datos históricos y modelos de clasificación.
+
+ 5. Requisitos funcionales
+
+ REQ-X01: Registro de instalaciones
+
+El sistema debe permitir registrar múltiples instalaciones agrícolas y sus zonas de cultivo.
+
+ REQ-X02: Registro de infraestructura hidráulica
+
+El sistema debe permitir registrar:
+
+- Depósitos.
+- Bombas.
+- Válvulas.
+- Tuberías.
+- Sensores de presión.
+- Sensores de caudal.
+- Gateways.
+- Nodos de control.
+
+ REQ-X03: Monitoreo distribuido
+
+El sistema debe recibir y procesar datos provenientes de múltiples instalaciones y nodos de control.
+
+ REQ-X04: Clasificación de riesgo
+
+El sistema debe clasificar el estado de cada instalación como:
+
+- Normal.
+- Degradado.
+- Crítico.
+- Fuera de servicio.
+
+ REQ-X05: Predicción de demanda
+
+El sistema debe predecir la demanda de agua de cada zona durante un intervalo futuro.
+
+ REQ-X06: Predicción de fallas
+
+El sistema debe clasificar la probabilidad de falla de bombas y válvulas utilizando sus mediciones históricas y actuales.
+
+ REQ-X07: Planeación global
+
+El sistema debe generar un plan de distribución de agua considerando:
+
+- Demanda de cada zona.
+- Disponibilidad de agua.
+- Capacidad de depósitos.
+- Estado de las bombas.
+- Capacidad de las tuberías.
+- Prioridad de las instalaciones.
+- Disponibilidad energética.
+- Restricciones de seguridad.
+
+ REQ-X08: Decisión local
+
+Cada gateway debe poder ejecutar decisiones críticas cuando no exista comunicación con la plataforma central.
+
+ REQ-X09: Coordinación entre nodos
+
+Los nodos deben intercambiar información sobre:
+
+- Demanda.
+- Disponibilidad.
+- Estado de actuadores.
+- Fallas.
+- Órdenes activas.
+- Recursos asignados.
+
+ REQ-X10: Resolución de conflictos
+
+El sistema debe detectar y resolver conflictos como:
+
+- Dos zonas solicitando simultáneamente el mismo recurso.
+- Demanda superior a la disponibilidad.
+- Bomba incapaz de cubrir el plan asignado.
+- Presión insuficiente.
+- Orden manual incompatible con una regla de seguridad.
+- Pérdida de comunicación durante una operación crítica.
+
+ REQ-X11: Prioridad de instalaciones
+
+El sistema debe permitir definir prioridades para las instalaciones de acuerdo con:
+
+- Tipo de cultivo.
+- Nivel de estrés.
+- Riesgo de pérdida.
+- Disponibilidad de agua.
+- Estado de la infraestructura.
+- Decisiones del operador.
+
+ REQ-X12: Reconfiguración operacional
+
+El sistema debe modificar el plan de distribución cuando se detecte:
+
+- Una falla.
+- Un cambio de demanda.
+- Una caída de presión.
+- Una reducción en la disponibilidad de agua.
+- Una pérdida de comunicación.
+- Una restricción energética.
+
+ REQ-X13: Supervisión humana
+
+El sistema debe proporcionar al operador:
+
+- Estado global de la red.
+- Instalaciones críticas.
+- Plan actual.
+- Conflictos detectados.
+- Predicciones.
+- Alertas.
+- Recomendaciones.
+- Acciones ejecutadas automáticamente.
+
+ REQ-X14: Intervención humana
+
+El operador debe poder:
+
+- Aprobar un plan.
+- Rechazar un plan.
+- Modificar prioridades.
+- Detener operaciones críticas.
+- Desactivar la autonomía de un nodo.
+- Forzar el cierre de una válvula o bomba.
+
+ REQ-X15: Auditoría
+
+El sistema debe registrar:
+
+- Datos recibidos.
+- Predicciones.
+- Planes generados.
+- Conflictos.
+- Decisiones automáticas.
+- Intervenciones humanas.
+- Órdenes ejecutadas.
+- Fallas de comunicación.
+
+ 6. Requisitos no funcionales
+
+ NFR-X01: Distribución
+
+El sistema debe continuar operando parcialmente cuando la plataforma central no esté disponible.
+
+ NFR-X02: Tiempo de respuesta
+
+Las decisiones críticas locales deben generarse en menos de tres segundos.
+
+ NFR-X03: Escalabilidad
+
+La arquitectura debe soportar múltiples instalaciones y nodos distribuidos.
+
+ NFR-X04: Tolerancia a fallos
+
+La falla de un nodo no debe detener completamente la operación de los demás nodos.
+
+ NFR-X05: Consistencia
+
+Las órdenes de control no deben ejecutarse de forma duplicada o contradictoria.
+
+ NFR-X06: Seguridad
+
+Las comunicaciones entre sensores, gateways, nodos y plataforma central deben autenticarse y protegerse.
+
+ NFR-X07: Explicabilidad
+
+Cada decisión automática debe incluir:
+
+- Datos utilizados.
+- Regla o criterio aplicado.
+- Modelo utilizado.
+- Nivel de confianza.
+- Restricciones consideradas.
+
+ NFR-X08: Recuperación
+
+El sistema debe sincronizar los estados locales después de restablecer la comunicación.
+
+ NFR-X09: Interoperabilidad
+
+Los nodos deben intercambiar mensajes utilizando formatos estructurados y versionables.
+
+ NFR-X10: Supervisión
+
+El operador debe poder consultar el estado de la red sin acceder directamente a cada dispositivo.
+
+ 7. Nueva arquitectura solicitada
+
+El sistema no debe conservar la arquitectura centralizada anterior. Debe proponer una arquitectura distribuida o híbrida compuesta, como mínimo, por:
+
+- Nodos de percepción.
+- Gateways locales.
+- Agentes de control local.
+- Servicios de coordinación regional.
+- Plataforma central de supervisión.
+- Servicio de predicción.
+- Servicio de planeación.
+- Servicio de resolución de conflictos.
+- Servicio de administración de recursos.
+- Servicio de auditoría.
+- Interfaz humana de supervisión.
+
+El agente arquitecto debe justificar si la solución debe utilizar:
+
+- Arquitectura distribuida.
+- Arquitectura jerárquica.
+- Arquitectura edge-cloud.
+- Arquitectura orientada a eventos.
+- Arquitectura híbrida.
+
+ 8. Candidatos algorítmicos permitidos
+
+El agente de algoritmos debe analizar exclusivamente los siguientes candidatos:
+
+1. Regresión logística.
+2. K-nearest neighbors.
+3. Árbol de decisión.
+4. Clasificador basado en reglas.
+
+Los algoritmos deben evaluarse para tareas de clasificación como:
+
+- Clasificación del riesgo operacional.
+- Clasificación de la probabilidad de falla.
+- Clasificación de la prioridad de una solicitud.
+- Clasificación del nivel de estrés hídrico.
+- Clasificación de la severidad de un conflicto.
+- Clasificación de la necesidad de intervención humana.
+
+El agente debe explicar que estos candidatos pueden servir para clasificación, pero que la planeación y optimización global pueden requerir posteriormente técnicas adicionales. En esta etapa, no debe introducir ni seleccionar otros algoritmos de optimización.
+
+ 9. Resultado esperado
+
+El resultado debe representar una metamorfosis arquitectónica:
+
+- La arquitectura anterior debe declararse descartada.
+- Debe identificarse el punto de quiebre.
+- Debe generarse un nuevo SDD.
+- No se deben limitar los cambios a componentes individuales.
+- Debe definirse una nueva organización de procesamiento.
+- Deben redefinirse las interfaces principales.
+- Debe construirse un nuevo modelo de datos.
+- Deben definirse nuevos mecanismos de coordinación.
+- Debe documentarse la relación entre procesamiento local y central.

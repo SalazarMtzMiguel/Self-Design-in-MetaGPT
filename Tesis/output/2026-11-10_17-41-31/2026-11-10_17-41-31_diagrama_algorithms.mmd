@@ -1,0 +1,27 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+graph TD
+    A[Sensores Ambientales] -->|Mediciones Crudas| GWM[Gateway Manager<br/>Clasificador Basado en Reglas]
+    GWM --> B{¿Conexión Estable?}
+    
+    B -->|No| C[Ejecutar Reglas Críticas<br/>Prioridad REQ-C08]
+    C --> D[Buffer Local + ID Transacción]
+    D --> E{¿Conexión Restablecida?}
+    E -->|Sí| F[Conflict Resolution Manager<br/>Sincronización REQ-C07/REQ-C08]
+    
+    B -->|Sí| G[Plataforma Central<br/>Árbol de Decisión]
+    G --> H[Clasificación Estrés Hídrico REQ-C01]
+    H --> I[Predicción Necesidad Riego REQ-C02]
+    I --> J[Recommendation Manager]
+    J --> K[Aprobación Operador REQ-C04]
+    K -->|Aceptado/Modificado| L[Actuator Control Service<br/>Validación NFR-C04]
+    L --> M[Válvulas de Riego]
+    
+    F --> N[Estado Consolidado + Audit Logging REQ-C09]
+    M --> N
+    
+    style GWM fill:#e1f5fe,stroke:#01579b
+    style G fill:#fff3e0,stroke:#e65100
+    style C fill:#fff3e0,stroke:#e65100
+    style D fill:#fff3e0,stroke:#e65100
+    style F fill:#fff3e0,stroke:#e65100
+    style N fill:#e8f5e9,stroke:#2e7d32

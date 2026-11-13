@@ -1,0 +1,32 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant C1 as User Client (Sender)
+    participant S as Central Server
+    participant P as Presence & Status Manager
+    participant M as Message Routing Engine
+    participant C2 as Target Client(s)
+    participant A as Admin Console
+
+    Note over C1, A: Authentication & Session Establishment
+    C1->>S: Login Request (Credentials + LAN Context)
+    S->>P: Register Presence & Issue Session Token
+    P-->>C1: Connection Confirmed + User List Update
+    P-->>A: Log Active User Event
+
+    Note over C1, A: Real-Time Messaging Flow
+    C1->>S: Encrypted Text Payload (Recipient/Group)
+    S->>M: Route Message with Integrity Check
+    M->>C2: Push Encrypted Payload via Persistent Channel
+    C2-->>C2: Decrypt, Timestamp, Store in Session History
+    C2-->>C1/C2: Display Notification + UI Update
+
+    Note over C1, A: Presence & Recovery Monitoring
+    C1->>S: Heartbeat Signal (Periodic)
+    S->>P: Update Connection Status
+    P-->>C2: Broadcast Online/Offline Indicator
+    S->>A: Log Disconnection/Recovery Event
+
+    Note over C1, A: Administration & Audit
+    A->>S: Request Active User Inventory
+    S->>P: Query Current Presence State
+    P-->>A: Return Real-Time User List + Status

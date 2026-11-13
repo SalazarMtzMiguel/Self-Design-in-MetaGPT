@@ -1,0 +1,59 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant C as ClientApplicationRuntime
+    participant Auth as AuthenticationService
+    participant Pres as PresenceManager
+    participant Router as MessageRoutingEngine
+    participant Session as SessionContextManager
+    participant File as FileTransferCoordinator
+    participant Audit as SystemAuditSubsystem
+
+    Note over C, Audit: Authentication & Session Establishment
+    C->>Auth: LoginRequest (Credentials)
+    Auth->>Auth: Validate Credentials
+    Auth-->>C: SessionContext + AuthResult
+    Auth->>Pres: RegisterUser(UserID)
+    Pres->>Audit: LogConnectionEvent
+    Pres-->>C: PresenceBroadcast(ActiveUsers)
+
+    Note over C, Audit: Real-Time Messaging Flow
+    C->>Router: EncryptedMessagePayload (Recipient/Group)
+    Router->>Auth: ValidateSession(SessionContext)
+    Auth-->>Router: SessionValid
+    Router->>Pres: ResolveRecipients(UserID)
+    Pres-->>Router: RecipientList
+    Router->>Router: VerifyIntegrity & InjectTimestamp
+    Router->>Session: AppendBuffer(MessageBuffer)
+    Router-->>C: DeliveryStatus
+    Router->>C: PushEncryptedPayload (via Persistent Channel)
+    C->>C: Decrypt, Store Local, Notify UI
+
+    Note over C, Audit: File Transfer Coordination
+    C->>File: TransferInitiationRequest(FileMetadata)
+    File->>Auth: ValidateSender(SessionContext)
+    Auth-->>File: Authorized
+    File->>File: CreateTransferSessionToken
+    File->>Router: SyncMetadata(MetadataSyncEvent)
+    Router-->>C: PushTransferNotification
+    C->>C: Display Transfer UI
+
+    Note over C, Audit: Presence & Recovery
+    C->>Pres: HeartbeatSignal
+    Pres->>Pres: UpdateStatus(Online)
+    Pres-->>C: PresenceBroadcast(StatusUpdate)
+    
+    rect rgb(240, 248, 255)
+        Note over Audit: Administrative Oversight
+        C->>Audit: AdminInventoryRequest
+        Audit->>Pres: QueryActiveUsers
+        Pres-->>Audit: ActiveUserSnapshot
+        Audit-->>C: ActiveUserReport
+    end
+
+    Note over C, Audit: Session Termination
+    C->>Auth: LogoutRequest
+    Auth->>Pres: UnregisterUser(UserID)
+    Pres->>Session: TerminateSession(SessionID)
+    Session->>Session: PurgeBuffers
+    Pres-->>C: PresenceBroadcast(OfflineUpdate)
+    Pres->>Audit: LogDisconnectionEvent

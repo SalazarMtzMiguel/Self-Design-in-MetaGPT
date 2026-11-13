@@ -1,0 +1,54 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant S as Sensores Ambientales
+    participant GM as Gateway Manager
+    participant DS as Data Storage
+    participant CLS as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant OP as Operador (User/Vis)
+    participant ACS as Actuator Control Service
+    participant CRM as Conflict Resolution Manager
+    participant DC as Device Communication
+    participant V as Válvulas
+    participant AL as Audit Logging
+
+    Note over S,V: Flujo de Telemetría e Inferencia
+    S->>GM: Mediciones crudas
+    GM->>DS: ItelemetrySync.publishTelemetry()
+    DS->>CLS: IanalyticsContext.fetchContext()
+    DS->>IPS: IanalyticsContext.fetchContext()
+    CLS-->>RM: IanalyticsResult.emitAnalysis()
+    IPS-->>RM: IanalyticsResult.emitAnalysis()
+    
+    Note over RM,OP: Ciclo de Aprobación Humana
+    RM->>OP: IhumanApproval.proposeRecommendation()
+    OP-->>RM: IhumanApproval.submitDecision()
+    
+    alt Decisión: Aceptar/Modificar
+        RM->>ACS: IcommandRequest.requestActuation()
+        ACS->>CRM: IcommandValidation.validatePriority()
+        CRM-->>ACS: IcommandValidation.resolveConflict()
+        ACS->>GM: IcommandExecution.dispatchCommand()
+        GM->>DC: IvalveControl.executeActuatorCommand()
+        DC-->>V: Comando físico (apertura/cierre)
+    end
+
+    Note over GM,CRM: Sincronización Post-Desconexión
+    alt Sin Conectividad
+        GM->>GM: Reglas críticas locales (<3s)
+        GM->>GM: Cola persistente local
+    end
+    
+    Note over GM,DS: Reconciliación
+    GM->>DS: ItelemetrySync.syncOfflineQueue()
+    DS->>CRM: Fusión de órdenes (Vector Clock + nonce)
+    CRM-->>DS: Orden unificada / Descarte duplicado [REQ-C07]
+
+    Note over All,AL: Trazabilidad
+    loop Cada Interfaz
+        GM->>AL: IauditTrail.logDecision()
+        DS->>AL: IauditTrail.logExecution()
+        RM->>AL: IauditTrail.logDecision()
+        ACS->>AL: IauditTrail.logExecution()
+    end

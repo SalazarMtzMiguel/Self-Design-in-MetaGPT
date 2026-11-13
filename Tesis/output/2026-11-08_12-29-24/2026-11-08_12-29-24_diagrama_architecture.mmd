@@ -1,0 +1,17 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant Sensor
+    participant Gateway
+    participant PlatformCentral
+    participant AlertGeneration
+    participant AlertClassification
+    participant UserInterface
+    participant LoggingAudit
+
+    Sensor->>Gateway: Send Data
+    Gateway->>PlatformCentral: Forward Data
+    PlatformCentral->>AlertGeneration: Process Data
+    AlertGeneration->>AlertClassification: Classify Alert
+    AlertClassification->>PlatformCentral: Return Alert
+    PlatformCentral->>UserInterface: Display Alert
+    PlatformCentral->>LoggingAudit: Log Alert

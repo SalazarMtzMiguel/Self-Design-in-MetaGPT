@@ -1,0 +1,13 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    Student ->> EnrollmentService: Initiate Enrollment
+    EnrollmentService ->> AcademicManagementService: Check Prerequisites
+    AcademicManagementService --> EnrollmentService: Return Prerequisite Status
+    EnrollmentService ->> SchedulingService: Check Capacity
+    SchedulingService --> EnrollmentService: Return Availability
+    EnrollmentService ->> AcademicManagementService: Create Enrollment Record
+    AcademicManagementService --> EnrollmentService: Confirm Enrollment
+    EnrollmentService ->> SchedulingService: Update Schedule
+    SchedulingService --> EnrollmentService: Confirm Update
+    EnrollmentService ->> CommunicationService: Send Notification
+    CommunicationService --> EnrollmentService: Confirm Notification Sent

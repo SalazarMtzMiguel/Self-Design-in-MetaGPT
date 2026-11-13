@@ -1,0 +1,33 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+mermaid
+    [
+        {
+            "System Overview": "A comprehensive university management platform designed to streamline administrative tasks.",
+            "Architectural Style": "Monolithic",
+            "Subsystem Definitions": [
+                {
+                    "User Management": "Handles user registration, role-based authentication, login systems, password recovery, and managing multiple users per role."
+                },
+                {
+                    "Academic Management": "Manages course creation, enrollment, prerequisites validation, scheduling conflicts prevention, withdrawals, and academic history generation."
+                },
+                {
+                    "Enrollment & Academic Control": "Handles student enrollment, classroom reservations, event scheduling, and conflict detection."
+                },
+                {
+                    "Scheduling & Resource Allocation": "Generates schedules avoiding conflicts, assigns classrooms, and handles multiple periods."
+                }
+            ],
+            "Boundary Definitions": [
+                "Students can only manage their own records.",
+                "Institutional administration controls academic reports by program and group.",
+                "Payment subsystems handle enrollment payments and account statements."
+            ],
+            "Communication Diagram": Mermaid diagram showing communication between subsystems.
+            "Interaction Diagram": Internal messaging within User Management component.
+            "Interaction Diagram Between Components": Communication between components.
+            "Interoperability": Uses REST or GraphQL APIs for external integration.
+            "Data Consistency Rules": Strong consistency in academic data.
+            "Data Models": Each component has its own data model, including user, course, and academic period details.
+    ]
+}

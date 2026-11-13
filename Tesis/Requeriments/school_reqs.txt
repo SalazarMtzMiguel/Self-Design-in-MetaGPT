@@ -1,0 +1,82 @@
+We are going to develop a university management platform.
+1. Functional Requirements (FR)
+1.1 User Management
+FR01: The system must allow registration of students, professors, administrators, and administrative staff.
+FR02: The system must support rolebased authentication (RBAC).
+FR03: The system must support login using institutional email and password.
+FR04: The system must allow password recovery via institutional email.
+FR05: The system must allow assigning multiple roles to a single user (e.g., professor + coordinator).
+1.2 Academic Management
+FR06: The system must allow creation, editing, and deletion of study programs.
+FR07: The system must allow defining courses with prerequisites.
+FR08: The system must allow assigning courses to semesters or modules.
+FR09: The system must allow assigning professors to specific courses.
+FR10: The system must allow a professor to teach multiple groups per course.
+1.3 Enrollment and Academic Control
+FR11: The system must allow student enrollment per academic period.
+FR12: The system must validate prerequisites before enrollment.
+FR13: The system must prevent overcapacity in course groups.
+FR14: The system must allow temporary or permanent course withdrawal.
+FR15: The system must maintain a complete academic history for each student.
+1.4 Evaluations and Grades
+FR16: The system must allow creation of course evaluations.
+FR17: The system must support different evaluation types (exam, assignment, project, participation).
+FR18: The system must calculate weighted final grades.
+FR19: The system must allow grade entry by professors.
+FR20: The system must allow students to review their grades.
+1.5 Scheduling and Resource Allocation
+FR21: The system must generate schedules while avoiding conflicts between classrooms, professors, and students.
+FR22: The system must allow assignment of physical or virtual classrooms.
+FR23: The system must support classroom reservations for academic events.
+FR24: The system must automatically detect scheduling conflicts.
+1.6 Communication
+FR25: The system must allow internal messaging between students and professors.
+FR26: The system must allow global institutional announcements.
+FR27: The system must send notifications via email or internal system.
+FR28: The system must allow classbased communication groups.
+1.7 Institutional Administration
+FR29: The system must generate academic reports by student, group, and program.
+FR30: The system must generate academic performance statistics.
+FR31: The system must allow auditing of grade changes.
+FR32: The system must allow management of academic periods.
+1.8 Payments (optional but useful for system stress testing)
+FR33: The system must record enrollment or tuition payments.
+FR34: The system must generate student account statements.
+FR35: The system must block enrollment if outstanding debts exist.
+2. NonFunctional Requirements (NFR)
+2.1 Performance
+NFR01: The system must support at least 50,000 concurrent users.
+NFR02: Academic history queries must respond in less than 2 seconds.
+NFR03: Schedule generation must not exceed 30 seconds per academic period.
+NFR04: The system must handle peak loads during enrollment periods without critical degradation.
+2.2 Scalability
+NFR05: The system must be horizontally scalable by modules (users, academics, payments).
+NFR06: The system must support domainbased service separation (microservicesready).
+NFR07: The system must handle data growth without requiring database restructuring.
+2.3 Security
+NFR08: All communications must be encrypted (TLS 1.2 or higher).
+NFR09: The system must implement rolebased access control (RBAC).
+NFR10: Passwords must be stored using secure hashing (bcrypt or equivalent).
+NFR11: The system must log audit trails for critical access and modifications.
+NFR12: The system must prevent SQL injection and common OWASP Top 10 attacks.
+2.4 Availability
+NFR13: The system must guarantee at least 99.5% uptime.
+NFR14: The system must provide fault tolerance for critical modules (users, enrollment).
+NFR15: The system must support disaster recovery with daily automatic backups.
+2.5 Maintainability
+NFR16: The system must be modularized by functional domains.
+NFR17: The code must follow clean architecture standards.
+NFR18: There must be a clear separation between business logic and persistence.
+NFR19: Changes in one module must not affect others (low coupling).
+2.6 Usability
+NFR20: The interface must be intuitive for nontechnical users.
+NFR21: The system must be accessible from mobile devices.
+NFR22: The system must comply with basic accessibility standards (WCAG 2.1 AA level).
+2.7 Interoperability
+NFR23: The system must expose REST or GraphQL APIs for external integration.
+NFR24: The system must support integration with external systems (library, payments, LMS).
+NFR25: The system must support data export in CSV, JSON, and PDF formats.
+2.8 Data Consistency
+NFR26: Critical operations (enrollment, grading) must be transactional.
+NFR27: The system must ensure strong consistency in academic data.
+NFR28: No data loss must occur under concurrent operations.

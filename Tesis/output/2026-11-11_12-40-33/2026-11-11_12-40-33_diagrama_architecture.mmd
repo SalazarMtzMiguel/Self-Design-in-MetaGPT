@@ -1,0 +1,45 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant S as Sensores Ambientales
+    participant G as Gateway Manager (Borde)
+    participant C as Plataforma Central
+    participant DS as Data Storage
+    participant CLS as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant OP as Operador
+    participant ACS as Actuator Control Service
+    participant CRM as Conflict Resolution Manager
+    participant V as Válvulas
+
+    Note over S,V: Flujo Normal de Predicción y Control
+    S->>G: Mediciones (temp, humedad, nivel)
+    G->>C: Publica telemetría (canal seguro)
+    C->>DS: Persiste datos históricos y en tiempo real
+    DS->>CLS: Envía contexto actual e histórico
+    CLS-->>C: Clasificación estrés hídrico [REQ-C01]
+    DS->>IPS: Envía contexto actual e histórico
+    IPS-->>C: Predicción necesidad riego [REQ-C02]
+    C->>RM: Combina resultados analíticos
+    RM->>OP: Genera recomendación (zona, prioridad, duración, justificación) [REQ-C03]
+    OP-->>RM: Acepta / Modifica / Rechaza [REQ-C04]
+    alt Recomendación Aceptada
+        RM->>ACS: Solicita ejecución de comando
+        ACS->>CRM: Valida autenticación y prioridades [NFR-C04, REQ-C08]
+        CRM-->>ACS: Autoriza comando unificado
+        ACS->>G: Envía orden validada
+        G->>V: Ejecuta apertura/cierre [REQ-C05]
+    end
+
+    Note over S,V: Manejo de Desconexión y Sincronización
+    alt Sin Conectividad
+        G->>G: Ejecuta reglas críticas localmente [NFR-C01, REQ-C06]
+        G->>G: Cola local de estados y órdenes pendientes
+    end
+
+    Note over S,V: Reconciliación al Restaurar Conexión
+    C->>G: Notifica restablecimiento
+    G->>C: Envía telemetría acumulada + logs locales
+    C->>CRM: Fusiona órdenes centrales vs locales
+    CRM-->>C: Aplica jerarquía y elimina duplicados [REQ-C07, REQ-C08]
+    C->>AL: Registra datos, reglas y modelos de decisión [REQ-C09, NFR-C05]

@@ -1,0 +1,15 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    Student ->> UMS: Login
+    UMS ->> Student: Authenticated Session
+    Student ->> ES: Enroll in Course
+    ES ->> AMS: Check Prerequisites
+    AMS --> ES: Return Prerequisite Status
+    ES ->> SS: Check Capacity
+    SS --> ES: Return Availability
+    ES ->> EVS: Create Enrollment Record
+    EVS --> ES: Confirm Enrollment
+    ES ->> SS: Update Schedule
+    SS --> ES: Confirm Update
+    ES ->> CS: Send Notification
+    CS --> Student: Enrollment Confirmation

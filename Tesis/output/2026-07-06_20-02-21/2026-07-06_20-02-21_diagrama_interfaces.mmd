@@ -1,0 +1,15 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    Student ->> UMS: authenticateUser(email, password)
+    UMS ->> Student: returns session token or user details
+    Student ->> ES: enroll(studentId, courseId, academicPeriod)
+    ES ->> AMS: checkPrerequisites(studentId, courseId)
+    AMS --> ES: returns prerequisite status
+    ES ->> SS: checkCapacity(courseId, academicPeriod)
+    SS --> ES: returns available slots
+    ES ->> EVS: createEnrollmentRecord(studentId, courseId, academicPeriod)
+    EVS --> ES: confirms enrollment
+    ES ->> SS: updateSchedule(courseId, academicPeriod, scheduleData)
+    SS --> ES: confirms schedule update
+    ES ->> CS: sendNotification(userId, "Course Enrollment Confirmation")
+    CS --> Student: sends notification

@@ -1,0 +1,176 @@
+Caso de estudio 1: Evolución por mantenimiento
+
+ Documento: Sistema IoT de monitoreo ambiental con mantenimiento incremental
+
+ 1. Contexto del sistema
+
+Se requiere diseñar un sistema IoT para monitorear las condiciones ambientales de un invernadero experimental. El sistema recibe datos de sensores de temperatura, humedad relativa, humedad del suelo e intensidad luminosa.
+
+La arquitectura existente está compuesta por:
+
+- Sensores ambientales.
+- Un gateway IoT.
+- Una plataforma central.
+- Un almacenamiento de mediciones.
+- Un módulo de visualización.
+- Un módulo de generación de alertas.
+- Un módulo de clasificación de condiciones ambientales.
+
+El sistema ya se encuentra operativo. El objetivo de este caso de estudio no es rediseñar la arquitectura, sino realizar modificaciones limitadas de mantenimiento.
+
+ 2. Objetivo del sistema
+
+El sistema debe:
+
+- Monitorear las condiciones ambientales del invernadero.
+- Detectar condiciones ambientales normales y anómalas.
+- Generar alertas cuando una variable se encuentre fuera de los límites configurados.
+- Clasificar el riesgo ambiental de cada zona.
+- Permitir modificar parámetros de configuración sin modificar la arquitectura base.
+
+ 3. Clasificación ontológica
+
+ Objetivo
+
+- Predicción de la clase de riesgo ambiental.
+- Detección de condiciones anómalas.
+- Generación de alertas.
+
+ Procesamiento
+
+- Procesamiento centralizado en la plataforma IoT.
+- El gateway únicamente recopila y reenvía los datos.
+
+ Capa de procesamiento
+
+- Percepción: adquisición de mediciones de sensores.
+- Middleware: comunicación, normalización y almacenamiento.
+- Aplicación: clasificación de condiciones y generación de alertas.
+
+ Interacción
+
+- Sistema-sistema: sensores, gateway y plataforma central.
+- Sistema-humano: operador que consulta mediciones y alertas.
+
+ Incertidumbre
+
+- Incertidumbre en las mediciones debido al ruido de los sensores.
+- Incertidumbre en los parámetros de los umbrales.
+- Incertidumbre del modelo de clasificación ambiental.
+
+ Representación del conocimiento
+
+- Datos: mediciones históricas y actuales.
+- Simbólica: reglas y umbrales ambientales.
+- Matemática: valores de sensores, promedios y rangos.
+- Híbrida: combinación de datos históricos y reglas de clasificación.
+
+ 4. Evolución solicitada
+
+Se han identificado los siguientes problemas de mantenimiento:
+
+1. El sistema genera demasiadas alertas cuando la humedad relativa fluctúa alrededor del umbral.
+2. Las alertas no diferencian entre una condición de advertencia y una condición crítica.
+3. El sistema no permite modificar los umbrales por zona.
+4. Algunos sensores producen mediciones temporalmente inválidas.
+5. El operador necesita consultar la razón por la que se generó cada alerta.
+
+ 5. Requisitos funcionales
+
+ REQ-M01: Configuración de umbrales
+
+El sistema debe permitir configurar umbrales mínimos y máximos para temperatura, humedad relativa, humedad del suelo e intensidad luminosa.
+
+ REQ-M02: Configuración por zona
+
+El sistema debe permitir definir umbrales diferentes para cada zona del invernadero.
+
+ REQ-M03: Histéresis de alertas
+
+El sistema debe evitar generar alertas repetidas cuando una medición fluctúe alrededor de un umbral.
+
+ REQ-M04: Clasificación de severidad
+
+El sistema debe clasificar cada evento ambiental como:
+
+- Normal.
+- Advertencia.
+- Crítico.
+
+ REQ-M05: Validación de mediciones
+
+El sistema debe identificar mediciones fuera del rango físico permitido y marcarlas como inválidas.
+
+ REQ-M06: Registro de justificación
+
+Cada alerta debe incluir:
+
+- Variable relacionada.
+- Valor recibido.
+- Umbral utilizado.
+- Zona.
+- Fecha y hora.
+- Regla o criterio que provocó la alerta.
+- Nivel de severidad.
+
+ REQ-M07: Conservación de la arquitectura
+
+Los cambios deben limitarse a:
+
+- Configuración.
+- Reglas de clasificación.
+- Validación de mediciones.
+- Interfaces o componentes directamente afectados.
+
+No se deben crear nuevos subsistemas principales ni cambiar el estilo arquitectónico.
+
+ 6. Requisitos no funcionales
+
+ NFR-M01: Tiempo de respuesta
+
+Una alerta debe generarse en menos de cinco segundos después de recibir una medición válida.
+
+ NFR-M02: Disponibilidad
+
+El sistema debe conservar la disponibilidad de la arquitectura existente.
+
+ NFR-M03: Compatibilidad
+
+Los cambios deben ser compatibles con los sensores y gateways existentes.
+
+ NFR-M04: Trazabilidad
+
+Toda alerta debe poder relacionarse con la medición que la originó.
+
+ NFR-M05: Configurabilidad
+
+Los umbrales y reglas deben poder modificarse sin recompilar la plataforma central.
+
+ 7. Cambios esperados en los artefactos
+
+El sistema multiagente debe actualizar únicamente los artefactos afectados:
+
+- Reglas del componente de alertas.
+- Contrato de configuración de umbrales.
+- Entidad o estructura de datos de alertas.
+- Algoritmo de clasificación de severidad.
+- Diagramas relacionados con el flujo de alertas.
+
+La arquitectura general, el gateway, la comunicación principal y el almacenamiento central deben conservarse.
+
+ 8. Candidatos algorítmicos permitidos
+
+El agente de algoritmos debe analizar, sin seleccionar automáticamente, los siguientes candidatos:
+
+1. Regresión logística.
+2. K-nearest neighbors.
+3. Árbol de decisión.
+4. Clasificador basado en reglas.
+
+El agente debe explicar cuál podría utilizarse para clasificar la severidad de las alertas y cuáles serían sus ventajas, limitaciones, entradas, salidas y complejidad.
+
+También debe indicar si un clasificador basado en reglas resulta suficiente para este escenario debido a que los criterios de severidad se expresan mediante umbrales explícitos.
+
+ 9. Resultado esperado
+
+El resultado debe representar una evolución por mantenimiento. No debe generar un SDD completamente nuevo. Debe conservar la arquitectura base y actualizar solamente los artefactos relacionados con la generación y clasificación de alertas.

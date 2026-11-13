@@ -1,0 +1,32 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+flowchart TD
+    subgraph Borde [Gateway Manager (Borde)]
+        G[Adquisición & Validación] --> R_LOCAL[Reglas Críticas Offline]
+        R_LOCAL -->|Umbral/Estado| Q[Cola Local Persistente]
+        R_LOCAL -->|Ejecución <3s| V[Válvulas]
+    end
+
+    subgraph Central [Plataforma Central]
+        DS[Data Storage] --> CLS[Water Stress Classifier]
+        DS --> IPS[Irrigation Prediction Service]
+        
+        CLS -->|Árbol de Decisión\nO(d) inferencia| RM[Recommendation Manager]
+        IPS -->|Regresión Logística\nProbabilidad [0,1]| RM
+        
+        RM -->|Recomendación Estructurada| OP[Operador]
+        OP -->|Acepta/Modifica| ACS[Actuator Control Service]
+        
+        ACS --> CRM[Conflict Resolution Manager]
+        CRM -->|Clasificador Basado en Reglas\nJerarquía REQ-C08| CMD[Comando Unificado]
+        CMD --> G
+    end
+
+    subgraph Sincronización [Reconciliación Post-Desconexión]
+        Q -->|Vector Clock + Nonce| CRM
+        CRM -->|Fusión/Descarte\nO(k) reglas| DS
+        DS --> AL[Audit Logging]
+    end
+
+    style Borde fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style Central fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style Sincronización fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px

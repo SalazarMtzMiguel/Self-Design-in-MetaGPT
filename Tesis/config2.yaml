@@ -1,0 +1,75 @@
+# Full Example: https://github.com/geekan/MetaGPT/blob/main/config/config2.example.yaml
+# Reflected Code: https://github.com/geekan/MetaGPT/blob/main/metagpt/config2.py
+# Config Docs: https://docs.deepwisdom.ai/main/en/guide/get_started/configuration.html
+llm:
+  api_type: "ollama"
+  model: "deepseek-r1:1.5b"
+  base_url: "http://localhost:11434/api"
+  timeout: 7200.0
+
+llms:
+  local:
+    api_type: "ollama"
+    model: "deepseek-r1:1.5b"
+    base_url: "http://localhost:11434/api"
+    timeout: 7200.0
+
+  gemmaOnline:
+    api_type: "ollama"
+    model: "qwen2.5-coder:7b"
+    base_url: "http://192.168.1.67:11434/api"
+    timeout: 7200.0
+
+  qwen3.6:
+    api_type: "ollama"
+    model: "qwen3.6:35b-a3b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  ds32b:
+    api_type: "ollama"
+    model: "deepseek-r1:32b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  ds14b:
+    api_type: "ollama"
+    model: "deepseek-r1:14b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  ds8b:
+    api_type: "ollama"
+    model: "deepseek-r1:8b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  gemma4:
+    api_type: "ollama"
+    model: "gemma4:12b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  qwen3.5:
+    api_type: "ollama"
+    model: "qwen3.5:9b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  qwen2.5_7b:
+    api_type: "ollama"
+    model: "qwen2.5:7b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+  qwen2.5_14b:
+    api_type: "ollama"
+    model: "qwen2.5:14b"
+    base_url: "http://10.0.5.112:11434/api"
+    timeout: 7200.0
+
+mermaid:
+  engine: "nodejs"
+  path: "mmdc.cmd"
+  puppeteer_config: "./config/puppeteer-config"
+  output_format: "svg"

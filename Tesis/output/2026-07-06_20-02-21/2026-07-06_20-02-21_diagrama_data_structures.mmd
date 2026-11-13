@@ -1,0 +1,106 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+erDiagram
+
+    User {
+        userId STRING
+        email STRING
+        passwordHash STRING
+        roles STRING[]
+        createdOn TIMESTAMP
+        lastLogin TIMESTAMP
+    }
+
+    Role {
+        roleId STRING
+        roleName STRING
+        permissions STRING[]
+    }
+
+    StudyProgram {
+        programId STRING
+        programName STRING
+        duration INTEGER
+        description STRING
+    }
+
+    Course {
+        courseId STRING
+        courseName STRING
+        credits INTEGER
+        description STRING
+    }
+
+    Prerequisite {
+        prereqId STRING
+        courseId STRING
+        prerequisiteCourseId STRING
+    }
+
+    Enrollment {
+        enrollmentId STRING
+        studentId STRING
+        courseId STRING
+        academicPeriod STRING
+        status STRING
+    }
+
+    Evaluation {
+        evaluationId STRING
+        enrollmentId STRING
+        evaluationType STRING
+        score FLOAT
+        weight FLOAT
+    }
+
+    Schedule {
+        scheduleId STRING
+        courseId STRING
+        academicPeriod STRING
+        classroomId STRING
+        startTime DATETIME
+        endTime DATETIME
+    }
+
+    Communication {
+        messageId STRING
+        senderId STRING
+        receiverId STRING
+        content STRING
+        sentOn TIMESTAMP
+    }
+
+    AcademicPeriod {
+        periodId STRING
+        name STRING
+        startDate DATE
+        endDate DATE
+    }
+
+    Classroom {
+        classroomId STRING
+        name STRING
+        type STRING
+        capacity INTEGER
+    }
+
+    Payment {
+        paymentId STRING
+        studentId STRING
+        amount FLOAT
+        status STRING
+        dueDate DATE
+    }
+
+    User }o--|{ Role : "has"
+    StudyProgram }o--|{ Course : "contains"
+    Course }o--|{ Prerequisite : "has"
+    Enrollment }o--|{ User : "enrolled by"
+    Enrollment }o--|{ Course : "enrolled in"
+    Evaluation }o--|{ Enrollment : "belongs to"
+    Schedule }o--|{ Course : "assigned to"
+    Schedule }o--|{ Classroom : "uses"
+    Communication }o--|{ User : "sent by"
+    Communication }o--|{ User : "received by"
+    AcademicPeriod }o--|{ Enrollment : "contains"
+    AcademicPeriod }o--|{ Schedule : "contains"
+    Payment }o--|{ User : "paid by"

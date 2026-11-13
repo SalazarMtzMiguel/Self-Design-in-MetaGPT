@@ -1,0 +1,14 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+graph TD
+    A[Start with target course] --> B{Check if student has completed the course}
+    B -->|Yes| C{All prerequisites met?}
+    C -->|No| D[Traverse each prerequisite]
+    D --> E{Check if prerequisite is in academic history}
+    E -->|No| F[Mark as not eligible]
+    E -->|Yes| G{Continue until all prerequisites are checked}
+    G --> H{Return true}
+    B -->|No| I{Add course to queue for traversal}
+    I --> J{Process next course in queue}
+    J --> K{Check if student has completed the course}
+    K -->|No| L[Mark as not eligible]
+    K -->|Yes| M{Continue until all prerequisites are checked}

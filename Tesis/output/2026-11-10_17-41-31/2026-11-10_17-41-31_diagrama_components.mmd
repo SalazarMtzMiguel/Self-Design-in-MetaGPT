@@ -1,0 +1,36 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant SM as Sensor Management
+    participant DA as Data Acquisition
+    participant GWM as Gateway Manager
+    participant DCS as Device Communication
+    participant WSC as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant VIZ as Visualization
+    participant ACS as Actuator Control Service
+    participant CRM as Conflict Resolution Manager
+    participant AL as Audit Logging
+
+    Note over SM,AL: Flujo Normal con Conexión Estable
+    SM->>DA: Datos calibrados por zona
+    DA->>GWM: Telemetría validada + timestamp
+    GWM->>WSC: Mediciones actuales + historial (Data Storage)
+    WSC-->>IPS: Clasificación estrés + confianza
+    IPS-->>RM: Predicción necesidad riego + intervalo
+    RM->>VIZ: Recomendación estructurada (zona, prioridad, justificación)
+    VIZ-->>RM: Respuesta operador (Aceptar/Modificar/Rechazar)
+    alt Aceptado/Modificado
+        RM->>ACS: Orden aprobada + metadatos
+        ACS->>DCS: Comandos autenticados para válvulas
+        DCS-->>ACS: Confirmación ejecución física
+        ACS->>AL: Registro de control y confianza
+    end
+
+    Note over SM,AL: Desconexión + Sincronización
+    GWM->>GWM: Ejecutar reglas críticas locales (<3s)
+    GWM->>DCS: Comandos fallback (buffer local con ID transacción)
+    GWM->>CRM: Paquetes de reconciliación al restablecer conexión
+    CRM->>CRM: Aplicar prioridad y detectar duplicados
+    CRM-->>GWM/ACS: Estado consolidado + alertas de discrepancia
+    CRM->>AL: Registro de resolución y estado final

@@ -1,0 +1,34 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant NodeOfPerception
+    participant Gateway
+    participant ControlAgent
+    participant RegionalCoordinationService
+    participant SupervisionPlatform
+    participant PredictionService
+    participant PlanningService
+    participant ConflictResolutionService
+    participant ResourceManagementService
+    participant AuditService
+    participant ServiceMeteorológico
+    participant SistemaEnergético
+    participant Operador
+    participant Administrador
+    participant ResponsableInfraestructura
+
+    NodeOfPerception->>Gateway: Send data
+    Gateway->>ControlAgent: Forward data
+    ControlAgent->>RegionalCoordinationService: Coordinate actions
+    ControlAgent->>SupervisionPlatform: Report status
+    PredictionService->>PlanningService: Generate predictions
+    PlanningService->>ControlAgent: Distribute plans
+    ConflictResolutionService->>ControlAgent: Resolve conflicts
+    ResourceManagementService->>ControlAgent: Manage resources
+    AuditService->>SupervisionPlatform: Log actions
+
+    Gateway->>ServiceMeteorológico: Fetch weather data
+    Gateway->>SistemaEnergético: Fetch energy data
+
+    Operador->>SupervisionPlatform: Approve/Reject plans
+    Administrador->>SupervisionPlatform: Define priorities
+    ResponsableInfraestructura->>SupervisionPlatform: Monitor network status

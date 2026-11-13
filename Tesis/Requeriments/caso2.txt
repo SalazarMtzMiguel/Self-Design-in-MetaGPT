@@ -1,0 +1,199 @@
+CASO DE ESTUDIO 2
+EVOLUCION POR CAMBIO DE PROBLEMA
+SISTEMA IOT DE PREDICCION Y CONTROL DE RIEGO
+
+CONFIGURACION:
+- Escenario SES: EVOLUTION_BY_PROBLEM_CHANGE.
+- Accion arquitectonica: reconfiguracion parcial.
+- Conservar la arquitectura y los componentes que sigan siendo validos.
+- No generar una arquitectura completamente nueva.
+- No utilizar MCTS ni afirmar que se ejecutaron simulaciones.
+- Comparar solamente: regresion logistica, KNN, arbol de decision
+  y clasificador basado en reglas.
+- Si falta informacion, escribir "NO ESPECIFICADO".
+- Generar la salida en espanol.
+
+================================================================
+1. CONTEXTO Y ARQUITECTURA BASE
+================================================================
+
+El sistema original monitorea un invernadero mediante sensores de temperatura,
+humedad del suelo, humedad relativa y nivel de agua. Un gateway recibe las
+mediciones y las envia a una plataforma central para almacenarlas, mostrarlas
+y generar alertas.
+
+Arquitectura base:
+- Sensor Management.
+- Data Acquisition.
+- Data Storage.
+- Alert Management.
+- Visualization.
+- Gateway Manager.
+- Device Communication.
+- User Management y Audit Logging.
+
+La arquitectura original es centralizada con capacidad local limitada en el
+gateway. No realiza prediccion ni controla actuadores.
+
+================================================================
+2. CAMBIO DEL PROBLEMA
+================================================================
+
+El sistema debe incorporar prediccion y control de riego sin abandonar sus
+capacidades actuales de monitoreo y alertas.
+
+Debe:
+- Clasificar el estres hidrico de cada zona.
+- Predecir si una zona necesitara riego.
+- Generar recomendaciones de riego.
+- Permitir que un operador acepte o rechace una recomendacion.
+- Enviar comandos a valvulas autorizadas.
+- Ejecutar reglas criticas localmente si se pierde la conexion.
+- Sincronizar mediciones y ordenes cuando la conexion se restablezca.
+
+================================================================
+3. CLASIFICACION ONTOLOGICA
+================================================================
+
+Objetivo:
+- Prediccion, planeacion y resolucion de conflictos mediante reglas.
+
+Procesamiento:
+- Centralizado para almacenar datos y generar predicciones.
+- Descentralizado para ejecutar reglas criticas en el gateway.
+
+Capa:
+- Percepcion: sensores ambientales y valvulas.
+- Middleware: gateway, comunicacion y almacenamiento.
+- Aplicacion: prediccion, recomendaciones y control.
+
+Interaccion:
+- Sistema-sistema: sensores, gateway, plataforma y valvulas.
+- Sistema-humano: operador que revisa y autoriza recomendaciones.
+
+Incertidumbre:
+- Mediciones de sensores, parametros y predicciones.
+
+Representacion del conocimiento:
+- Datos historicos y mediciones.
+- Reglas de umbral y prioridad.
+- Modelo hibrido de datos y reglas.
+
+================================================================
+4. EVOLUCION DE LA ARQUITECTURA
+================================================================
+
+Conservar:
+- Sensor Management.
+- Data Acquisition.
+- User Management.
+- Visualization.
+- Audit Logging.
+
+Modificar:
+- Data Storage: almacenar predicciones y ordenes.
+- Alert Management: incluir estres hidrico y fallas de valvulas.
+- Gateway Manager: ejecutar reglas locales y sincronizar estados.
+- Device Communication: comunicarse con valvulas.
+
+Agregar:
+- Water Stress Classifier.
+- Irrigation Prediction Service.
+- Recommendation Manager.
+- Actuator Control Service.
+- Conflict Resolution Manager.
+
+El nuevo diseño debe indicar que componentes se conservan, modifican o
+agregan. No debe descartar la arquitectura base.
+
+================================================================
+5. REQUISITOS FUNCIONALES
+================================================================
+
+REQ-C01: Clasificar cada zona como sin estres, estres bajo, estres medio
+o estres alto.
+
+REQ-C02: Predecir si una zona necesitara riego dentro de un intervalo
+configurable.
+
+REQ-C03: Generar recomendaciones con zona, prioridad, momento, duracion,
+justificacion y confianza.
+
+REQ-C04: Permitir al operador aceptar, modificar o rechazar una recomendacion.
+
+REQ-C05: Enviar comandos de apertura y cierre a valvulas autorizadas.
+
+REQ-C06: Ejecutar localmente reglas criticas cuando no exista conexion.
+
+REQ-C07: Evitar la ejecucion duplicada de una orden durante la sincronizacion.
+
+REQ-C08: Resolver conflictos con esta prioridad:
+1. Parada de emergencia.
+2. Restriccion de seguridad.
+3. Control manual.
+4. Regla automatica.
+5. Orden programada.
+
+REQ-C09: Registrar los datos, reglas o modelos que originaron cada decision.
+
+================================================================
+6. REQUISITOS NO FUNCIONALES
+================================================================
+
+NFR-C01: Una regla critica debe ejecutarse localmente en menos de tres segundos.
+
+NFR-C02: El gateway debe continuar monitoreando durante una desconexion temporal.
+
+NFR-C03: El sistema debe soportar hasta 10 zonas y 20 valvulas por invernadero.
+
+NFR-C04: Los comandos deben autenticarse y validarse antes de ejecutarse.
+
+NFR-C05: Las decisiones deben conservar una explicacion auditable.
+
+================================================================
+7. ANALISIS ALGORITMICO
+================================================================
+
+El agente de algoritmos debe analizar solamente:
+
+- Regresion logistica.
+- K-nearest neighbors.
+- Arbol de decision.
+- Clasificador basado en reglas.
+
+Evaluar su aplicacion a:
+- Clasificacion del estres hidrico.
+- Prediccion de necesidad de riego.
+- Clasificacion de urgencia.
+- Deteccion de condiciones que impiden el riego.
+
+Para cada candidato indicar:
+- Entradas y salidas.
+- Requisitos de datos.
+- Complejidad.
+- Ventajas y limitaciones.
+- Explicabilidad.
+- Adecuacion para el gateway y la plataforma central.
+
+Las prioridades de REQ-C08 deben representarse mediante reglas. No usar MCTS,
+simulaciones ni algoritmos adicionales de optimizacion.
+
+================================================================
+8. FORMATO DE SALIDA
+================================================================
+
+Generar un SDD de evolucion con estas secciones:
+
+1. Resumen del cambio.
+2. Arquitectura base y elementos conservados.
+3. Componentes modificados y nuevos.
+4. Interfaces actualizadas o agregadas.
+5. Estructuras de datos nuevas.
+6. Procesamiento centralizado y local.
+7. Reglas de resolucion de conflictos.
+8. Comparacion de candidatos algoritmicos.
+9. Trazabilidad requisito-componente-algoritmo.
+10. Diagrama Mermaid de la arquitectura evolucionada.
+
+No inventar informacion de la arquitectura base. No generar un SDD de
+metamorfosis. No afirmar que los algoritmos fueron implementados o validados.

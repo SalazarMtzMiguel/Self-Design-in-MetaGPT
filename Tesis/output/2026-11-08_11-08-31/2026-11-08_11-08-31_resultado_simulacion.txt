@@ -1,0 +1,908 @@
+================================================================
+REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-11-08_11-08-31)
+================================================================
+
+### 1. INITIAL REQUIREMENT:
+Caso de estudio 1: Evolución por mantenimiento
+
+ Documento: Sistema IoT de monitoreo ambiental con mantenimiento incremental
+
+ 1. Contexto del sistema
+
+Se requiere diseñar un sistema IoT para monitorear las condiciones ambientales de un invernadero experimental. El sistema recibe datos de sensores de temperatura, humedad relativa, humedad del suelo e intensidad luminosa.
+
+La arquitectura existente está compuesta por:
+
+- Sensores ambientales.
+- Un gateway IoT.
+- Una plataforma central.
+- Un almacenamiento de mediciones.
+- Un módulo de visualización.
+- Un módulo de generación de alertas.
+- Un módulo de clasificación de condiciones ambientales.
+
+El sistema ya se encuentra operativo. El objetivo de este caso de estudio no es rediseñar la arquitectura, sino realizar modificaciones limitadas de mantenimiento.
+
+ 2. Objetivo del sistema
+
+El sistema debe:
+
+- Monitorear las condiciones ambientales del invernadero.
+- Detectar condiciones ambientales normales y anómalas.
+- Generar alertas cuando una variable se encuentre fuera de los límites configurados.
+- Clasificar el riesgo ambiental de cada zona.
+- Permitir modificar parámetros de configuración sin modificar la arquitectura base.
+
+ 3. Clasificación ontológica
+
+ Objetivo
+
+- Predicción de la clase de riesgo ambiental.
+- Detección de condiciones anómalas.
+- Generación de alertas.
+
+ Procesamiento
+
+- Procesamiento centralizado en la plataforma IoT.
+- El gateway únicamente recopila y reenvía los datos.
+
+ Capa de procesamiento
+
+- Percepción: adquisición de mediciones de sensores.
+- Middleware: comunicación, normalización y almacenamiento.
+- Aplicación: clasificación de condiciones y generación de alertas.
+
+ Interacción
+
+- Sistema-sistema: sensores, gateway y plataforma central.
+- Sistema-humano: operador que consulta mediciones y alertas.
+
+ Incertidumbre
+
+- Incertidumbre en las mediciones debido al ruido de los sensores.
+- Incertidumbre en los parámetros de los umbrales.
+- Incertidumbre del modelo de clasificación ambiental.
+
+ Representación del conocimiento
+
+- Datos: mediciones históricas y actuales.
+- Simbólica: reglas y umbrales ambientales.
+- Matemática: valores de sensores, promedios y rangos.
+- Híbrida: combinación de datos históricos y reglas de clasificación.
+
+ 4. Evolución solicitada
+
+Se han identificado los siguientes problemas de mantenimiento:
+
+1. El sistema genera demasiadas alertas cuando la humedad relativa fluctúa alrededor del umbral.
+2. Las alertas no diferencian entre una condición de advertencia y una condición crítica.
+3. El sistema no permite modificar los umbrales por zona.
+4. Algunos sensores producen mediciones temporalmente inválidas.
+5. El operador necesita consultar la razón por la que se generó cada alerta.
+
+ 5. Requisitos funcionales
+
+ REQ-M01: Configuración de umbrales
+
+El sistema debe permitir configurar umbrales mínimos y máximos para temperatura, humedad relativa, humedad del suelo e intensidad luminosa.
+
+ REQ-M02: Configuración por zona
+
+El sistema debe permitir definir umbrales diferentes para cada zona del invernadero.
+
+ REQ-M03: Histéresis de alertas
+
+El sistema debe evitar generar alertas repetidas cuando una medición fluctúe alrededor de un umbral.
+
+ REQ-M04: Clasificación de severidad
+
+El sistema debe clasificar cada evento ambiental como:
+
+- Normal.
+- Advertencia.
+- Crítico.
+
+ REQ-M05: Validación de mediciones
+
+El sistema debe identificar mediciones fuera del rango físico permitido y marcarlas como inválidas.
+
+ REQ-M06: Registro de justificación
+
+Cada alerta debe incluir:
+
+- Variable relacionada.
+- Valor recibido.
+- Umbral utilizado.
+- Zona.
+- Fecha y hora.
+- Regla o criterio que provocó la alerta.
+- Nivel de severidad.
+
+ REQ-M07: Conservación de la arquitectura
+
+Los cambios deben limitarse a:
+
+- Configuración.
+- Reglas de clasificación.
+- Validación de mediciones.
+- Interfaces o componentes directamente afectados.
+
+No se deben crear nuevos subsistemas principales ni cambiar el estilo arquitectónico.
+
+ 6. Requisitos no funcionales
+
+ NFR-M01: Tiempo de respuesta
+
+Una alerta debe generarse en menos de cinco segundos después de recibir una medición válida.
+
+ NFR-M02: Disponibilidad
+
+El sistema debe conservar la disponibilidad de la arquitectura existente.
+
+ NFR-M03: Compatibilidad
+
+Los cambios deben ser compatibles con los sensores y gateways existentes.
+
+ NFR-M04: Trazabilidad
+
+Toda alerta debe poder relacionarse con la medición que la originó.
+
+ NFR-M05: Configurabilidad
+
+Los umbrales y reglas deben poder modificarse sin recompilar la plataforma central.
+
+ 7. Cambios esperados en los artefactos
+
+El sistema multiagente debe actualizar únicamente los artefactos afectados:
+
+- Reglas del componente de alertas.
+- Contrato de configuración de umbrales.
+- Entidad o estructura de datos de alertas.
+- Algoritmo de clasificación de severidad.
+- Diagramas relacionados con el flujo de alertas.
+
+La arquitectura general, el gateway, la comunicación principal y el almacenamiento central deben conservarse.
+
+ 8. Candidatos algorítmicos permitidos
+
+El agente de algoritmos debe analizar, sin seleccionar automáticamente, los siguientes candidatos:
+
+1. Regresión logística.
+2. K-nearest neighbors.
+3. Árbol de decisión.
+4. Clasificador basado en reglas.
+
+El agente debe explicar cuál podría utilizarse para clasificar la severidad de las alertas y cuáles serían sus ventajas, limitaciones, entradas, salidas y complejidad.
+
+También debe indicar si un clasificador basado en reglas resulta suficiente para este escenario debido a que los criterios de severidad se expresan mediante umbrales explícitos.
+
+ 9. Resultado esperado
+
+El resultado debe representar una evolución por mantenimiento. No debe generar un SDD completamente nuevo. Debe conservar la arquitectura base y actualizar solamente los artefactos relacionados con la generación y clasificación de alertas.
+
+
+----------------------------------------------------------------
+
+### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner - local):
+
+
+### Architecture
+
+#### 1. **System Overview**
+- **Main Objectives**: Monitorear ambientales, detectar anómalas, generar alertas, classizar riesgos, y garantir la transparencia de la información.
+- **Architectural Vision**: Un sistema basado en redes de flujos de datos con un enfoque incrementario en mantenimiento.
+
+#### 2. **Architectural Style**
+- **Recommended Architecture Pattern**: **Layered Architecture**.
+- **Justification**: El sistema se construirá en secciones específicas relevantes, como la generación de alertas y la clasificación de riesgos, manteniendo la estructura central y los componentes base.
+
+#### 3. **System Subsystems**
+1. **Generación de Alertas**
+   - **Subsistemas**:
+     - **Subsistema 1**: Objetivo: Detectar anómalas.
+     - **Subsistema 2**: Objetivo: Classificar riesgos.
+2. **Clasificación de Riesgos**
+   - **Subsistemas**:
+     - **Subsistema 1**: Definir Zonas de Riesgo.
+     - **Subsistema 2**: Configurar Reglas de Clasificación.
+     - **Subsistema 3**: Implementar Algoritmos de Clasificación.
+
+#### 4. **Communication and Data Flow**
+- **Interfaz**: Mermaid Sequence Diagram.
+- **Definición**: La comunicación se define por un flujo secuencial de datos entre componentes principales: sensores, gateway, plataforma central y notification.
+- **Procesamiento**:
+  - **Sensores**: Recopilación y comunicación de datos.
+  - **Gateway**: Permite alinear y redirección de datos.
+  - **Plataforma Central**: Almacenamiento y distribución de datos.
+
+#### 5. **Algorithm Design**
+- **Algoritmos**:
+  - **Generación de Alertas**: **Algoritmo de Anomalías**.
+  - **Clasificación de Riesgos**: **Algoritmo de Clasificación**.
+  - **Optimización**: **Algoritmo Incremental**.
+
+#### 6. **Architecture Interaction Diagram**
+- **Mermaid Sequence Diagram**: Muestra el flujo de datos entre componentes relevantes.
+
+#### 7. **Interaction and Data Flow**
+- **Interfaces**: Definir las interfaces para la comunicación entre componentes principales.
+- **Data Flow**: Ensurar un flujo secuencial y limpio de datos.
+
+#### 8. **Architectural Design**
+- **Algorithms**: Proporcionar alinear algoritmos de clasificación explicitos y suavizados.
+- **Clasificación**: **Algoritmo de Clasificación Explicita**.
+
+#### 9. **Resultado esperado**
+- **Riesgo Clasificación**: Clasificar each event ambiental como normal, advertencia, o crítico.
+- **Validación**: Detectar datos out-of-range y marcarlos como inválidos.
+- **Dispositivos**: Data structures y algoritmos eficientes para la detectación de anómalas y la clasificación.
+
+### Resultado
+El sistema se construirá con un red de flujos de datos secuencial, con secciones específicas para la generación de alertas y la clasificación de riesgos. Se aplicará un algoritmo de clasificación basado en reglas explicitas y suavizados, asegurando una transparencia y una eficiencia en la detectación de anómalas.
+
+----------------------------------------------------------------
+
+### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner - local):
+
+
+### Component Design
+
+#### 1. **Generación de Alertas**
+- **Component**: Anomaly Detection Component
+- **Responsibility**: Detects anomalies in temperature, humidity, soil moisture, and luminosity by comparing current data with expected ranges.
+- **Dependencies**:
+  - Sensor Data ( historical and current )
+  - Thresholds and Rules ( explicit for explicit algorithm, smooth for incremental )
+- **Inputs**:
+  - Sensor Data ( historical, current )
+  - Expected Ranges ( for each condition )
+- **Outputs**:
+  - Alerts ( normal, alert, critical )
+
+#### 2. **Clasificación de Riesgos**
+- **Component**: Risk Classification Component
+- **Responsibility**: Classifies each event as normal, alert, or critical based on severity thresholds.
+- **Dependencies**:
+  - Risk Classification Rules ( explicit for explicit algorithm, smooth for incremental )
+- **Inputs**:
+  - Risk Classification Rules ( explicit for explicit algorithm, smooth for incremental )
+- **Outputs**:
+  - Risk Classification ( normal, alert, critical )
+
+#### 3. **Validación de Medíos**
+- **Component**: Data Validation Component
+- **Responsibility**: Validates sensor data to ensure it falls within physically possible limits.
+- **Dependencies**:
+  - Sensor Data ( historical and current )
+- **Inputs**:
+  - Sensor Data ( historical, current )
+- **Outputs**:
+  - Invalid Data ( if out of range )
+
+#### 4. **Interfaz de comunicación**
+- **Component**: Interface Component
+- **Responsibility**: Communicates with the gateway and platform central system.
+- **Dependencies**:
+  - Sensor Data ( historical, current )
+- **Inputs**:
+  - Sensor Data ( historical, current )
+- **Outputs**:
+  - Data Flow ( sequential communication between components )
+- **Communication Flow**:
+  1. Sensor Data ( historical, current )
+  2. Interface Component
+  3. Gateway
+  4. Platform Central
+  5. Interface Component
+  6. Notification Component
+
+#### 5. **Algorithms**
+- **Generación de Alertas (Explicit Algorithm)**
+  - **Algorithm**: Anomaly Detection
+    - **Steps**:
+      1. Compare current sensor data with expected ranges.
+      2. Calculate deviation from expected ranges.
+      3. Apply predefined thresholds and rules.
+      4. Generate alerts when conditions are outside expected ranges.
+- **Clasificación de Riesgos (Explicit Algorithm)**
+  - **Algorithm**: Risk Classification
+    - **Steps**:
+      1. Define severity thresholds based on predefined rules.
+      2. Classify events as normal, alert, or critical based on severity.
+- **Optimización (Incremental Algorithm)**
+  - **Algorithm**: Incremental Anomaly Detection
+    - **Steps**:
+      1. Update alert generation based on current data.
+      2. Adjust thresholds and rules as needed.
+      3. Prevent unnecessary recalculations.
+
+#### 6. **Data Structures**
+- **Sensor Data Storage**
+  - Dictionaries or arrays storing historical and current measurements.
+- **Risk Classification Rules**
+  - Dictionaries or arrays defining thresholds and rules for risk classification.
+- **Data Validation Rules**
+  - Dictionaries or arrays defining valid ranges for each condition.
+
+#### 7. **Interfaz de Justificación**
+- **Component**: Justification Component
+- **Responsibility**: Provides a clear explanation for each alert.
+- **Dependencies**:
+  - Alert Data ( from Generation Component )
+- **Inputs**:
+  - Alert Data ( from Generation Component )
+- **Outputs**:
+  - Justification ( details for each alert, including variable, value, threshold, zone, date, and time )
+
+#### 8. **Interfaz de Communication**
+- **Component**: Communication Interface
+- **Responsibility**: Ensures data flows correctly between components.
+- **Dependencies**:
+  - Sensor Data ( historical, current )
+- **Inputs**:
+  - Sensor Data ( historical, current )
+- **Outputs**:
+  - Data Flow ( sequential communication between components )
+
+#### 9. **Algoritmos de Clasificación (Explicit and Smooth)**
+- **Explicit Algorithm (Clasificación Explicita)**
+  - **Steps**:
+    1. Use predefined thresholds and rules for classification.
+    2. Generate alerts when conditions are outside expected ranges.
+- **Smooth Algorithm (Clasificación Suavizada)**
+  - **Steps**:
+    1. Adjust classification based on current data.
+    2. Maintain classifications without major recalculations.
+
+#### 10. **Resultado esperado**
+- **Riesgo Clasificación**: Each event is classified as normal, alert, or critical based on severity thresholds.
+- **Validación**: Invalid data is flagged with a message.
+- **Dispositivos**: Efficient data validation and alerting mechanisms with clear explanations.
+
+### Component Responsibilities
+- **Generación de Alertas**: Detects anomalies and generates alerts.
+- **Clasificación de Riesgos**: Classifies risks based on severity.
+- **Validación de Medíos**: Ensures data validity.
+- **Interfaz de comunicación**: Coordinates data flow between components.
+
+### Dependencies
+- **Component**: Each component has specific dependencies, such as sensor data, thresholds, and rules.
+- **Communication**: Ensures data flows correctly between components.
+- **Justificación**: Provides clear explanations for alerts.
+
+### Communication Boundaries
+- **Explicit Algorithm**: Only triggers alerts when necessary.
+- **Smooth Algorithm**: Adjusts classifications based on current data.
+- **Interface Component**: Manages data flow between components.
+
+### Modular Design
+- Each component is designed to handle a specific part of the system, ensuring maintainability and scalability.
+
+----------------------------------------------------------------
+
+### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner - local):
+
+
+### Interface Design for Anomaly Detection Component
+
+#### **1. Data Flow**
+- **Inputs**:
+  - Historical Data: A dictionary where keys are condition names (e.g., temperature, humidity) and values are lists of historical measurements.
+  - Current Data: A dictionary where keys are condition names and values are current measurements.
+- **Outputs**:
+  - Historical Data: The same historical data as input.
+  - Current Data: The current measurements as input.
+  - Alerts: A list of alerts (normal, alert, critical) for each condition.
+
+#### **2. Data Structures**
+- **Historical Data**: A dictionary with keys as condition names and values as lists of historical measurements.
+- **Current Data**: A dictionary with keys as condition names and values as current measurements.
+- **Validation Rules**: A dictionary defining the minimum and maximum expected values for each condition.
+
+#### **3. Algorithm**
+- **Anomaly Detection**:
+  1. For each condition, compare current measurement with expected range.
+  2. Calculate the deviation from the expected range.
+  3. Apply predefined thresholds and rules to determine if the condition is within expected limits.
+  4. Generate alerts when conditions are outside expected ranges.
+
+#### **4. Validation Rules**
+- **Minimum and Maximum Values**: Define for each condition the lowest and highest acceptable values.
+- **Thresholds**: Define the margin above and below the expected range to determine if an alert is needed.
+
+#### **5. Alert Generation**
+- **Threshold Calculation**: For each condition, calculate the difference between current and expected values.
+- **Alert Conditions**: If the threshold is exceeded, generate an alert.
+- **Alert Type**: Determine if the alert should be normal, alert, or critical based on severity.
+
+#### **6. Communication**
+- **Component**: Communication Interface
+  - **Responsibility**: Coordinates data flow between the component and other components.
+  - **Dependencies**: Sensor data ( historical and current )
+  - **Inputs**: Sensor data ( historical, current )
+  - **Outputs**: Data flow ( sequential communication between components )
+
+#### **7. Dependencies**
+- **Component**: Each component has specific dependencies, such as sensor data, validation rules, and alert generation rules.
+- **Communication**: Ensures data flows correctly between components.
+- **Justification**: Provides clear explanations for each alert.
+
+#### **8. Modular Design**
+- Each component is designed to handle a specific part of the system, ensuring maintainability and scalability.
+
+This interface ensures that the anomaly detection component is robust, efficient, and easy to integrate with the rest of the system, providing clear and actionable alerts for system monitoring.
+
+----------------------------------------------------------------
+
+### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner - local):
+
+
+# Data Design
+
+## DATA MODEL OVERVIEW
+
+The system is designed to manage a dynamic IoT environment with multiple sensor variables. The data model is organized into entities that represent different aspects of the system, including sensor data, alert generation, risk classification, and validation. Each entity is defined with its attributes, relationships, and constraints to ensure data consistency and integrity.
+
+---
+
+## DOMAIN ENTITIES
+
+### 1. **Sensor Data**
+   - **Entity**: SensorData
+   - **Attributes**:
+     - **Condition**: String (e.g., temperature, humidity)
+     - **Value**: Number (e.g., 25°C, 50%)
+   - **Relationships**:
+     - **From**: Sensor ( historical, current )
+     - **To**: SensorData
+   - **Constraints**:
+     - Values must fall within expected ranges.
+
+### 2. **Alert Generation**
+   - **Entity**: AnomalyDetection
+   - **Attributes**:
+     - **Condition**: String (e.g., temperature, humidity)
+     - **Value**: Number (e.g., 25°C, 50%)
+     - **Threshold**: Number (e.g., 24°C, 51%)
+     - **AlertType**: String (e.g., normal, alert, critical)
+   - **Relationships**:
+     - **From**: SensorData ( historical, current )
+     - **To**: Alerts
+   - **Constraints**:
+     - Alerts are generated only when conditions are outside expected ranges.
+
+### 3. **Risk Classification**
+   - **Entity**: RiskClassification
+   - **Attributes**:
+     - **Condition**: String (e.g., temperature, humidity)
+     - **Threshold**: Number (e.g., 24°C, 51%)
+     - **Criticality**: String (e.g., normal, alert, critical)
+   - **Relationships**:
+     - **From**: RiskClassification Rules
+     - **To**: RiskClassification
+   - **Constraints**:
+     - Risk classification is based on predefined thresholds.
+
+### 4. **Validation Rules**
+   - **Entity**: ValidationRule
+   - **Attributes**:
+     - **Condition**: String (e.g., temperature, humidity)
+     - **Minimum**: Number (e.g., 20°C, 40%)
+     - **Maximum**: Number (e.g., 30°C, 60%)
+   - **Relationships**:
+     - **From**: ValidationRule
+     - **To**: SensorData
+   - **Constraints**:
+     - Values must fall within defined ranges.
+
+### 5. **Notification Component**
+   - **Entity**: Notification
+   - **Attributes**:
+     - **Condition**: String (e.g., temperature, humidity)
+     - **Date**: Date (YYYY-MM-DD)
+     - **Time**: Time (HH:MM:SS)
+     - **Message**: String (e.g., "Temperature: 24°C")
+   - **Relationships**:
+     - **From**: Notification
+     - **To**: SensorData
+   - **Constraints**:
+     - Notifications are sent only when conditions are outside expected ranges.
+
+---
+
+## DATA STORAGE DESIGN
+
+### 1. **Sensor Data**
+   - **Storage**: SensorData
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Array of Numbers
+   - **Constraints**:
+     - Values must fall within expected ranges.
+
+### 2. **Alert Generation**
+   - **Storage**: Alerts
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Array of Objects
+   - **Constraints**:
+     - Alerts are generated only when conditions are outside expected ranges.
+
+### 3. **Risk Classification**
+   - **Storage**: RiskClassification
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Dictionary of Objects
+   - **Constraints**:
+     - Risk classification is based on predefined thresholds.
+
+### 4. **Validation Rules**
+   - **Storage**: ValidationRule
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Dictionary of Objects
+   - **Constraints**:
+     - Values must fall within defined ranges.
+
+---
+
+## DATA CONSISTENCY RULES
+
+### 1. **Transaction Rules**
+   - **From**: Notification
+   - **To**: Alerts
+   - **Conditions**:
+     - Notification is sent when conditions are outside expected ranges.
+     - Alerts are generated in response to notifications.
+   - **Constraints**:
+     - Notifications must be sent only when conditions are outside expected ranges.
+
+### 2. **Validation**
+   - **From**: ValidationRule
+   - **To**: SensorData
+   - **Conditions**:
+     - Sensor data must fall within expected ranges.
+     - Alerts are generated only when conditions are outside expected ranges.
+   - **Constraints**:
+     - Sensor data must not violate validation rules.
+
+### 3. **Integrity Constraints**
+   - **From**: RiskClassification
+   - **To**: RiskClassification
+   - **Conditions**:
+     - Risk classification must be consistent across all entities.
+   - **Constraints**:
+     - Risk classification must be based on predefined thresholds.
+
+---
+
+## DATA MODEL DIAGRAM
+
+```mermaid
+SensorData
+|
+ValidationRule
+|
+Notification
+|
+Alerts
+|
+RiskClassification
+|
+Risks
+```
+
+---
+
+## DATA STORAGE DESIGN (DETAILED)
+
+### 1. **Sensor Data**
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Array of Numbers
+   - **Attributes**:
+     - **Condition**: String
+     - **Value**: Number
+   - **Constraints**:
+     - Values must fall within expected ranges.
+
+### 2. **Alert Generation**
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Array of Objects
+   - **Attributes**:
+     - **Condition**: String
+     - **Value**: Number
+     - **Threshold**: Number
+     - **AlertType**: String
+   - **Constraints**:
+     - Alerts are generated only when conditions are outside expected ranges.
+
+### 3. **Risk Classification**
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Dictionary of Objects
+   - **Attributes**:
+     - **Condition**: String
+     - **Threshold**: Number
+     - **Criticality**: String
+   - **Constraints**:
+     - Risk classification is based on predefined thresholds.
+
+### 4. **Validation Rules**
+   - **Persistent Approach**: Persistent
+   - **Storage Strategy**: Dictionary of Objects
+   - **Attributes**:
+     - **Condition**: String
+     - **Minimum**: Number
+     - **Maximum**: Number
+   - **Constraints**:
+     - Values must fall within defined ranges.
+
+---
+
+## DATA CONSISTENCY RULES (DETAILED)
+
+### 1. **Transaction Rules**
+   - **Conditions**:
+     - Notification is sent when conditions are outside expected ranges.
+     - Alerts are generated in response to notifications.
+   - **Constraints**:
+     - Notifications must be sent only when conditions are outside expected ranges.
+
+### 2. **Validation**
+   - **Conditions**:
+     - Sensor data must fall within expected ranges.
+     - Alerts are generated only when conditions are outside expected ranges.
+   - **Constraints**:
+     - Sensor data must not violate validation rules.
+
+### 3. **Integrity Constraints**
+   - **Conditions**:
+     - Risk classification must be consistent across all entities.
+   - **Constraints**:
+     - Risk classification must be based on predefined thresholds.
+
+---
+
+## DATA CONSISTENCY RULES (DETAILED)
+
+### 1. **Transaction Rules**
+   - **From**: Notification
+   - **To**: Alerts
+   - **Conditions**:
+     - Notification is sent when conditions are outside expected ranges.
+     - Alerts are generated in response to notifications.
+   - **Constraints**:
+     - Notifications must be sent only when conditions are outside expected ranges.
+
+### 2. **Validation**
+   - **From**: ValidationRule
+   - **To**: SensorData
+   - **Conditions**:
+     - Sensor data must fall within expected ranges.
+     - Alerts are generated only when conditions are outside expected ranges.
+   - **Constraints**:
+     - Sensor data must not violate validation rules.
+
+### 3. **Integrity Constraints**
+   - **From**: RiskClassification
+   - **To**: RiskClassification
+   - **Conditions**:
+     - Risk classification must be consistent across all entities.
+   - **Constraints**:
+     - Risk classification must be based on predefined thresholds.
+
+--- 
+
+This design ensures data consistency, reliability, and scalability, aligning with the system's requirements and previous artifacts.
+
+----------------------------------------------------------------
+
+### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner - local):
+
+
+# Algorithm Design for IoT Monitoreo Ambientales
+
+## 1. **Component Overview**
+
+### 1.1. Sensor Data
+- **Entity**: SensorData
+- **Attributes**:
+  - **Condition**: String (e.g., temperature, humidity)
+  - **Value**: Number (e.g., 25°C, 50%)
+- **Relationships**:
+  - **From**: Sensor ( historical, current )
+  - **To**: SensorData
+- **Constraints**:
+  - Values must fall within expected ranges.
+
+### 1.2. Anomaly Detection
+- **Entity**: AnomalyDetection
+- **Attributes**:
+  - **Condition**: String (e.g., temperature, humidity)
+  - **Value**: Number (e.g., 25°C, 50%)
+  - **Threshold**: Number (e.g., 24°C, 51%)
+  - **AlertType**: String (e.g., normal, alert, critical)
+- **Relationships**:
+  - **From**: SensorData ( historical, current )
+  - **To**: Alerts
+- **Constraints**:
+  - Alerts are generated only when conditions are outside expected ranges.
+
+### 1.3. Risk Classification
+- **Entity**: RiskClassification
+- **Attributes**:
+  - **Condition**: String (e.g., temperature, humidity)
+  - **Threshold**: Number (e.g., 24°C, 51%)
+  - **Criticality**: String (e.g., normal, alert, critical)
+- **Relationships**:
+  - **From**: RiskClassification Rules
+  - **To**: RiskClassification
+- **Constraints**:
+  - Risk classification is based on predefined thresholds.
+
+### 1.4. Validation Rules
+- **Entity**: ValidationRule
+- **Attributes**:
+  - **Condition**: String (e.g., temperature, humidity)
+  - **Minimum**: Number (e.g., 20°C, 40%)
+  - **Maximum**: Number (e.g., 30°C, 60%)
+- **Relationships**:
+  - **From**: ValidationRule
+  - **To**: SensorData
+- **Constraints**:
+  - Values must fall within defined ranges.
+
+### 1.5. Notification Component
+- **Entity**: Notification
+- **Attributes**:
+  - **Condition**: String (e.g., temperature, humidity)
+  - **Date**: Date (YYYY-MM-DD)
+  - **Time**: Time (HH:MM:SS)
+  - **Message**: String (e.g., "Temperature: 24°C")
+- **Relationships**:
+  - **From**: Notification
+  - **To**: SensorData
+- **Constraints**:
+  - Notifications are sent only when conditions are outside expected ranges.
+
+---
+
+## 2. **Data Storage Design**
+
+### 2.1. Sensor Data
+- **Persistent Approach**: Persistent
+- **Storage Strategy**: Array of Numbers
+- **Attributes**:
+  - **Condition**: String
+  - **Value**: Number
+- **Constraints**:
+  - Values must fall within expected ranges.
+
+### 2.2. Anomaly Detection
+- **Persistent Approach**: Persistent
+- **Storage Strategy**: Array of Objects
+- **Attributes**:
+  - **Condition**: String
+  - **Value**: Number
+  - **Threshold**: Number
+  - **AlertType**: String
+- **Constraints**:
+  - Alerts are generated only when conditions are outside expected ranges.
+
+### 2.3. Risk Classification
+- **Persistent Approach**: Persistent
+- **Storage Strategy**: Dictionary of Objects
+- **Attributes**:
+  - **Condition**: String
+  - **Threshold**: Number
+  - **Criticality**: String
+- **Constraints**:
+  - Risk classification is based on predefined thresholds.
+
+### 2.4. Validation Rules
+- **Persistent Approach**: Persistent
+- **Storage Strategy**: Dictionary of Objects
+- **Attributes**:
+  - **Condition**: String
+  - **Minimum**: Number
+  - **Maximum**: Number
+- **Constraints**:
+  - Values must fall within defined ranges.
+
+---
+
+## 3. **Data Consistency Rules**
+
+### 3.1. Transaction Rules
+- **Conditions**:
+  - Notification is sent when conditions are outside expected ranges.
+  - Alerts are generated in response to notifications.
+- **Constraints**:
+  - Notifications must be sent only when conditions are outside expected ranges.
+
+### 3.2. Validation
+- **Conditions**:
+  - Sensor data must fall within expected ranges.
+  - Alerts are generated only when conditions are outside expected ranges.
+- **Constraints**:
+  - Sensor data must not violate validation rules.
+
+### 3.3. Integrity Constraints
+- **Conditions**:
+  - Risk classification must be consistent across all entities.
+- **Constraints**:
+  - Risk classification must be based on predefined thresholds.
+
+---
+
+## 4. **Communication Design**
+
+### 4.1. Data Flow Diagram
+```
+SensorData --> ValidationRule --> Notification --> Alerts --> RiskClassification
+```
+
+### 4.2. Communication Protocol
+- **Sequence**: SensorData ( historical, current ) --> ValidationRule --> Notification --> Alerts --> RiskClassification
+- **Messages**:
+  - SensorData sends data to ValidationRule.
+  - ValidationRule sends data to Notification.
+  - Notification sends alerts to Alerts.
+  - Alerts send alerts to RiskClassification.
+- **Data Flow**: Sequential and clear, ensuring data integrity.
+
+---
+
+## 5. **Algorithms**
+
+### 5.1. Anomaly Detection (Explicit Algorithm)
+- **Steps**:
+  1. Compare current sensor data with expected ranges.
+  2. Calculate deviation from expected ranges.
+  3. Apply thresholds and rules to generate alerts.
+- **Algorithm**: Threshold-based comparison.
+
+### 5.2. Anomaly Detection (Smooth Algorithm)
+- **Steps**:
+  1. Adjust thresholds based on current data.
+  2. Maintain alerts based on updated data.
+- **Algorithm**: Smooth adjustment of thresholds.
+
+### 5.3. Risk Classification (Explicit Algorithm)
+- **Steps**:
+  1. Apply predefined thresholds and rules.
+  2. Classify events as normal, alert, or critical.
+- **Algorithm**: Threshold-based classification.
+
+### 5.4. Risk Classification (Smooth Algorithm)
+- **Steps**:
+  1. Adjust risk classification rules based on current data.
+  2. Maintain classification based on updated rules.
+- **Algorithm**: Threshold-based classification with rule adjustment.
+
+---
+
+## 6. **Design Considerations**
+
+### 6.1. Modular Design
+- Each component is designed to handle a specific part of the system.
+- Components are modular, allowing for easy maintenance and scalability.
+
+### 6.2. Communication Flow
+- Data flows sequentially from SensorData to ValidationRules, Notification, Alerts, and finally to RiskClassification.
+- Ensures data integrity and consistency throughout the system.
+
+### 6.3. Algorithm Clarity
+- Algorithms are clear and easy to modify.
+- Explicit algorithms are straightforward, while smooth algorithms may require more frequent recalculations.
+
+### 6.4. Data Validation
+- Ensures data integrity by checking against predefined ranges.
+- Prevents invalid data from being processed further.
+
+---
+
+## 7. **Conclusion**
+
+The algorithm design for the IoT monitoreo ambientales system focuses on anomaly detection, risk classification, alert generation, and data validation. Each component is designed to handle specific aspects of the system, ensuring data integrity, consistency, and maintainability. The communication protocol ensures sequential data flow, allowing for clear and efficient alert generation and risk classification. The modular design of the system enhances flexibility and scalability, making it robust and adaptable to changes in the environment.
+
+----------------------------------------------------------------
+
+================================================================
+                      FIN DEL REPORTE                           
+================================================================

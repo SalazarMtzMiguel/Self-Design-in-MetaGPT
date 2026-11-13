@@ -1,0 +1,34 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant DA as Data Acquisition
+    participant GWM as Gateway Manager
+    participant WSC as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant VIZ as Visualization
+    participant ACS as Actuator Control Service
+    participant DCS as Device Communication
+    participant CRM as Conflict Resolution Manager
+    participant AL as Audit Logging
+
+    Note over DA,AL: Flujo Normal y Aprobación
+    DA->>GWM: TelemetryIngestionInterface.enviarMediciones()
+    GWM->>WSC: StressClassificationInterface.clasificarEstrésHídrico()
+    WSC-->>IPS: IrrigationPredictionInterface.predecirNecesidadRiego()
+    IPS-->>RM: RecommendationApprovalInterface.emitirRecomendacion()
+    RM->>VIZ: Notificación visual (zona, prioridad, confianza)
+    VIZ-->>RM: RecommendationApprovalInterface.recibirRespuestaOperador()
+    alt Aceptado/Modificado
+        RM->>ACS: ActuatorCommandInterface.validarYEnviarComando()
+        ACS->>DCS: Comando protocolizado + firma
+        DCS-->>ACS: Confirmación ejecución física
+        ACS->>AL: Evento auditado (idDecision, modelo, timestamp)
+    end
+
+    Note over DA,AL: Desconexión y Sincronización
+    GWM->>GWM: LocalFallbackInterface.ejecutarReglaCritica()
+    GWM->>DCS: Comando fallback + idTransaccionLocal
+    GWM->>CRM: SyncReconciliationInterface.sincronizarEstados()
+    CRM->>CRM: ResolverConflictos (jerarquía REQ-C08)
+    CRM-->>GWM/ACS: EstadoConsolidado + AlertaDiscrepancia
+    CRM->>AL: Registro reconciliación y descarte duplicados

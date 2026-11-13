@@ -1,0 +1,539 @@
+================================================================
+REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-07-02_10-44-11)
+================================================================
+
+### 1. INITIAL REQUIREMENT:
+We are going to develop a university management platform.
+1. Functional Requirements (FR)
+1.1 User Management
+FR01: The system must allow registration of students, professors, administrators, and administrative staff.
+FR02: The system must support rolebased authentication (RBAC).
+FR03: The system must support login using institutional email and password.
+FR04: The system must allow password recovery via institutional email.
+FR05: The system must allow assigning multiple roles to a single user (e.g., professor + coordinator).
+1.2 Academic Management
+FR06: The system must allow creation, editing, and deletion of study programs.
+FR07: The system must allow defining courses with prerequisites.
+FR08: The system must allow assigning courses to semesters or modules.
+FR09: The system must allow assigning professors to specific courses.
+FR10: The system must allow a professor to teach multiple groups per course.
+1.3 Enrollment and Academic Control
+FR11: The system must allow student enrollment per academic period.
+FR12: The system must validate prerequisites before enrollment.
+FR13: The system must prevent overcapacity in course groups.
+FR14: The system must allow temporary or permanent course withdrawal.
+FR15: The system must maintain a complete academic history for each student.
+1.4 Evaluations and Grades
+FR16: The system must allow creation of course evaluations.
+FR17: The system must support different evaluation types (exam, assignment, project, participation).
+FR18: The system must calculate weighted final grades.
+FR19: The system must allow grade entry by professors.
+FR20: The system must allow students to review their grades.
+1.5 Scheduling and Resource Allocation
+FR21: The system must generate schedules while avoiding conflicts between classrooms, professors, and students.
+FR22: The system must allow assignment of physical or virtual classrooms.
+FR23: The system must support classroom reservations for academic events.
+FR24: The system must automatically detect scheduling conflicts.
+1.6 Communication
+FR25: The system must allow internal messaging between students and professors.
+FR26: The system must allow global institutional announcements.
+FR27: The system must send notifications via email or internal system.
+FR28: The system must allow classbased communication groups.
+1.7 Institutional Administration
+FR29: The system must generate academic reports by student, group, and program.
+FR30: The system must generate academic performance statistics.
+FR31: The system must allow auditing of grade changes.
+FR32: The system must allow management of academic periods.
+1.8 Payments (optional but useful for system stress testing)
+FR33: The system must record enrollment or tuition payments.
+FR34: The system must generate student account statements.
+FR35: The system must block enrollment if outstanding debts exist.
+2. NonFunctional Requirements (NFR)
+2.1 Performance
+NFR01: The system must support at least 50,000 concurrent users.
+NFR02: Academic history queries must respond in less than 2 seconds.
+NFR03: Schedule generation must not exceed 30 seconds per academic period.
+NFR04: The system must handle peak loads during enrollment periods without critical degradation.
+2.2 Scalability
+NFR05: The system must be horizontally scalable by modules (users, academics, payments).
+NFR06: The system must support domainbased service separation (microservicesready).
+NFR07: The system must handle data growth without requiring database restructuring.
+2.3 Security
+NFR08: All communications must be encrypted (TLS 1.2 or higher).
+NFR09: The system must implement rolebased access control (RBAC).
+NFR10: Passwords must be stored using secure hashing (bcrypt or equivalent).
+NFR11: The system must log audit trails for critical access and modifications.
+NFR12: The system must prevent SQL injection and common OWASP Top 10 attacks.
+2.4 Availability
+NFR13: The system must guarantee at least 99.5% uptime.
+NFR14: The system must provide fault tolerance for critical modules (users, enrollment).
+NFR15: The system must support disaster recovery with daily automatic backups.
+2.5 Maintainability
+NFR16: The system must be modularized by functional domains.
+NFR17: The code must follow clean architecture standards.
+NFR18: There must be a clear separation between business logic and persistence.
+NFR19: Changes in one module must not affect others (low coupling).
+2.6 Usability
+NFR20: The interface must be intuitive for nontechnical users.
+NFR21: The system must be accessible from mobile devices.
+NFR22: The system must comply with basic accessibility standards (WCAG 2.1 AA level).
+2.7 Interoperability
+NFR23: The system must expose REST or GraphQL APIs for external integration.
+NFR24: The system must support integration with external systems (library, payments, LMS).
+NFR25: The system must support data export in CSV, JSON, and PDF formats.
+2.8 Data Consistency
+NFR26: Critical operations (enrollment, grading) must be transactional.
+NFR27: The system must ensure strong consistency in academic data.
+NFR28: No data loss must occur under concurrent operations.
+
+----------------------------------------------------------------
+
+### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner - local):
+
+
+```mermaid
+mermaid
+    [
+        {
+            "System Overview": "A comprehensive university management platform designed to streamline administrative tasks.",
+            "Architectural Style": "Monolithic",
+            "Subsystem Definitions": [
+                {
+                    "User Management": "Handles user registration, role-based authentication, login systems, password recovery, and managing multiple users per role."
+                },
+                {
+                    "Academic Management": "Manages course creation, enrollment, prerequisites validation, scheduling conflicts prevention, withdrawals, and academic history generation."
+                },
+                {
+                    "Enrollment & Academic Control": "Handles student enrollment, classroom reservations, event scheduling, and conflict detection."
+                },
+                {
+                    "Scheduling & Resource Allocation": "Generates schedules avoiding conflicts, assigns classrooms, and handles multiple periods."
+                }
+            ],
+            "Boundary Definitions": [
+                "Students can only manage their own records.",
+                "Institutional administration controls academic reports by program and group.",
+                "Payment subsystems handle enrollment payments and account statements."
+            ],
+            "Communication & Data Flow": [
+                {
+                    "Internal Messaging": "Users communicate internally through user management systems."
+                },
+                {
+                    "Global Announcements": "External announcements are sent via internal systems."
+                }
+            ],
+            "Interaction Diagram": Mermaid diagram showing communication between subsystems.
+            "Interoperability": "Uses REST or GraphQL APIs for external integration."
+            "Data Consistency": "Ensures strong consistency in academic data."
+    ]
+}
+```
+
+----------------------------------------------------------------
+
+### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner - local):
+
+
+### Component Design for University Management Platform
+
+#### 1. **Component Overview**
+
+**Component Name:** User Management  
+**Overview:** Manages user registration, role-based authentication, login systems, password recovery, and managing multiple users per role.
+
+---
+
+#### 2. **Component Specification**
+
+| **Component Name**                          | **Responsibility**                                                                 | **Internal Behavior**                                                                                     | **Dependencies**                                                                                   | **Inputs**                                                                                       | **Outputs**                                                                                       |
+|--------------------------------------------|-----------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| **Name:** User Management                  | Manages user registration, role-based authentication, login systems, password recovery, and managing multiple users per role.                                      |  
+| **Responsibility:**  
+   - Registers new users with institutional email and password.  
+   - Assigns roles to users based on their attributes (e.g., student, professor).  
+   - Recovers passwords for users using institutional email.  
+   - Manages multiple users per role.  
+
+| **Internal Behavior:**  
+   - Fetches user data from a database or external source.  
+   - Validates user credentials and assigns roles.  
+   - Handles password recovery by comparing the provided password with stored credentials.  
+   - Maintains a list of active users for each role.  
+
+| **Dependencies:**  
+   - **System Overview**: To ensure proper user management across all components.  
+   - **Academic Management**: To validate prerequisites and manage student enrollment.  
+
+| **Inputs:**  
+   - User registration details (username, email).  
+   - Role assignment parameters.  
+
+| **Outputs:**  
+   - List of active users per role.  
+
+---
+
+#### 3. **Component Responsibility Boundaries**
+
+**User Management Component:**
+
+- **Owns:** User data (username, email), roles, authentication details (passwords).  
+- **Responsible for:** Ensuring user registration and login are performed using institutional email.  
+- **Does Not Own:** Other users or systems outside the university.  
+
+---
+
+#### 4. **Communication Diagram**
+
+**Component Boundary Definitions:**
+
+- **Internal Messaging:** Internal communication between components within the User Management component.  
+- **Global Announcements:** Communication with external announcements (e.g., enrollment payments).  
+
+**Interaction Diagram:**
+
+```
+System Overview --> User Management --> Academic Management --> Enroll Student
+```
+
+---
+
+#### 5. **Component Algorithms**
+
+(No specific algorithms are required as there is no real-time processing needed.)
+
+---
+
+### Component Design Summary
+
+The University Management Platform is designed to be a monolithic system with components that handle specific functionalities while maintaining the architectural style of "Monolithic." Each component ensures data consistency, performance, and scalability according to the non-functional requirements.
+
+----------------------------------------------------------------
+
+### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner - local):
+
+
+### Component Design Interfaces
+
+---
+
+#### 1. **Interface Overview: User Management**
+
+**Name:** UserManagement
+
+**Description:** Manages user registration, role-based authentication, login systems, password recovery, and managing multiple users per role.
+
+**Inputs:**
+- Username
+- Email
+
+**Outputs:**
+- User data (username, email)
+
+---
+
+#### 2. **Interface for Register Operation**
+
+**Name:** Register
+
+**Contract:**
+- **Responsibility:** Registers a new user with institutional email and password.
+- **Internal Behavior:** Validates the username and email against the database. If valid, assigns roles based on attributes (e.g., student, professor). Returns an object containing the user data if successful, or an error message if invalid.
+
+**Inputs:**
+- Username
+- Email
+
+**Outputs:**
+- User data object or error message.
+
+---
+
+#### 3. **Interface for Assign Role Operation**
+
+**Name:** AssignRole
+
+**Contract:**
+- **Responsibility:** Manages role assignments based on user attributes.
+- **Internal Behavior:** Takes role parameters (e.g., student, professor) and assigns roles to users. Returns a list of active users per role.
+
+**Inputs:**
+- Role parameters
+
+**Outputs:**
+- List of active users per role.
+
+---
+
+#### 4. **Interface for Recover Password Operation**
+
+**Name:** RecoverPassword
+
+**Contract:**
+- **Responsibility:** Recovers passwords using institutional email.
+- **Internal Behavior:** Validates the provided password against stored credentials. If valid, returns an error message; otherwise, updates the user's password and returns a success message.
+
+**Inputs:**
+- Provided password
+- Stored credentials (password)
+
+**Outputs:**
+- Error message or success message.
+
+---
+
+#### 5. **Interface for Manage Roles Operation**
+
+**Name:** ManageRoles
+
+**Contract:**
+- **Responsibility:** Manages roles based on user attributes.
+- **Internal Behavior:** Takes role parameters and manages multiple users per role. Returns a list of active users per role.
+
+**Inputs:**
+- Role parameters
+
+**Outputs:**
+- List of active users per role.
+
+---
+
+#### 6. **Interface for Validate Prerequisites Operation**
+
+**Name:** ValidatePrerequisites
+
+**Contract:**
+- **Responsibility:** Validates prerequisites before enrollment.
+- **Internal Behavior:** Validates course requirements and assigns prerequisites based on user attributes (e.g., student, professor). Returns a list of validated courses or an error message if invalid.
+
+**Inputs:**
+- Course requirements
+- User attributes
+
+**Outputs:**
+- List of validated courses or error message.
+
+---
+
+#### 7. **Interface for Enroll Student Operation**
+
+**Name:** EnrollStudent
+
+**Contract:**
+- **Responsibility:** Enrolls a student into a course.
+- **Internal Behavior:** Validates enrollment details and manages multiple students per role. Returns an enrolled list or an error message if invalid.
+
+**Inputs:**
+- Course
+- Student data (username, email)
+
+**Outputs:**
+- List of enrolled students or error message.
+
+---
+
+#### 8. **Interface for Internal Messaging**
+
+**Name:** InternalMessaging
+
+**Contract:**
+- **Responsibility:** Manages internal communication between components.
+- **Internal Behavior:** Communicates with other components within the User Management component. Returns a list of messages and their details.
+
+**Inputs:**
+- Request from another component
+
+**Outputs:**
+- List of messages (internal) or error message.
+
+---
+
+#### 9. **Interface for Global Announcements**
+
+**Name:** GlobalAnnouncements
+
+**Contract:**
+- **Responsibility:** Manages external announcements.
+- **Internal Behavior:** Communicates with external systems (e.g., payments). Returns a list of announcements and their details.
+
+**Inputs:**
+- External system data or message
+
+**Outputs:**
+- List of announcements or error message.
+
+----------------------------------------------------------------
+
+### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner - local):
+
+
+```mermaid
+mermaid
+    [
+        {
+            "System Overview": "A comprehensive university management platform designed to streamline administrative tasks.",
+            "Architectural Style": "Monolithic",
+            "Subsystem Definitions": [
+                {
+                    "User Management": "Handles user registration, role-based authentication, login systems, password recovery, and managing multiple users per role."
+                },
+                {
+                    "Academic Management": "Manages course creation, enrollment, prerequisites validation, scheduling conflicts prevention, withdrawals, and academic history generation."
+                },
+                {
+                    "Enrollment & Academic Control": "Handles student enrollment, classroom reservations, event scheduling, and conflict detection."
+                },
+                {
+                    "Scheduling & Resource Allocation": "Generates schedules avoiding conflicts, assigns classrooms, and handles multiple periods."
+                }
+            ],
+            "Boundary Definitions": [
+                "Students can only manage their own records.",
+                "Institutional administration controls academic reports by program and group.",
+                "Payment subsystems handle enrollment payments and account statements."
+            ],
+            "Communication Diagram": Mermaid diagram showing communication between subsystems.
+            "Interaction Diagram": Internal messaging within User Management component.
+            "Interaction Diagram Between Components": Communication between components.
+            "Interoperability": Uses REST or GraphQL APIs for external integration.
+            "Data Consistency Rules": Strong consistency in academic data.
+            "Data Models": Each component has its own data model, including user, course, and academic period details.
+    ]
+}
+```
+
+----------------------------------------------------------------
+
+### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner - local):
+
+
+### Algorithm Design Using Exactly This Structure:
+
+#### 1. **Component Overview**
+
+**Component Name:** User Management  
+**Overview:** Manages user registration, role-based authentication, login systems, password recovery, and managing multiple users per role.
+
+---
+
+#### 2. **Component Specification**
+
+| **Component Name**                          | **Responsibility**                                                                                     | **Inputs**                                                                                       | **Outputs**                                                                                       |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| **Name:** User Management                  | Manages user registration, role-based authentication, login systems, password recovery, and managing multiple users per role.                                      |  
+| **Responsibility:**  
+   - Registers new users with institutional email and password.  
+   - Assigns roles to users based on their attributes (e.g., student, professor).  
+   - Recovers passwords for users using institutional email.  
+   - Manages multiple users per role.  
+
+| **Internal Behavior:**  
+   - Fetches user data from a database or external source.  
+   - Validates user credentials and assigns roles.  
+   - Handles password recovery by comparing the provided password with stored credentials.  
+   - Maintains a list of active users for each role.  
+
+| **Dependencies:**  
+   - **System Overview:** To ensure proper user management across all components.  
+   - **Academic Management:** To validate prerequisites and manage student enrollment. |
+
+| **Inputs:**  
+   - User registration details (username, email).  
+   - Role assignment parameters.  
+
+| **Outputs:**  
+   - List of active users per role.  
+
+---
+
+#### 3. **Algorithm Design**
+
+**User Management Component:**
+
+- **Role-Based Authentication:** Assign roles to users based on their attributes using RBAC.
+- **Username/Password Validation:** Validate user credentials and recover passwords using institutional email.
+- **User Management Database:** Maintain a database for storing user data, including usernames, emails, roles, and passwords.
+
+**Algorithm Selection:**
+Since the User Management component is monolithic with no real-time processing needed, it doesn't require specific algorithms. Instead, it leverages RBAC, password recovery logic, and database management to ensure secure and efficient user handling.
+
+---
+
+#### 4. **Communication Diagram**
+
+**Component Boundary Definitions:**
+- **Internal Messaging:** Internal communication between components within the User Management component.
+- **Global Announcements:** Communication with external announcements (e.g., enrollment payments).
+
+**Interaction Diagram:**
+```
+System Overview --> User Management --> Academic Management --> Enroll Student
+```
+
+---
+
+#### 5. **Algorithm Flow Diagram**
+
+```mermaid
+mermaid
+    [
+        {
+            "Component": "User Management",
+            "Inputs": "Username, Email",
+            "Outputs": "User Data (username, email)",
+            "Dependencies": {
+                "System Overview", "Academic Management"
+            }
+        },
+        {
+            "Component": "Academic Management",
+            "Inputs": "Enrollment Details, Prerequisites Validation",
+            "Outputs": "Academic History Generation"
+        }
+    ]
+```
+
+---
+
+#### 6. **Algorithm Flow Diagram for Internal Messaging**
+
+```mermaid
+mermaid
+    [
+        {
+            "Component": "Internal Messaging",
+            "Inputs": "Request from another component",
+            "Outputs": "List of messages (internal) or error message",
+            "Dependencies": {}
+        }
+    ]
+```
+
+---
+
+#### 7. **Algorithm Flow Diagram for Global Announcements**
+
+```mermaid
+mermaid
+    [
+        {
+            "Component": "Global Announcements",
+            "Inputs": "External System Data or Message",
+            "Outputs": "List of announcements or error message"
+        }
+    ]
+```
+
+---
+
+### Conclusion
+
+The University Management Platform is designed with a monolithic architecture, ensuring each subsystem handles specific functionalities. The User Management component uses RBAC and password recovery logic, while Academic Management manages enrollment, prerequisites, and history generation. MCTS is not explicitly used here but could be applied for prioritizing subsystems based on current priorities or handling multiple states dynamically.
+
+----------------------------------------------------------------
+
+================================================================
+                      FIN DEL REPORTE                           
+================================================================

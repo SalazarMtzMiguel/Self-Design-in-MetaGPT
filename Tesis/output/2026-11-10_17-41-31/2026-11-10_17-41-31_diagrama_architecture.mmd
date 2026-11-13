@@ -1,0 +1,36 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    participant S as Sensores Ambientales
+    participant G as Gateway Manager
+    participant P as Plataforma Central
+    participant WSC as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant OP as Operador Humano
+    participant ACS as Actuator Control Service
+    participant V as Válvulas de Riego
+    participant CRM as Conflict Resolution Manager
+
+    Note over S,V: Escenario Normal con Conexión Estable
+    S->>G: Mediciones (T, Hsuelo, Haire, Nivel)
+    G->>P: Flujo telemétrico validado
+    P->>WSC: Datos históricos + actuales
+    WSC-->>P: Clasificación estrés hídrico (REQ-C01)
+    P->>IPS: Predicción necesidad riego
+    IPS-->>P: Predicción + confianza (REQ-C02)
+    P->>RM: Generar recomendación estructurada
+    RM-->>OP: Notificación (zona, prioridad, duración, justificación)
+    OP-->>RM: Aceptar / Modificar / Rechazar (REQ-C04)
+    alt Recomendación Aceptada
+        RM->>ACS: Comando autorizado + metadatos
+        ACS->>V: Comandos apertura/cierre autenticados (REQ-C05, NFR-C04)
+        ACS-->>P: Confirmación ejecución
+        P->>Audit Logging: Registro explicauditable (REQ-C09, NFR-C05)
+    end
+
+    Note over S,V: Escenario Desconexión + Sincronización
+    G->>G: Ejecutar reglas críticas locales (<3s, REQ-C06, NFR-C01)
+    G->>V: Comandos fallback (buffer local)
+    G->>P: Reconciliación al restablecer conexión
+    P->>CRM: Resolver conflictos y duplicados (REQ-C07, REQ-C08)
+    CRM-->>G/P: Estado consolidado + alertas de discrepancia

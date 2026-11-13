@@ -1,0 +1,2188 @@
+@prefix : <http://example.com#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix gufo: <http://purl.org/nemo/gufo#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://example.com#> .
+
+<http://example.com> rdf:type owl:Ontology ;
+                      owl:imports gufo: .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://example.com#assumes
+:assumes rdf:type owl:ObjectProperty ;
+         rdfs:domain :Algorithm_Instance ;
+         rdfs:range :Assumption ;
+         rdfs:label "assumes"@en .
+
+
+###  http://example.com#configures
+:configures rdf:type owl:ObjectProperty ;
+            rdfs:domain :Data_Item ;
+            rdfs:range :AlgorithmDeployment ;
+            rdfs:label "configures"@en .
+
+
+###  http://example.com#designEvaluationHasMetric
+:designEvaluationHasMetric rdf:type owl:ObjectProperty ;
+                           rdfs:domain :DesignEvaluation ;
+                           rdfs:range :Metric .
+
+
+###  http://example.com#designHasAlgorithmApproach
+:designHasAlgorithmApproach rdf:type owl:ObjectProperty ;
+                            rdfs:domain :Design ;
+                            rdfs:range :Algorithm_approach .
+
+
+###  http://example.com#designHasAssumption
+:designHasAssumption rdf:type owl:ObjectProperty ;
+                     rdfs:domain :Design ;
+                     rdfs:range :Assumption .
+
+
+###  http://example.com#designHasComplexity
+:designHasComplexity rdf:type owl:ObjectProperty ;
+                     rdfs:domain :Design ;
+                     rdfs:range :Complexity .
+
+
+###  http://example.com#designHasConstraint
+:designHasConstraint rdf:type owl:ObjectProperty ;
+                     rdfs:domain :Design ;
+                     rdfs:range :Constraint .
+
+
+###  http://example.com#designHasDataRepresentation
+:designHasDataRepresentation rdf:type owl:ObjectProperty ;
+                             rdfs:domain :Design ;
+                             rdfs:range :Data_Representation .
+
+
+###  http://example.com#designHasDesignEvaluation
+:designHasDesignEvaluation rdf:type owl:ObjectProperty ;
+                           rdfs:domain :Design ;
+                           rdfs:range :DesignEvaluation .
+
+
+###  http://example.com#determines
+:determines rdf:type owl:ObjectProperty ;
+            rdfs:domain :Specification ;
+            rdfs:range :SpecificationIO .
+
+
+###  http://example.com#hasSpecification
+:hasSpecification rdf:type owl:ObjectProperty ;
+                  owl:inverseOf :isSpecificationOf ;
+                  rdfs:domain :Requirement ;
+                  rdfs:range :Specification .
+
+
+###  http://example.com#implements
+:implements rdf:type owl:ObjectProperty ;
+            rdfs:domain :Algorithm_Instance ;
+            rdfs:range :Algorithm_approach ;
+            rdfs:label "implements"@en .
+
+
+###  http://example.com#isDesignFor
+:isDesignFor rdf:type owl:ObjectProperty ;
+             rdfs:domain :Design ;
+             rdfs:range :Problem .
+
+
+###  http://example.com#isSpecificationOf
+:isSpecificationOf rdf:type owl:ObjectProperty .
+
+
+###  http://example.com#satifies
+:satifies rdf:type owl:ObjectProperty ;
+          rdfs:domain :Algorithm_Instance ;
+          rdfs:range :Constraint ;
+          rdfs:label "satifies"@en .
+
+
+###  http://example.com#serviceEvaluationHasMetric
+:serviceEvaluationHasMetric rdf:type owl:ObjectProperty ;
+                            rdfs:domain :ServiceEvaluation ;
+                            rdfs:range :Metric .
+
+
+###  http://example.com#serviceHasServiceEvaluation
+:serviceHasServiceEvaluation rdf:type owl:ObjectProperty ;
+                             rdfs:domain :Service ;
+                             rdfs:range :ServiceEvaluation .
+
+
+###  http://example.com#supportsInteraction
+:supportsInteraction rdf:type owl:ObjectProperty ;
+                     rdfs:domain :Design ;
+                     rdfs:range :Interaction .
+
+
+###  http://example.com#supportsKnowledge
+:supportsKnowledge rdf:type owl:ObjectProperty ;
+                   rdfs:domain :Design ;
+                   rdfs:range :Knowledge .
+
+
+###  http://example.com#supportsObjective
+:supportsObjective rdf:type owl:ObjectProperty ;
+                   rdfs:domain :Design ;
+                   rdfs:range :Objective .
+
+
+###  http://example.com#supportsProcessing
+:supportsProcessing rdf:type owl:ObjectProperty ;
+                    rdfs:domain :Design ;
+                    rdfs:range :Processing .
+
+
+###  http://example.com#supportsProcessingLayer
+:supportsProcessingLayer rdf:type owl:ObjectProperty ;
+                         rdfs:domain :Design ;
+                         rdfs:range :ProcessingLayer .
+
+
+###  http://example.com#supportsUncertainty
+:supportsUncertainty rdf:type owl:ObjectProperty ;
+                     rdfs:domain :Design ;
+                     rdfs:range :Uncertainty .
+
+
+###  http://example.com#uses
+:uses rdf:type owl:ObjectProperty ;
+      rdfs:domain :Algorithm_Instance ;
+      rdfs:range :Data_Representation ;
+      rdfs:label "uses"@en .
+
+
+###  http://purl.org/nemo/gufo#inheresIn
+gufo:inheresIn rdf:type owl:ObjectProperty .
+
+
+###  http://purl.org/nemo/gufo#mediates
+gufo:mediates rdf:type owl:ObjectProperty .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://example.com#hasValue
+:hasValue rdf:type owl:DatatypeProperty ;
+          rdfs:domain :Metric ;
+          rdfs:range xsd:decimal .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://example.com#Algorithm
+:Algorithm rdf:type owl:Class ;
+           rdfs:subClassOf :Solution .
+
+
+###  http://example.com#AlgorithmDeployment
+:AlgorithmDeployment rdf:type owl:Class ;
+                     rdfs:subClassOf gufo:Relator ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty gufo:mediates ;
+                                       owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                       owl:onClass :Algorithm_Instance
+                                     ] .
+
+
+###  http://example.com#Algorithm_Characteristics
+:Algorithm_Characteristics rdf:type owl:Class ;
+                           rdfs:subClassOf :Metric .
+
+
+###  http://example.com#Algorithm_Instance
+:Algorithm_Instance rdf:type owl:Class ;
+                    rdfs:subClassOf :Algorithm ,
+                                    [ rdf:type owl:Restriction ;
+                                      owl:onProperty [ owl:inverseOf gufo:mediates
+                                                     ] ;
+                                      owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                      owl:onClass :AlgorithmDeployment
+                                    ] .
+
+
+###  http://example.com#Algorithm_approach
+:Algorithm_approach rdf:type owl:Class ;
+                    rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Assumption
+:Assumption rdf:type owl:Class ;
+            rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Assumption_DistanceMeaningful
+:Assumption_DistanceMeaningful rdf:type owl:Class ;
+                               rdfs:subClassOf :Assumption .
+
+
+###  http://example.com#Assumption_ExpertKnowledgeAvailable
+:Assumption_ExpertKnowledgeAvailable rdf:type owl:Class ;
+                                     rdfs:subClassOf :Assumption .
+
+
+###  http://example.com#Assumption_FeatureRelevance
+:Assumption_FeatureRelevance rdf:type owl:Class ;
+                             rdfs:subClassOf :Assumption .
+
+
+###  http://example.com#Assumption_IndependentFeatures
+:Assumption_IndependentFeatures rdf:type owl:Class ;
+                                rdfs:subClassOf :Assumption .
+
+
+###  http://example.com#Assumption_Linearity
+:Assumption_Linearity rdf:type owl:Class ;
+                      rdfs:subClassOf :Assumption .
+
+
+###  http://example.com#Assumption_NoisyDataTolerance
+:Assumption_NoisyDataTolerance rdf:type owl:Class ;
+                               rdfs:subClassOf :Assumption .
+
+
+###  http://example.com#Bayesian
+:Bayesian rdf:type owl:Class ;
+          rdfs:subClassOf :ProbabilityDriven .
+
+
+###  http://example.com#Complexity
+:Complexity rdf:type owl:Class ;
+            rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Complexity_Spatial_DecisionTree
+:Complexity_Spatial_DecisionTree rdf:type owl:Class ;
+                                 rdfs:subClassOf :Spatial .
+
+
+###  http://example.com#Complexity_Spatial_KNN
+:Complexity_Spatial_KNN rdf:type owl:Class ;
+                        rdfs:subClassOf :Spatial .
+
+
+###  http://example.com#Complexity_Spatial_LogisticRegression
+:Complexity_Spatial_LogisticRegression rdf:type owl:Class ;
+                                       rdfs:subClassOf :Spatial .
+
+
+###  http://example.com#Complexity_Spatial_RuleBased
+:Complexity_Spatial_RuleBased rdf:type owl:Class ;
+                              rdfs:subClassOf :Spatial .
+
+
+###  http://example.com#Complexity_Temporal_DecisionTree
+:Complexity_Temporal_DecisionTree rdf:type owl:Class ;
+                                  rdfs:subClassOf :Temporal .
+
+
+###  http://example.com#Complexity_Temporal_KNN
+:Complexity_Temporal_KNN rdf:type owl:Class ;
+                         rdfs:subClassOf :Temporal .
+
+
+###  http://example.com#Complexity_Temporal_LogisticRegression
+:Complexity_Temporal_LogisticRegression rdf:type owl:Class ;
+                                        rdfs:subClassOf :Temporal .
+
+
+###  http://example.com#Complexity_Temporal_RuleBased
+:Complexity_Temporal_RuleBased rdf:type owl:Class ;
+                               rdfs:subClassOf :Temporal .
+
+
+###  http://example.com#Constraint
+:Constraint rdf:type owl:Class ;
+            rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Constraint_HighMemoryUsage
+:Constraint_HighMemoryUsage rdf:type owl:Class ;
+                            rdfs:subClassOf :Constraint .
+
+
+###  http://example.com#Constraint_LabeledDataRequired
+:Constraint_LabeledDataRequired rdf:type owl:Class ;
+                                rdfs:subClassOf :Constraint .
+
+
+###  http://example.com#Constraint_NumericFeatures
+:Constraint_NumericFeatures rdf:type owl:Class ;
+                            rdfs:subClassOf :Constraint .
+
+
+###  http://example.com#Constraint_OverfittingRisk
+:Constraint_OverfittingRisk rdf:type owl:Class ;
+                            rdfs:subClassOf :Constraint .
+
+
+###  http://example.com#Constraint_RuleMaintenance
+:Constraint_RuleMaintenance rdf:type owl:Class ;
+                            rdfs:subClassOf :Constraint .
+
+
+###  http://example.com#CriterionDriven
+:CriterionDriven rdf:type owl:Class ;
+                 rdfs:subClassOf :Algorithm_approach .
+
+
+###  http://example.com#DataDriven
+:DataDriven rdf:type owl:Class ;
+            rdfs:subClassOf :Algorithm_approach .
+
+
+###  http://example.com#Data_Item
+:Data_Item rdf:type owl:Class ;
+           rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Data_Representation
+:Data_Representation rdf:type owl:Class ;
+                     rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Derives
+:Derives rdf:type owl:Class ;
+         rdfs:subClassOf gufo:Relator .
+
+
+###  http://example.com#Design
+:Design rdf:type owl:Class ;
+        rdfs:subClassOf :Algorithm ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :isDesignFor ;
+                          owl:someValuesFrom :Problem
+                        ] .
+
+
+###  http://example.com#DesignEvaluation
+:DesignEvaluation rdf:type owl:Class ;
+                  rdfs:subClassOf gufo:Relator .
+
+
+###  http://example.com#DesignEvaluation_DecisionTree
+:DesignEvaluation_DecisionTree rdf:type owl:Class ;
+                               rdfs:subClassOf :DesignEvaluation .
+
+
+###  http://example.com#DesignEvaluation_KNN
+:DesignEvaluation_KNN rdf:type owl:Class ;
+                      rdfs:subClassOf :DesignEvaluation .
+
+
+###  http://example.com#DesignEvaluation_LogisticRegression
+:DesignEvaluation_LogisticRegression rdf:type owl:Class ;
+                                     rdfs:subClassOf :DesignEvaluation .
+
+
+###  http://example.com#DesignEvaluation_RuleBased
+:DesignEvaluation_RuleBased rdf:type owl:Class ;
+                            rdfs:subClassOf :DesignEvaluation .
+
+
+###  http://example.com#Design_KNN
+:Design_KNN rdf:type owl:Class ;
+            rdfs:subClassOf :Design ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designEvaluationHasMetric ;
+                              owl:someValuesFrom :QoE_Accuracy_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designEvaluationHasMetric ;
+                              owl:someValuesFrom :QoE_F1_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designEvaluationHasMetric ;
+                              owl:someValuesFrom :QoE_Robustness_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designEvaluationHasMetric ;
+                              owl:someValuesFrom :QoS_Latency_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designEvaluationHasMetric ;
+                              owl:someValuesFrom :QoS_ResourceUsage_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designEvaluationHasMetric ;
+                              owl:someValuesFrom :QoS_Scalability_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasAlgorithmApproach ;
+                              owl:someValuesFrom :Supervised_Learning
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasAssumption ;
+                              owl:someValuesFrom :Assumption_DistanceMeaningful
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasComplexity ;
+                              owl:someValuesFrom :Complexity_Spatial_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasComplexity ;
+                              owl:someValuesFrom :Complexity_Temporal_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasConstraint ;
+                              owl:someValuesFrom :Constraint_HighMemoryUsage
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasDataRepresentation ;
+                              owl:someValuesFrom :Tabular
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :designHasDesignEvaluation ;
+                              owl:someValuesFrom :DesignEvaluation_KNN
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsInteraction ;
+                              owl:someValuesFrom :Interaction_System
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsKnowledge ;
+                              owl:someValuesFrom :Knowledge_Data
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsObjective ;
+                              owl:someValuesFrom :Objective_Classification
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsProcessing ;
+                              owl:someValuesFrom :Processing_Centralized
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsProcessingLayer ;
+                              owl:someValuesFrom :ProcessingLayer_Application_Cloud
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsUncertainty ;
+                              owl:someValuesFrom :Uncertainty_Model
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :supportsUncertainty ;
+                              owl:someValuesFrom :Uncertainty_Parameter
+                            ] .
+
+
+###  http://example.com#Design_LogisticRegression
+:Design_LogisticRegression rdf:type owl:Class ;
+                           rdfs:subClassOf :Design ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designEvaluationHasMetric ;
+                                             owl:someValuesFrom :QoE_Accuracy_LR
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designEvaluationHasMetric ;
+                                             owl:someValuesFrom :QoE_F1_LR
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designEvaluationHasMetric ;
+                                             owl:someValuesFrom :QoE_Robustness_LR
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designEvaluationHasMetric ;
+                                             owl:someValuesFrom :QoS_Latency_LR
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designEvaluationHasMetric ;
+                                             owl:someValuesFrom :QoS_ResourceUsage_LR
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designEvaluationHasMetric ;
+                                             owl:someValuesFrom :QoS_Scalability_LR
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasAlgorithmApproach ;
+                                             owl:someValuesFrom :Supervised_Learning
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasAssumption ;
+                                             owl:someValuesFrom :Assumption_IndependentFeatures
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasAssumption ;
+                                             owl:someValuesFrom :Assumption_Linearity
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasComplexity ;
+                                             owl:someValuesFrom :Complexity_Spatial_LogisticRegression
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasComplexity ;
+                                             owl:someValuesFrom :Complexity_Temporal_LogisticRegression
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasConstraint ;
+                                             owl:someValuesFrom :Constraint_LabeledDataRequired
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasConstraint ;
+                                             owl:someValuesFrom :Constraint_NumericFeatures
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasDataRepresentation ;
+                                             owl:someValuesFrom :Tabular
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :designHasDesignEvaluation ;
+                                             owl:someValuesFrom :DesignEvaluation_LogisticRegression
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsInteraction ;
+                                             owl:someValuesFrom :Interaction_System
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsKnowledge ;
+                                             owl:someValuesFrom :Knowledge_Data
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsObjective ;
+                                             owl:someValuesFrom :Objective_Classification
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsProcessing ;
+                                             owl:someValuesFrom :Processing_Centralized
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsProcessingLayer ;
+                                             owl:someValuesFrom :ProcessingLayer_Application_Cloud
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsProcessingLayer ;
+                                             owl:someValuesFrom :ProcessingLayer_Application_Device
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsProcessingLayer ;
+                                             owl:someValuesFrom :ProcessingLayer_Application_Edge
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsProcessingLayer ;
+                                             owl:someValuesFrom :ProcessingLayer_Application_Fog
+                                           ] ,
+                                           [ rdf:type owl:Restriction ;
+                                             owl:onProperty :supportsUncertainty ;
+                                             owl:someValuesFrom :Uncertainty_Model
+                                           ] .
+
+
+###  http://example.com#Design_RuleBased
+:Design_RuleBased rdf:type owl:Class ;
+                  rdfs:subClassOf :Design ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designEvaluationHasMetric ;
+                                    owl:someValuesFrom :QoE_Accuracy_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designEvaluationHasMetric ;
+                                    owl:someValuesFrom :QoE_F1_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designEvaluationHasMetric ;
+                                    owl:someValuesFrom :QoE_Robustness_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designEvaluationHasMetric ;
+                                    owl:someValuesFrom :QoS_Latency_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designEvaluationHasMetric ;
+                                    owl:someValuesFrom :QoS_ResourceUsage_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designEvaluationHasMetric ;
+                                    owl:someValuesFrom :QoS_Scalability_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasAlgorithmApproach ;
+                                    owl:someValuesFrom :Production_Rules
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasAssumption ;
+                                    owl:someValuesFrom :Assumption_ExpertKnowledgeAvailable
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasComplexity ;
+                                    owl:someValuesFrom :Complexity_Spatial_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasComplexity ;
+                                    owl:someValuesFrom :Complexity_Temporal_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasConstraint ;
+                                    owl:someValuesFrom :Constraint_RuleMaintenance
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasDataRepresentation ;
+                                    owl:someValuesFrom :Symbolic
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :designHasDesignEvaluation ;
+                                    owl:someValuesFrom :DesignEvaluation_RuleBased
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsInteraction ;
+                                    owl:someValuesFrom :Interaction_Human
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsInteraction ;
+                                    owl:someValuesFrom :Interaction_System
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsKnowledge ;
+                                    owl:someValuesFrom :Knowledge_Mathematical
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsKnowledge ;
+                                    owl:someValuesFrom :Knowledge_Symbolic
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsObjective ;
+                                    owl:someValuesFrom :Objective_Classification
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessing ;
+                                    owl:someValuesFrom :Processing_Centralized
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessing ;
+                                    owl:someValuesFrom :Processing_Decentralized
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessingLayer ;
+                                    owl:someValuesFrom :ProcessingLayer_Application_Cloud
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessingLayer ;
+                                    owl:someValuesFrom :ProcessingLayer_Application_Device
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessingLayer ;
+                                    owl:someValuesFrom :ProcessingLayer_Application_Edge
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessingLayer ;
+                                    owl:someValuesFrom :ProcessingLayer_Application_Fog
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessingLayer ;
+                                    owl:someValuesFrom :ProcessingLayer_Middleware
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsProcessingLayer ;
+                                    owl:someValuesFrom :ProcessingLayer_Perception
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsUncertainty ;
+                                    owl:someValuesFrom :Uncertainty_Measurements
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsUncertainty ;
+                                    owl:someValuesFrom :Uncertainty_Model
+                                  ] ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :supportsUncertainty ;
+                                    owl:someValuesFrom :Uncertainty_Parameter
+                                  ] .
+
+
+###  http://example.com#Desing_DecisionTree
+:Desing_DecisionTree rdf:type owl:Class ;
+                     rdfs:subClassOf :Design ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designEvaluationHasMetric ;
+                                       owl:someValuesFrom :QoE_Accuracy_DT
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designEvaluationHasMetric ;
+                                       owl:someValuesFrom :QoE_F1_DT
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designEvaluationHasMetric ;
+                                       owl:someValuesFrom :QoE_Robustness_DT
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designEvaluationHasMetric ;
+                                       owl:someValuesFrom :QoS_Latency_DT
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designEvaluationHasMetric ;
+                                       owl:someValuesFrom :QoS_ResourceUsage_DT
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designEvaluationHasMetric ;
+                                       owl:someValuesFrom :QoS_Scalability_DT
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasAlgorithmApproach ;
+                                       owl:someValuesFrom :Supervised_Learning
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasAssumption ;
+                                       owl:someValuesFrom :Assumption_NoisyDataTolerance
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasComplexity ;
+                                       owl:someValuesFrom :Complexity_Spatial_DecisionTree
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasComplexity ;
+                                       owl:someValuesFrom :Complexity_Temporal_DecisionTree
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasConstraint ;
+                                       owl:someValuesFrom :Constraint_OverfittingRisk
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasDataRepresentation ;
+                                       owl:someValuesFrom :Tabular
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :designHasDesignEvaluation ;
+                                       owl:someValuesFrom :DesignEvaluation_DecisionTree
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :supportsInteraction ;
+                                       owl:someValuesFrom :Interaction_System
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :supportsKnowledge ;
+                                       owl:someValuesFrom :Knowledge_Data
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :supportsObjective ;
+                                       owl:someValuesFrom :Objective_Classification
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :supportsProcessing ;
+                                       owl:someValuesFrom :Processing_Centralized
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :supportsProcessingLayer ;
+                                       owl:someValuesFrom :ProcessingLayer_Application
+                                     ] ,
+                                     [ rdf:type owl:Restriction ;
+                                       owl:onProperty :supportsUncertainty ;
+                                       owl:someValuesFrom :Uncertainty_Model
+                                     ] .
+
+
+###  http://example.com#Dynamic_Programming
+:Dynamic_Programming rdf:type owl:Class ;
+                     rdfs:subClassOf :CriterionDriven .
+
+
+###  http://example.com#Evidence_Theory
+:Evidence_Theory rdf:type owl:Class ;
+                 rdfs:subClassOf :ProbabilityDriven .
+
+
+###  http://example.com#Execution
+:Execution rdf:type owl:Class ;
+           rdfs:subClassOf :Algorithm .
+
+
+###  http://example.com#Game_Theory
+:Game_Theory rdf:type owl:Class ;
+             rdfs:subClassOf :UtilityDriven .
+
+
+###  http://example.com#Heuristic
+:Heuristic rdf:type owl:Class ;
+           rdfs:subClassOf :CriterionDriven .
+
+
+###  http://example.com#Hybrid
+:Hybrid rdf:type owl:Class ;
+        rdfs:subClassOf :Data_Representation .
+
+
+###  http://example.com#Input
+:Input rdf:type owl:Class ;
+       rdfs:subClassOf :Data_Item .
+
+
+###  http://example.com#Interaction
+:Interaction rdf:type owl:Class ;
+             rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#Interaction_Human
+:Interaction_Human rdf:type owl:Class ;
+                   rdfs:subClassOf :Interaction .
+
+
+###  http://example.com#Interaction_System
+:Interaction_System rdf:type owl:Class ;
+                    rdfs:subClassOf :Interaction .
+
+
+###  http://example.com#Knowledge
+:Knowledge rdf:type owl:Class ;
+           rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#Knowledge_Data
+:Knowledge_Data rdf:type owl:Class ;
+                rdfs:subClassOf :Knowledge .
+
+
+###  http://example.com#Knowledge_Hybrid
+:Knowledge_Hybrid rdf:type owl:Class ;
+                  rdfs:subClassOf :Knowledge .
+
+
+###  http://example.com#Knowledge_Mathematical
+:Knowledge_Mathematical rdf:type owl:Class ;
+                        rdfs:subClassOf :Knowledge .
+
+
+###  http://example.com#Knowledge_Symbolic
+:Knowledge_Symbolic rdf:type owl:Class ;
+                    rdfs:subClassOf :Knowledge .
+
+
+###  http://example.com#Logic_Based
+:Logic_Based rdf:type owl:Class ;
+             rdfs:subClassOf :RuleDriven .
+
+
+###  http://example.com#Mathematical
+:Mathematical rdf:type owl:Class ;
+              rdfs:subClassOf :Data_Representation .
+
+
+###  http://example.com#Metric
+:Metric rdf:type owl:Class ;
+        rdfs:subClassOf gufo:Quality .
+
+
+###  http://example.com#Multicriteria
+:Multicriteria rdf:type owl:Class ;
+               rdfs:subClassOf :UtilityDriven .
+
+
+###  http://example.com#Objective
+:Objective rdf:type owl:Class ;
+           rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#Objective_Classification
+:Objective_Classification rdf:type owl:Class ;
+                          rdfs:subClassOf :Prediction .
+
+
+###  http://example.com#Objective_ConflictResolution
+:Objective_ConflictResolution rdf:type owl:Class ;
+                              rdfs:subClassOf :Objective .
+
+
+###  http://example.com#Objective_Estimation
+:Objective_Estimation rdf:type owl:Class ;
+                      rdfs:subClassOf :Prediction .
+
+
+###  http://example.com#Objective_Forecast
+:Objective_Forecast rdf:type owl:Class ;
+                    rdfs:subClassOf :Objective .
+
+
+###  http://example.com#Objective_Optimization
+:Objective_Optimization rdf:type owl:Class ;
+                        rdfs:subClassOf :Objective .
+
+
+###  http://example.com#Objective_Planning
+:Objective_Planning rdf:type owl:Class ;
+                    rdfs:subClassOf :Objective .
+
+
+###  http://example.com#Objective_Regression
+:Objective_Regression rdf:type owl:Class ;
+                      rdfs:subClassOf :Prediction .
+
+
+###  http://example.com#Output
+:Output rdf:type owl:Class ;
+        rdfs:subClassOf :Data_Item .
+
+
+###  http://example.com#Parameter
+:Parameter rdf:type owl:Class ;
+           rdfs:subClassOf :Data_Item .
+
+
+###  http://example.com#Performance
+:Performance rdf:type owl:Class ;
+             rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#Prediction
+:Prediction rdf:type owl:Class ;
+            rdfs:subClassOf :Objective .
+
+
+###  http://example.com#ProbabilityDriven
+:ProbabilityDriven rdf:type owl:Class ;
+                   rdfs:subClassOf :Algorithm_approach .
+
+
+###  http://example.com#Problem
+:Problem rdf:type owl:Class ;
+         rdfs:subClassOf gufo:FunctionalComplex ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :Interaction
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :Knowledge
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :Objective
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :Processing
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :ProcessingLayer
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :Uncertainty
+                         ] ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:mediates
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :Derives
+                         ] .
+
+
+###  http://example.com#Processing
+:Processing rdf:type owl:Class ;
+            rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#ProcessingLayer
+:ProcessingLayer rdf:type owl:Class ;
+                 rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#ProcessingLayer_Application
+:ProcessingLayer_Application rdf:type owl:Class ;
+                             rdfs:subClassOf :ProcessingLayer .
+
+
+###  http://example.com#ProcessingLayer_Application_Cloud
+:ProcessingLayer_Application_Cloud rdf:type owl:Class ;
+                                   rdfs:subClassOf :ProcessingLayer_Application .
+
+
+###  http://example.com#ProcessingLayer_Application_Device
+:ProcessingLayer_Application_Device rdf:type owl:Class ;
+                                    rdfs:subClassOf :ProcessingLayer_Application .
+
+
+###  http://example.com#ProcessingLayer_Application_Edge
+:ProcessingLayer_Application_Edge rdf:type owl:Class ;
+                                  rdfs:subClassOf :ProcessingLayer_Application .
+
+
+###  http://example.com#ProcessingLayer_Application_Fog
+:ProcessingLayer_Application_Fog rdf:type owl:Class ;
+                                 rdfs:subClassOf :ProcessingLayer_Application .
+
+
+###  http://example.com#ProcessingLayer_Middleware
+:ProcessingLayer_Middleware rdf:type owl:Class ;
+                            rdfs:subClassOf :ProcessingLayer .
+
+
+###  http://example.com#ProcessingLayer_Perception
+:ProcessingLayer_Perception rdf:type owl:Class ;
+                            rdfs:subClassOf :ProcessingLayer .
+
+
+###  http://example.com#Processing_Centralized
+:Processing_Centralized rdf:type owl:Class ;
+                        rdfs:subClassOf :Processing .
+
+
+###  http://example.com#Processing_Decentralized
+:Processing_Decentralized rdf:type owl:Class ;
+                          rdfs:subClassOf :Processing .
+
+
+###  http://example.com#Production_Rules
+:Production_Rules rdf:type owl:Class ;
+                  rdfs:subClassOf :RuleDriven .
+
+
+###  http://example.com#QoE_Accuracy
+:QoE_Accuracy rdf:type owl:Class ;
+              rdfs:subClassOf :Quality_of_Experience .
+
+
+###  http://example.com#QoE_Accuracy_DT
+:QoE_Accuracy_DT rdf:type owl:Class ;
+                 rdfs:subClassOf :QoE_Accuracy .
+
+
+###  http://example.com#QoE_Accuracy_KNN
+:QoE_Accuracy_KNN rdf:type owl:Class ;
+                  rdfs:subClassOf :QoE_Accuracy .
+
+
+###  http://example.com#QoE_Accuracy_LR
+:QoE_Accuracy_LR rdf:type owl:Class ;
+                 rdfs:subClassOf :QoE_Accuracy .
+
+
+###  http://example.com#QoE_Accuracy_RuleBased
+:QoE_Accuracy_RuleBased rdf:type owl:Class ;
+                        rdfs:subClassOf :QoE_Accuracy .
+
+
+###  http://example.com#QoE_F1Score
+:QoE_F1Score rdf:type owl:Class ;
+             rdfs:subClassOf :Quality_of_Experience .
+
+
+###  http://example.com#QoE_F1_DT
+:QoE_F1_DT rdf:type owl:Class ;
+           rdfs:subClassOf :QoE_F1Score .
+
+
+###  http://example.com#QoE_F1_KNN
+:QoE_F1_KNN rdf:type owl:Class ;
+            rdfs:subClassOf :QoE_F1Score .
+
+
+###  http://example.com#QoE_F1_LR
+:QoE_F1_LR rdf:type owl:Class ;
+           rdfs:subClassOf :QoE_F1Score .
+
+
+###  http://example.com#QoE_F1_RuleBased
+:QoE_F1_RuleBased rdf:type owl:Class ;
+                  rdfs:subClassOf :QoE_F1Score .
+
+
+###  http://example.com#QoE_Precision
+:QoE_Precision rdf:type owl:Class ;
+               rdfs:subClassOf :Quality_of_Experience .
+
+
+###  http://example.com#QoE_Robustness
+:QoE_Robustness rdf:type owl:Class ;
+                rdfs:subClassOf :Quality_of_Experience .
+
+
+###  http://example.com#QoE_Robustness_DT
+:QoE_Robustness_DT rdf:type owl:Class ;
+                   rdfs:subClassOf :QoE_Robustness .
+
+
+###  http://example.com#QoE_Robustness_KNN
+:QoE_Robustness_KNN rdf:type owl:Class ;
+                    rdfs:subClassOf :QoE_Robustness .
+
+
+###  http://example.com#QoE_Robustness_LR
+:QoE_Robustness_LR rdf:type owl:Class ;
+                   rdfs:subClassOf :QoE_Robustness .
+
+
+###  http://example.com#QoE_Robustness_RuleBased
+:QoE_Robustness_RuleBased rdf:type owl:Class ;
+                          rdfs:subClassOf :QoE_Robustness .
+
+
+###  http://example.com#QoS_Availability
+:QoS_Availability rdf:type owl:Class ;
+                  rdfs:subClassOf :Quality_of_Service .
+
+
+###  http://example.com#QoS_Latency
+:QoS_Latency rdf:type owl:Class ;
+             rdfs:subClassOf :Quality_of_Service .
+
+
+###  http://example.com#QoS_Latency_DT
+:QoS_Latency_DT rdf:type owl:Class ;
+                rdfs:subClassOf :QoS_Latency .
+
+
+###  http://example.com#QoS_Latency_KNN
+:QoS_Latency_KNN rdf:type owl:Class ;
+                 rdfs:subClassOf :QoS_Latency .
+
+
+###  http://example.com#QoS_Latency_LR
+:QoS_Latency_LR rdf:type owl:Class ;
+                rdfs:subClassOf :QoS_Latency .
+
+
+###  http://example.com#QoS_Latency_RuleBased
+:QoS_Latency_RuleBased rdf:type owl:Class ;
+                       rdfs:subClassOf :QoS_Latency .
+
+
+###  http://example.com#QoS_ResourceUsage
+:QoS_ResourceUsage rdf:type owl:Class ;
+                   rdfs:subClassOf :Quality_of_Service .
+
+
+###  http://example.com#QoS_ResourceUsage_DT
+:QoS_ResourceUsage_DT rdf:type owl:Class ;
+                      rdfs:subClassOf :QoS_ResourceUsage .
+
+
+###  http://example.com#QoS_ResourceUsage_KNN
+:QoS_ResourceUsage_KNN rdf:type owl:Class ;
+                       rdfs:subClassOf :QoS_ResourceUsage .
+
+
+###  http://example.com#QoS_ResourceUsage_LR
+:QoS_ResourceUsage_LR rdf:type owl:Class ;
+                      rdfs:subClassOf :QoS_ResourceUsage .
+
+
+###  http://example.com#QoS_ResourceUsage_RuleBased
+:QoS_ResourceUsage_RuleBased rdf:type owl:Class ;
+                             rdfs:subClassOf :QoS_ResourceUsage .
+
+
+###  http://example.com#QoS_Scalability
+:QoS_Scalability rdf:type owl:Class ;
+                 rdfs:subClassOf :Quality_of_Service .
+
+
+###  http://example.com#QoS_Scalability_DT
+:QoS_Scalability_DT rdf:type owl:Class ;
+                    rdfs:subClassOf :QoS_Scalability .
+
+
+###  http://example.com#QoS_Scalability_KNN
+:QoS_Scalability_KNN rdf:type owl:Class ;
+                     rdfs:subClassOf :QoS_Scalability .
+
+
+###  http://example.com#QoS_Scalability_LR
+:QoS_Scalability_LR rdf:type owl:Class ;
+                    rdfs:subClassOf :QoS_Scalability .
+
+
+###  http://example.com#QoS_Scalability_RuleBased
+:QoS_Scalability_RuleBased rdf:type owl:Class ;
+                           rdfs:subClassOf :QoS_Scalability .
+
+
+###  http://example.com#QoS_Throughput
+:QoS_Throughput rdf:type owl:Class ;
+                rdfs:subClassOf :Quality_of_Service .
+
+
+###  http://example.com#Quality_of_Experience
+:Quality_of_Experience rdf:type owl:Class ;
+                       rdfs:subClassOf :Metric .
+
+
+###  http://example.com#Quality_of_Service
+:Quality_of_Service rdf:type owl:Class ;
+                    rdfs:subClassOf :Metric .
+
+
+###  http://example.com#Requirement
+:Requirement rdf:type owl:Class ;
+             rdfs:subClassOf :Algorithm ,
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :hasSpecification ;
+                               owl:someValuesFrom :Specification
+                             ] .
+
+
+###  http://example.com#Restriction
+:Restriction rdf:type owl:Class ;
+             rdfs:subClassOf :CriterionDriven .
+
+
+###  http://example.com#RuleDriven
+:RuleDriven rdf:type owl:Class ;
+            rdfs:subClassOf :Algorithm_approach .
+
+
+###  http://example.com#Service
+:Service rdf:type owl:Class ;
+         rdfs:subClassOf gufo:FunctionalComplex ,
+                         [ rdf:type owl:Restriction ;
+                           owl:onProperty [ owl:inverseOf gufo:mediates
+                                          ] ;
+                           owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                           owl:onClass :AlgorithmDeployment
+                         ] .
+
+
+###  http://example.com#ServiceEvaluation
+:ServiceEvaluation rdf:type owl:Class ;
+                   rdfs:subClassOf gufo:Relator .
+
+
+###  http://example.com#Solution
+:Solution rdf:type owl:Class ;
+          rdfs:subClassOf gufo:FunctionalComplex .
+
+
+###  http://example.com#Spatial
+:Spatial rdf:type owl:Class ;
+         rdfs:subClassOf :Complexity .
+
+
+###  http://example.com#Specification
+:Specification rdf:type owl:Class ;
+               rdfs:subClassOf gufo:FunctionalComplex ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty [ owl:inverseOf gufo:inheresIn
+                                                ] ;
+                                 owl:someValuesFrom :Performance
+                               ] ,
+                               [ rdf:type owl:Restriction ;
+                                 owl:onProperty [ owl:inverseOf gufo:mediates
+                                                ] ;
+                                 owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                 owl:onClass :Derives
+                               ] .
+
+
+###  http://example.com#SpecificationIO
+:SpecificationIO rdf:type owl:Class ;
+                 rdfs:subClassOf gufo:Relator ,
+                                 [ rdf:type owl:Restriction ;
+                                   owl:onProperty gufo:mediates ;
+                                   owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                   owl:onClass :Data_Item
+                                 ] .
+
+
+###  http://example.com#Stochastic
+:Stochastic rdf:type owl:Class ;
+            rdfs:subClassOf :ProbabilityDriven .
+
+
+###  http://example.com#Supervised_Learning
+:Supervised_Learning rdf:type owl:Class ;
+                     rdfs:subClassOf :DataDriven .
+
+
+###  http://example.com#Symbolic
+:Symbolic rdf:type owl:Class ;
+          rdfs:subClassOf :Data_Representation .
+
+
+###  http://example.com#Tabular
+:Tabular rdf:type owl:Class ;
+         rdfs:subClassOf :Data_Representation .
+
+
+###  http://example.com#Temporal
+:Temporal rdf:type owl:Class ;
+          rdfs:subClassOf :Complexity .
+
+
+###  http://example.com#Uncertainty
+:Uncertainty rdf:type owl:Class ;
+             rdfs:subClassOf gufo:IntrinsicMode .
+
+
+###  http://example.com#Uncertainty_Measurements
+:Uncertainty_Measurements rdf:type owl:Class ;
+                          rdfs:subClassOf :Uncertainty .
+
+
+###  http://example.com#Uncertainty_Model
+:Uncertainty_Model rdf:type owl:Class ;
+                   rdfs:subClassOf :Uncertainty .
+
+
+###  http://example.com#Uncertainty_Parameter
+:Uncertainty_Parameter rdf:type owl:Class ;
+                       rdfs:subClassOf :Uncertainty .
+
+
+###  http://example.com#Unsupervised_Learning
+:Unsupervised_Learning rdf:type owl:Class ;
+                       rdfs:subClassOf :DataDriven .
+
+
+###  http://example.com#UtilityDriven
+:UtilityDriven rdf:type owl:Class ;
+               rdfs:subClassOf :Algorithm_approach .
+
+
+###  http://purl.org/nemo/gufo#Category
+gufo:Category rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#FunctionalComplex
+gufo:FunctionalComplex rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#IntrinsicMode
+gufo:IntrinsicMode rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#Kind
+gufo:Kind rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#MaterialRelationshipType
+gufo:MaterialRelationshipType rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#Phase
+gufo:Phase rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#Quality
+gufo:Quality rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#Relator
+gufo:Relator rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#Role
+gufo:Role rdf:type owl:Class .
+
+
+###  http://purl.org/nemo/gufo#SubKind
+gufo:SubKind rdf:type owl:Class .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://example.com#Algorithm
+:Algorithm rdf:type owl:NamedIndividual ,
+                    gufo:Kind .
+
+
+###  http://example.com#AlgorithmApproach_ProductionRules
+:AlgorithmApproach_ProductionRules rdf:type owl:NamedIndividual ,
+                                            :Production_Rules .
+
+
+###  http://example.com#AlgorithmApproach_SupervisedLearning
+:AlgorithmApproach_SupervisedLearning rdf:type owl:NamedIndividual ,
+                                               :Supervised_Learning .
+
+
+###  http://example.com#AlgorithmApproach_UnsupervisedLearning
+:AlgorithmApproach_UnsupervisedLearning rdf:type owl:NamedIndividual ,
+                                                 :Unsupervised_Learning .
+
+
+###  http://example.com#AlgorithmDeployment
+:AlgorithmDeployment rdf:type owl:NamedIndividual ,
+                              gufo:Kind .
+
+
+###  http://example.com#Algorithm_Characteristics
+:Algorithm_Characteristics rdf:type owl:NamedIndividual ,
+                                    gufo:SubKind .
+
+
+###  http://example.com#Algorithm_Instance
+:Algorithm_Instance rdf:type owl:NamedIndividual ,
+                             gufo:SubKind .
+
+
+###  http://example.com#Algorithm_approach
+:Algorithm_approach rdf:type owl:NamedIndividual ,
+                             gufo:Kind .
+
+
+###  http://example.com#Assumption
+:Assumption rdf:type owl:NamedIndividual ,
+                     gufo:Kind .
+
+
+###  http://example.com#Bayesian
+:Bayesian rdf:type owl:NamedIndividual ,
+                   gufo:SubKind .
+
+
+###  http://example.com#Complexity
+:Complexity rdf:type owl:NamedIndividual ,
+                     gufo:Kind .
+
+
+###  http://example.com#Constraint
+:Constraint rdf:type owl:NamedIndividual ,
+                     gufo:Kind .
+
+
+###  http://example.com#CriterionDriven
+:CriterionDriven rdf:type owl:NamedIndividual ,
+                          gufo:SubKind .
+
+
+###  http://example.com#DataDriven
+:DataDriven rdf:type owl:NamedIndividual ,
+                     gufo:SubKind .
+
+
+###  http://example.com#DataRepresentation_Symbolic
+:DataRepresentation_Symbolic rdf:type owl:NamedIndividual ,
+                                      :Symbolic .
+
+
+###  http://example.com#DataRepresentation_Tabular
+:DataRepresentation_Tabular rdf:type owl:NamedIndividual ,
+                                     :Tabular .
+
+
+###  http://example.com#Data_Item
+:Data_Item rdf:type owl:NamedIndividual ,
+                    gufo:Kind .
+
+
+###  http://example.com#Data_Representation
+:Data_Representation rdf:type owl:NamedIndividual ,
+                              gufo:Kind .
+
+
+###  http://example.com#Derives
+:Derives rdf:type owl:NamedIndividual ,
+                  gufo:Kind .
+
+
+###  http://example.com#Design
+:Design rdf:type owl:NamedIndividual ,
+                 gufo:Phase .
+
+
+###  http://example.com#DesignEvaluation
+:DesignEvaluation rdf:type owl:NamedIndividual ,
+                           gufo:Kind .
+
+
+###  http://example.com#DesignEvaluation_DecisionTree_CameraCrop
+:DesignEvaluation_DecisionTree_CameraCrop rdf:type owl:NamedIndividual ,
+                                                   :DesignEvaluation_DecisionTree ;
+                                          :designEvaluationHasMetric :QoE_Accuracy_DT_CameraCrop ,
+                                                                     :QoE_F1_DT_CameraCrop ,
+                                                                     :QoE_Robustness_DT_CameraCrop ,
+                                                                     :QoS_Latency_DT_CameraCrop ,
+                                                                     :QoS_ResourceUsage_DT_CameraCrop ,
+                                                                     :QoS_Scalability_DT_CameraCrop .
+
+
+###  http://example.com#DesignEvaluation_KNN_CameraCrop
+:DesignEvaluation_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                          :DesignEvaluation_KNN ;
+                                 :designEvaluationHasMetric :QoE_Accuracy_KNN_CameraCrop ,
+                                                            :QoE_F1_KNN_CameraCrop ,
+                                                            :QoE_Robustness_KNN_CameraCrop ,
+                                                            :QoS_Latency_KNN_CameraCrop ,
+                                                            :QoS_ResourceUsage_KNN_CameraCrop ,
+                                                            :QoS_Scalability_KNN_CameraCrop .
+
+
+###  http://example.com#DesignEvaluation_LogisticRegression_CameraCrop
+:DesignEvaluation_LogisticRegression_CameraCrop rdf:type owl:NamedIndividual ,
+                                                         :DesignEvaluation_LogisticRegression ;
+                                                :designEvaluationHasMetric :QoE_Accuracy_LR_CameraCrop ,
+                                                                           :QoE_F1_LR_CameraCrop ,
+                                                                           :QoE_Robustness_LR_CameraCrop ,
+                                                                           :QoS_Latency_LR_CameraCrop ,
+                                                                           :QoS_ResourceUsage_LR_CameraCrop ,
+                                                                           :QoS_Scalability_LR_CameraCrop .
+
+
+###  http://example.com#DesignEvaluation_RuleBased_CameraCrop
+:DesignEvaluation_RuleBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                                :DesignEvaluation_RuleBased ;
+                                       :designEvaluationHasMetric :QoE_Accuracy_RuleBased_CameraCrop ,
+                                                                  :QoE_F1_RuleBased_CameraCrop ,
+                                                                  :QoE_Robustness_RuleBased_CameraCrop ,
+                                                                  :QoS_Latency_RuleBased_CameraCrop ,
+                                                                  :QoS_ResourceUsage_RuledBased_CameraCrop ,
+                                                                  :QoS_Scalability_RuledBased_CameraCrop .
+
+
+###  http://example.com#Design_DecisionTree_CameraCrop
+:Design_DecisionTree_CameraCrop rdf:type owl:NamedIndividual ,
+                                         :Desing_DecisionTree ;
+                                :designHasDesignEvaluation :DesignEvaluation_DecisionTree_CameraCrop ;
+                                :isDesignFor :Problem_CameraCropClassification ;
+                                :supportsInteraction :Interaction_System_CameraCrop ;
+                                :supportsKnowledge :Knowledge_Data_CameraCrop ;
+                                :supportsObjective :Objective_Classification_CameraCrop ;
+                                :supportsProcessing :Processing_Centralized_CameraCrop ;
+                                :supportsProcessingLayer :ProcessingLayer_Application_Cloud_CameraCrop ;
+                                :supportsUncertainty :Uncertainty_Model_CameraCrop .
+
+
+###  http://example.com#Design_KNN_CameraCrop
+:Design_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                :Design_KNN ;
+                       :designHasDesignEvaluation :DesignEvaluation_KNN_CameraCrop ;
+                       :isDesignFor :Problem_CameraCropClassification ;
+                       :supportsInteraction :Interaction_System_CameraCrop ;
+                       :supportsKnowledge :Knowledge_Data_CameraCrop ;
+                       :supportsObjective :Objective_Classification_CameraCrop ;
+                       :supportsProcessing :Processing_Centralized_CameraCrop ;
+                       :supportsProcessingLayer :ProcessingLayer_Application_Cloud_CameraCrop ;
+                       :supportsUncertainty :Uncertainty_Model_CameraCrop .
+
+
+###  http://example.com#Design_LogisticRegression_CameraCrop
+:Design_LogisticRegression_CameraCrop rdf:type owl:NamedIndividual ,
+                                               :Design_LogisticRegression ;
+                                      :designHasDesignEvaluation :DesignEvaluation_LogisticRegression_CameraCrop ;
+                                      :isDesignFor :Problem_CameraCropClassification ;
+                                      :supportsInteraction :Interaction_System_CameraCrop ;
+                                      :supportsKnowledge :Knowledge_Data_CameraCrop ;
+                                      :supportsObjective :Objective_Classification_CameraCrop ;
+                                      :supportsProcessing :Processing_Centralized_CameraCrop ;
+                                      :supportsProcessingLayer :ProcessingLayer_Application_Cloud_CameraCrop ;
+                                      :supportsUncertainty :Uncertainty_Model_CameraCrop .
+
+
+###  http://example.com#Design_RuleBased_CameraCrop
+:Design_RuleBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                      :Design_RuleBased ;
+                             :designHasDesignEvaluation :DesignEvaluation_RuleBased_CameraCrop ;
+                             :isDesignFor :Problem_CameraCropClassification ;
+                             :supportsInteraction :Interaction_System_CameraCrop ;
+                             :supportsKnowledge :Knowledge_Data_CameraCrop ;
+                             :supportsObjective :Objective_Classification_CameraCrop ;
+                             :supportsProcessing :Processing_Centralized_CameraCrop ;
+                             :supportsProcessingLayer :ProcessingLayer_Application_Cloud_CameraCrop ;
+                             :supportsUncertainty :Uncertainty_Model_CameraCrop .
+
+
+###  http://example.com#Dynamic_Programming
+:Dynamic_Programming rdf:type owl:NamedIndividual ,
+                              gufo:SubKind .
+
+
+###  http://example.com#Evidence_Theory
+:Evidence_Theory rdf:type owl:NamedIndividual ,
+                          gufo:SubKind .
+
+
+###  http://example.com#Execution
+:Execution rdf:type owl:NamedIndividual ,
+                    gufo:Phase .
+
+
+###  http://example.com#Game_Theory
+:Game_Theory rdf:type owl:NamedIndividual ,
+                      gufo:SubKind .
+
+
+###  http://example.com#Heuristic
+:Heuristic rdf:type owl:NamedIndividual ,
+                    gufo:SubKind .
+
+
+###  http://example.com#Hybrid
+:Hybrid rdf:type owl:NamedIndividual ,
+                 gufo:SubKind .
+
+
+###  http://example.com#Input
+:Input rdf:type owl:NamedIndividual ,
+                gufo:Role .
+
+
+###  http://example.com#Interaction
+:Interaction rdf:type owl:NamedIndividual ,
+                      gufo:Kind .
+
+
+###  http://example.com#Interaction_System_CameraCrop
+:Interaction_System_CameraCrop rdf:type owl:NamedIndividual ,
+                                        :Interaction_System ;
+                               gufo:inheresIn :Problem_CameraCropClassification .
+
+
+###  http://example.com#Knowledge
+:Knowledge rdf:type owl:NamedIndividual ,
+                    gufo:Kind .
+
+
+###  http://example.com#Knowledge_Data_CameraCrop
+:Knowledge_Data_CameraCrop rdf:type owl:NamedIndividual ,
+                                    :Knowledge_Data ;
+                           gufo:inheresIn :Problem_CameraCropClassification .
+
+
+###  http://example.com#Logic_Based
+:Logic_Based rdf:type owl:NamedIndividual ,
+                      gufo:SubKind .
+
+
+###  http://example.com#Mathematical
+:Mathematical rdf:type owl:NamedIndividual ,
+                       gufo:SubKind .
+
+
+###  http://example.com#Metric
+:Metric rdf:type owl:NamedIndividual ,
+                 gufo:Kind .
+
+
+###  http://example.com#Multicriteria
+:Multicriteria rdf:type owl:NamedIndividual ,
+                        gufo:SubKind .
+
+
+###  http://example.com#Objective
+:Objective rdf:type owl:NamedIndividual ,
+                    gufo:Kind .
+
+
+###  http://example.com#Objective_Classification_CameraCrop
+:Objective_Classification_CameraCrop rdf:type owl:NamedIndividual ,
+                                              :Objective_Classification ;
+                                     gufo:inheresIn :Problem_CameraCropClassification .
+
+
+###  http://example.com#Output
+:Output rdf:type owl:NamedIndividual ,
+                 gufo:Role .
+
+
+###  http://example.com#Parameter
+:Parameter rdf:type owl:NamedIndividual ,
+                    gufo:Role .
+
+
+###  http://example.com#Performance
+:Performance rdf:type owl:NamedIndividual ,
+                      gufo:Kind .
+
+
+###  http://example.com#Performance_Classification_CameraCrop
+:Performance_Classification_CameraCrop rdf:type owl:NamedIndividual ,
+                                                :Performance ;
+                                       gufo:inheresIn :Specification_Classification_CameraCrop .
+
+
+###  http://example.com#ProbabilityDriven
+:ProbabilityDriven rdf:type owl:NamedIndividual ,
+                            gufo:SubKind .
+
+
+###  http://example.com#Problem
+:Problem rdf:type owl:NamedIndividual ,
+                  gufo:Category .
+
+
+###  http://example.com#Problem_CameraCropClassification
+:Problem_CameraCropClassification rdf:type owl:NamedIndividual ,
+                                           :Problem .
+
+
+###  http://example.com#Processing
+:Processing rdf:type owl:NamedIndividual ,
+                     gufo:Kind .
+
+
+###  http://example.com#ProcessingLayer
+:ProcessingLayer rdf:type owl:NamedIndividual ,
+                          gufo:Kind .
+
+
+###  http://example.com#ProcessingLayer_Application_Cloud_CameraCrop
+:ProcessingLayer_Application_Cloud_CameraCrop rdf:type owl:NamedIndividual ,
+                                                       :ProcessingLayer_Application_Cloud ;
+                                              gufo:inheresIn :Problem_CameraCropClassification .
+
+
+###  http://example.com#Processing_Centralized_CameraCrop
+:Processing_Centralized_CameraCrop rdf:type owl:NamedIndividual ,
+                                            :Processing_Centralized ;
+                                   gufo:inheresIn :Problem_CameraCropClassification .
+
+
+###  http://example.com#Production_Rules
+:Production_Rules rdf:type owl:NamedIndividual ,
+                           gufo:SubKind .
+
+
+###  http://example.com#QoE_Accuracy_DT_CameraCrop
+:QoE_Accuracy_DT_CameraCrop rdf:type owl:NamedIndividual ,
+                                     :QoE_Accuracy_DT ;
+                            :hasValue 0.88 .
+
+
+###  http://example.com#QoE_Accuracy_KNN_CameraCrop
+:QoE_Accuracy_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                      :QoE_Accuracy_KNN ;
+                             :hasValue 0.82 .
+
+
+###  http://example.com#QoE_Accuracy_LR_CameraCrop
+:QoE_Accuracy_LR_CameraCrop rdf:type owl:NamedIndividual ,
+                                     :QoE_Accuracy_LR ;
+                            :hasValue 0.85 .
+
+
+###  http://example.com#QoE_Accuracy_RuleBased_CameraCrop
+:QoE_Accuracy_RuleBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                            :QoE_Accuracy_RuleBased ;
+                                   :hasValue 0.75 .
+
+
+###  http://example.com#QoE_F1_DT_CameraCrop
+:QoE_F1_DT_CameraCrop rdf:type owl:NamedIndividual ,
+                               :QoE_F1_DT ;
+                      :hasValue 0.86 .
+
+
+###  http://example.com#QoE_F1_KNN_CameraCrop
+:QoE_F1_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                :QoE_F1_KNN ;
+                       :hasValue 0.8 .
+
+
+###  http://example.com#QoE_F1_LR_CameraCrop
+:QoE_F1_LR_CameraCrop rdf:type owl:NamedIndividual ,
+                               :QoE_F1_LR ;
+                      :hasValue 0.84 .
+
+
+###  http://example.com#QoE_F1_RuleBased_CameraCrop
+:QoE_F1_RuleBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                      :QoE_F1_RuleBased ;
+                             :hasValue 0.72 .
+
+
+###  http://example.com#QoE_Robustness_DT_CameraCrop
+:QoE_Robustness_DT_CameraCrop rdf:type owl:NamedIndividual ,
+                                       :QoE_Robustness_DT ;
+                              :hasValue 0.7 .
+
+
+###  http://example.com#QoE_Robustness_KNN_CameraCrop
+:QoE_Robustness_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                        :QoE_Robustness_KNN ;
+                               :hasValue 0.6 .
+
+
+###  http://example.com#QoE_Robustness_LR_CameraCrop
+:QoE_Robustness_LR_CameraCrop rdf:type owl:NamedIndividual ,
+                                       :QoE_Robustness_LR ;
+                              :hasValue 0.8 .
+
+
+###  http://example.com#QoE_Robustness_RuleBased_CameraCrop
+:QoE_Robustness_RuleBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                              :QoE_Robustness_RuleBased ;
+                                     :hasValue 0.9 .
+
+
+###  http://example.com#QoS_Latency_DT_CameraCrop
+:QoS_Latency_DT_CameraCrop rdf:type owl:NamedIndividual ,
+                                    :QoS_Latency_DT ;
+                           :hasValue 0.85 .
+
+
+###  http://example.com#QoS_Latency_KNN_CameraCrop
+:QoS_Latency_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                     :QoS_Latency_KNN ;
+                            :hasValue 0.6 .
+
+
+###  http://example.com#QoS_Latency_LR_CameraCrop
+:QoS_Latency_LR_CameraCrop rdf:type owl:NamedIndividual ,
+                                    :QoS_Latency_LR ;
+                           :hasValue 0.9 .
+
+
+###  http://example.com#QoS_Latency_RuleBased_CameraCrop
+:QoS_Latency_RuleBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                           :QoS_Latency_RuleBased ;
+                                  :hasValue 0.95 .
+
+
+###  http://example.com#QoS_ResourceUsage_DT_CameraCrop
+:QoS_ResourceUsage_DT_CameraCrop rdf:type owl:NamedIndividual ,
+                                          :QoS_ResourceUsage_DT ;
+                                 :hasValue 0.75 .
+
+
+###  http://example.com#QoS_ResourceUsage_KNN_CameraCrop
+:QoS_ResourceUsage_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                           :QoS_ResourceUsage_KNN ;
+                                  :hasValue 0.4 .
+
+
+###  http://example.com#QoS_ResourceUsage_LR_CameraCrop
+:QoS_ResourceUsage_LR_CameraCrop rdf:type owl:NamedIndividual ,
+                                          :QoS_ResourceUsage_LR ;
+                                 :hasValue 0.85 .
+
+
+###  http://example.com#QoS_ResourceUsage_RuledBased_CameraCrop
+:QoS_ResourceUsage_RuledBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                                  :QoS_ResourceUsage_RuleBased ;
+                                         :hasValue 0.90 .
+
+
+###  http://example.com#QoS_Scalability_DT_CameraCrop
+:QoS_Scalability_DT_CameraCrop rdf:type owl:NamedIndividual ,
+                                        :QoS_Scalability_DT ;
+                               :hasValue 0.7 .
+
+
+###  http://example.com#QoS_Scalability_KNN_CameraCrop
+:QoS_Scalability_KNN_CameraCrop rdf:type owl:NamedIndividual ,
+                                         :QoS_Scalability_KNN ;
+                                :hasValue 0.5 .
+
+
+###  http://example.com#QoS_Scalability_LR_CameraCrop
+:QoS_Scalability_LR_CameraCrop rdf:type owl:NamedIndividual ,
+                                        :QoS_Scalability_LR ;
+                               :hasValue 0.9 .
+
+
+###  http://example.com#QoS_Scalability_RuledBased_CameraCrop
+:QoS_Scalability_RuledBased_CameraCrop rdf:type owl:NamedIndividual ,
+                                                :QoS_Scalability_RuleBased ;
+                                       :hasValue 0.95 .
+
+
+###  http://example.com#Quality_of_Experience
+:Quality_of_Experience rdf:type owl:NamedIndividual ,
+                                gufo:SubKind .
+
+
+###  http://example.com#Quality_of_Service
+:Quality_of_Service rdf:type owl:NamedIndividual ,
+                             gufo:SubKind .
+
+
+###  http://example.com#Requirement
+:Requirement rdf:type owl:NamedIndividual ,
+                      gufo:Phase .
+
+
+###  http://example.com#Requirement_CameraCropClassification
+:Requirement_CameraCropClassification rdf:type owl:NamedIndividual ,
+                                               :Requirement ;
+                                      :hasSpecification :Specification_Classification_CameraCrop .
+
+
+###  http://example.com#Restriction
+:Restriction rdf:type owl:NamedIndividual ,
+                      gufo:SubKind .
+
+
+###  http://example.com#RuleDriven
+:RuleDriven rdf:type owl:NamedIndividual ,
+                     gufo:SubKind .
+
+
+###  http://example.com#Service
+:Service rdf:type owl:NamedIndividual ,
+                  gufo:Kind .
+
+
+###  http://example.com#ServiceEvaluation
+:ServiceEvaluation rdf:type owl:NamedIndividual ,
+                            gufo:Kind .
+
+
+###  http://example.com#Solution
+:Solution rdf:type owl:NamedIndividual ,
+                   gufo:Category .
+
+
+###  http://example.com#Spatial
+:Spatial rdf:type owl:NamedIndividual ,
+                  gufo:SubKind .
+
+
+###  http://example.com#Specification
+:Specification rdf:type owl:NamedIndividual ,
+                        gufo:Kind .
+
+
+###  http://example.com#SpecificationIO
+:SpecificationIO rdf:type owl:NamedIndividual ,
+                          gufo:Kind .
+
+
+###  http://example.com#Specification_Classification_CameraCrop
+:Specification_Classification_CameraCrop rdf:type owl:NamedIndividual ,
+                                                  :Specification .
+
+
+###  http://example.com#Stochastic
+:Stochastic rdf:type owl:NamedIndividual ,
+                     gufo:SubKind .
+
+
+###  http://example.com#Supervised_Learning
+:Supervised_Learning rdf:type owl:NamedIndividual ,
+                              gufo:SubKind .
+
+
+###  http://example.com#Symbolic
+:Symbolic rdf:type owl:NamedIndividual ,
+                   gufo:SubKind .
+
+
+###  http://example.com#Tabular
+:Tabular rdf:type owl:NamedIndividual ,
+                  gufo:SubKind .
+
+
+###  http://example.com#Temporal
+:Temporal rdf:type owl:NamedIndividual ,
+                   gufo:SubKind .
+
+
+###  http://example.com#Uncertainty
+:Uncertainty rdf:type owl:NamedIndividual ,
+                      gufo:Kind .
+
+
+###  http://example.com#Uncertainty_Model_CameraCrop
+:Uncertainty_Model_CameraCrop rdf:type owl:NamedIndividual ,
+                                       :Uncertainty_Model ;
+                              gufo:inheresIn :Problem_CameraCropClassification .
+
+
+###  http://example.com#Unsupervised_Learning
+:Unsupervised_Learning rdf:type owl:NamedIndividual ,
+                                gufo:SubKind .
+
+
+###  http://example.com#UtilityDriven
+:UtilityDriven rdf:type owl:NamedIndividual ,
+                        gufo:SubKind .
+
+
+###  http://example.com#determines
+:determines rdf:type owl:NamedIndividual ,
+                     gufo:MaterialRelationshipType .
+
+
+#################################################################
+#    Annotations
+#################################################################
+
+:Algorithm rdfs:label "Algorithm"@en .
+
+
+:AlgorithmDeployment rdfs:label "Algorithm_Deployment"@en .
+
+
+:Algorithm_Characteristics rdfs:label "Algorithm_Characteristics"@en .
+
+
+:Algorithm_Instance rdfs:label "Algorithm_Instance"@en .
+
+
+:Algorithm_approach rdfs:label "Algorithm_approach"@en .
+
+
+:Assumption rdfs:label "Assumption"@en .
+
+
+:Bayesian rdfs:label "Bayesian"@en .
+
+
+:Complexity rdfs:label "Complexity"@en .
+
+
+:Constraint rdfs:label "Constraint"@en .
+
+
+:CriterionDriven rdfs:label "Criterion-Driven"@en .
+
+
+:DataDriven rdfs:label "Data-Driven"@en .
+
+
+:Data_Item rdfs:label "Data_Item"@en .
+
+
+:Data_Representation rdfs:label "Data_Representation"@en .
+
+
+:Derives rdfs:label "Derives"@en .
+
+
+:Design rdfs:label "Design"@en .
+
+
+:DesignEvaluation rdfs:label "Design_Evaluation"@en .
+
+
+:Dynamic_Programming rdfs:label "Dynamic_Programming"@en .
+
+
+:Evidence_Theory rdfs:label "Evidence_Theory"@en .
+
+
+:Execution rdfs:label "Execution"@en .
+
+
+:Game_Theory rdfs:label "Game_Theory"@en .
+
+
+:Heuristic rdfs:label "Heuristic"@en .
+
+
+:Hybrid rdfs:label "Hybrid"@en .
+
+
+:Input rdfs:label "Input"@en .
+
+
+:Interaction rdfs:label "Interaction"@en .
+
+
+:Knowledge rdfs:label "Knowledge"@en .
+
+
+:Logic_Based rdfs:label "Logic_Based"@en .
+
+
+:Mathematical rdfs:label "Mathematical"@en .
+
+
+:Metric rdfs:label "Metric"@en .
+
+
+:Multicriteria rdfs:label "Multicriteria"@en .
+
+
+:Objective rdfs:label "Objective"@en .
+
+
+:Output rdfs:label "Output"@en .
+
+
+:Parameter rdfs:label "Parameter"@en .
+
+
+:Performance rdfs:label "Performance"@en .
+
+
+:ProbabilityDriven rdfs:label "Probability-Driven"@en .
+
+
+:Problem rdfs:label "Problem"@en .
+
+
+:Processing rdfs:label "Processing"@en .
+
+
+:ProcessingLayer rdfs:label "Processing_Layer"@en .
+
+
+:Production_Rules rdfs:label "Production_Rules"@en .
+
+
+:Quality_of_Experience rdfs:label "Quality_of_Experience"@en .
+
+
+:Quality_of_Service rdfs:label "Quality_of_Service"@en .
+
+
+:Requirement rdfs:label "Requirement"@en .
+
+
+:Restriction rdfs:label "Restriction"@en .
+
+
+:RuleDriven rdfs:label "Rule-Driven"@en .
+
+
+:Service rdfs:label "Service"@en .
+
+
+:ServiceEvaluation rdfs:label "Service_Evaluation"@en .
+
+
+:Solution rdfs:label "Solution"@en .
+
+
+:Spatial rdfs:label "Spatial"@en .
+
+
+:Specification rdfs:label "Specification"@en .
+
+
+:SpecificationIO rdfs:label "SpecificationIO"@en .
+
+
+:Stochastic rdfs:label "Stochastic"@en .
+
+
+:Supervised_Learning rdfs:label "Supervised_Learning"@en .
+
+
+:Symbolic rdfs:label "Symbolic"@en .
+
+
+:Tabular rdfs:label "Tabular"@en .
+
+
+:Temporal rdfs:label "Temporal"@en .
+
+
+:Uncertainty rdfs:label "Uncertainty"@en .
+
+
+:Unsupervised_Learning rdfs:label "Unsupervised_Learning"@en .
+
+
+:UtilityDriven rdfs:label "Utility-Driven"@en .
+
+
+:determines rdfs:label "determines"@en .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

@@ -1,0 +1,5 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+graph TD
+       A[User provides password] --> B[Generate Salt]
+       B --> C[Hash Password with bcrypt]
+       C --> D[Store hashed password and salt]

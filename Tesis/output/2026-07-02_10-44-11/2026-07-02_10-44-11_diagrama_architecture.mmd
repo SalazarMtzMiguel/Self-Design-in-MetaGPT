@@ -1,0 +1,38 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+mermaid
+    [
+        {
+            "System Overview": "A comprehensive university management platform designed to streamline administrative tasks.",
+            "Architectural Style": "Monolithic",
+            "Subsystem Definitions": [
+                {
+                    "User Management": "Handles user registration, role-based authentication, login systems, password recovery, and managing multiple users per role."
+                },
+                {
+                    "Academic Management": "Manages course creation, enrollment, prerequisites validation, scheduling conflicts prevention, withdrawals, and academic history generation."
+                },
+                {
+                    "Enrollment & Academic Control": "Handles student enrollment, classroom reservations, event scheduling, and conflict detection."
+                },
+                {
+                    "Scheduling & Resource Allocation": "Generates schedules avoiding conflicts, assigns classrooms, and handles multiple periods."
+                }
+            ],
+            "Boundary Definitions": [
+                "Students can only manage their own records.",
+                "Institutional administration controls academic reports by program and group.",
+                "Payment subsystems handle enrollment payments and account statements."
+            ],
+            "Communication & Data Flow": [
+                {
+                    "Internal Messaging": "Users communicate internally through user management systems."
+                },
+                {
+                    "Global Announcements": "External announcements are sent via internal systems."
+                }
+            ],
+            "Interaction Diagram": Mermaid diagram showing communication between subsystems.
+            "Interoperability": "Uses REST or GraphQL APIs for external integration."
+            "Data Consistency": "Ensures strong consistency in academic data."
+    ]
+}

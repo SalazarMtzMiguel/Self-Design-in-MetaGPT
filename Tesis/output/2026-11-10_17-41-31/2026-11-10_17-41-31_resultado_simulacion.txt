@@ -1,0 +1,919 @@
+================================================================
+REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-11-10_17-41-31)
+================================================================
+
+### 1. INITIAL REQUIREMENT:
+CASO DE ESTUDIO 2
+EVOLUCION POR CAMBIO DE PROBLEMA
+SISTEMA IOT DE PREDICCION Y CONTROL DE RIEGO
+
+CONFIGURACION:
+- Escenario SES: EVOLUTION_BY_PROBLEM_CHANGE.
+- Accion arquitectonica: reconfiguracion parcial.
+- Conservar la arquitectura y los componentes que sigan siendo validos.
+- No generar una arquitectura completamente nueva.
+- No utilizar MCTS ni afirmar que se ejecutaron simulaciones.
+- Comparar solamente: regresion logistica, KNN, arbol de decision
+  y clasificador basado en reglas.
+- Si falta informacion, escribir "NO ESPECIFICADO".
+- Generar la salida en espanol.
+
+================================================================
+1. CONTEXTO Y ARQUITECTURA BASE
+================================================================
+
+El sistema original monitorea un invernadero mediante sensores de temperatura,
+humedad del suelo, humedad relativa y nivel de agua. Un gateway recibe las
+mediciones y las envia a una plataforma central para almacenarlas, mostrarlas
+y generar alertas.
+
+Arquitectura base:
+- Sensor Management.
+- Data Acquisition.
+- Data Storage.
+- Alert Management.
+- Visualization.
+- Gateway Manager.
+- Device Communication.
+- User Management y Audit Logging.
+
+La arquitectura original es centralizada con capacidad local limitada en el
+gateway. No realiza prediccion ni controla actuadores.
+
+================================================================
+2. CAMBIO DEL PROBLEMA
+================================================================
+
+El sistema debe incorporar prediccion y control de riego sin abandonar sus
+capacidades actuales de monitoreo y alertas.
+
+Debe:
+- Clasificar el estres hidrico de cada zona.
+- Predecir si una zona necesitara riego.
+- Generar recomendaciones de riego.
+- Permitir que un operador acepte o rechace una recomendacion.
+- Enviar comandos a valvulas autorizadas.
+- Ejecutar reglas criticas localmente si se pierde la conexion.
+- Sincronizar mediciones y ordenes cuando la conexion se restablezca.
+
+================================================================
+3. CLASIFICACION ONTOLOGICA
+================================================================
+
+Objetivo:
+- Prediccion, planeacion y resolucion de conflictos mediante reglas.
+
+Procesamiento:
+- Centralizado para almacenar datos y generar predicciones.
+- Descentralizado para ejecutar reglas criticas en el gateway.
+
+Capa:
+- Percepcion: sensores ambientales y valvulas.
+- Middleware: gateway, comunicacion y almacenamiento.
+- Aplicacion: prediccion, recomendaciones y control.
+
+Interaccion:
+- Sistema-sistema: sensores, gateway, plataforma y valvulas.
+- Sistema-humano: operador que revisa y autoriza recomendaciones.
+
+Incertidumbre:
+- Mediciones de sensores, parametros y predicciones.
+
+Representacion del conocimiento:
+- Datos historicos y mediciones.
+- Reglas de umbral y prioridad.
+- Modelo hibrido de datos y reglas.
+
+================================================================
+4. EVOLUCION DE LA ARQUITECTURA
+================================================================
+
+Conservar:
+- Sensor Management.
+- Data Acquisition.
+- User Management.
+- Visualization.
+- Audit Logging.
+
+Modificar:
+- Data Storage: almacenar predicciones y ordenes.
+- Alert Management: incluir estres hidrico y fallas de valvulas.
+- Gateway Manager: ejecutar reglas locales y sincronizar estados.
+- Device Communication: comunicarse con valvulas.
+
+Agregar:
+- Water Stress Classifier.
+- Irrigation Prediction Service.
+- Recommendation Manager.
+- Actuator Control Service.
+- Conflict Resolution Manager.
+
+El nuevo diseño debe indicar que componentes se conservan, modifican o
+agregan. No debe descartar la arquitectura base.
+
+================================================================
+5. REQUISITOS FUNCIONALES
+================================================================
+
+REQ-C01: Clasificar cada zona como sin estres, estres bajo, estres medio
+o estres alto.
+
+REQ-C02: Predecir si una zona necesitara riego dentro de un intervalo
+configurable.
+
+REQ-C03: Generar recomendaciones con zona, prioridad, momento, duracion,
+justificacion y confianza.
+
+REQ-C04: Permitir al operador aceptar, modificar o rechazar una recomendacion.
+
+REQ-C05: Enviar comandos de apertura y cierre a valvulas autorizadas.
+
+REQ-C06: Ejecutar localmente reglas criticas cuando no exista conexion.
+
+REQ-C07: Evitar la ejecucion duplicada de una orden durante la sincronizacion.
+
+REQ-C08: Resolver conflictos con esta prioridad:
+1. Parada de emergencia.
+2. Restriccion de seguridad.
+3. Control manual.
+4. Regla automatica.
+5. Orden programada.
+
+REQ-C09: Registrar los datos, reglas o modelos que originaron cada decision.
+
+================================================================
+6. REQUISITOS NO FUNCIONALES
+================================================================
+
+NFR-C01: Una regla critica debe ejecutarse localmente en menos de tres segundos.
+
+NFR-C02: El gateway debe continuar monitoreando durante una desconexion temporal.
+
+NFR-C03: El sistema debe soportar hasta 10 zonas y 20 valvulas por invernadero.
+
+NFR-C04: Los comandos deben autenticarse y validarse antes de ejecutarse.
+
+NFR-C05: Las decisiones deben conservar una explicacion auditable.
+
+================================================================
+7. ANALISIS ALGORITMICO
+================================================================
+
+El agente de algoritmos debe analizar solamente:
+
+- Regresion logistica.
+- K-nearest neighbors.
+- Arbol de decision.
+- Clasificador basado en reglas.
+
+Evaluar su aplicacion a:
+- Clasificacion del estres hidrico.
+- Prediccion de necesidad de riego.
+- Clasificacion de urgencia.
+- Deteccion de condiciones que impiden el riego.
+
+Para cada candidato indicar:
+- Entradas y salidas.
+- Requisitos de datos.
+- Complejidad.
+- Ventajas y limitaciones.
+- Explicabilidad.
+- Adecuacion para el gateway y la plataforma central.
+
+Las prioridades de REQ-C08 deben representarse mediante reglas. No usar MCTS,
+simulaciones ni algoritmos adicionales de optimizacion.
+
+================================================================
+8. FORMATO DE SALIDA
+================================================================
+
+Generar un SDD de evolucion con estas secciones:
+
+1. Resumen del cambio.
+2. Arquitectura base y elementos conservados.
+3. Componentes modificados y nuevos.
+4. Interfaces actualizadas o agregadas.
+5. Estructuras de datos nuevas.
+6. Procesamiento centralizado y local.
+7. Reglas de resolucion de conflictos.
+8. Comparacion de candidatos algoritmicos.
+9. Trazabilidad requisito-componente-algoritmo.
+10. Diagrama Mermaid de la arquitectura evolucionada.
+
+No inventar informacion de la arquitectura base. No generar un SDD de
+metamorfosis. No afirmar que los algoritmos fueron implementados o validados.
+
+
+----------------------------------------------------------------
+
+### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner - qwen3.6):
+# 1. SYSTEM OVERVIEW
+
+**Objetivos Principales:** Evolucionar el sistema de monitoreo de invernadero existente hacia un sistema híbrido de predicción y control de riego, manteniendo intactas las capacidades originales de adquisición, almacenamiento, visualización y gestión de alertas. El objetivo es habilitar la clasificación del estrés hídrico por zona, la predicción de necesidad de riego, la generación de recomendaciones ejecutables bajo aprobación humana, y la ejecución descentralizada de reglas críticas ante fallos de conectividad.
+
+**Alcance:** El sistema abarca tres capas arquitectónicas: Percepción (sensores ambientales y válvulas), Middleware (gateway de invernadero, canalización de dispositivos y almacenamiento central) y Aplicación (servicios de predicción, clasificación, gestión de recomendaciones, control de actuadores y resolución de conflictos). Soporta hasta 10 zonas y 20 válvulas por invernadero (NFR-C03), opera bajo incertidumbre de mediciones y parámetros, y garantiza trazabilidad completa de las decisiones (REQ-C09, NFR-C05).
+
+**Visión Arquitectónica:** Se adopta un modelo híbrido edge-cloud que preserva la topología centralizada original para el procesamiento intensivo de datos y la predicción, mientras introduce capacidades locales en el gateway para garantizar latencia crítica (<3s) y resiliencia ante desconexiones (NFR-C01, NFR-C02). La arquitectura mantiene la trazabilidad explícita hacia los requisitos funcionales (REQ-C01 a REQ-C09) y no funcionales (NFR-C01 a NFR-C05), integrando un clasificador de estrés hídrico, un servicio de predicción de riego, un gestor de recomendaciones, un servicio de control de actuadores y un gestor de resolución de conflictos como nuevos subsistemas estratégicos.
+
+---
+
+# 2. ARCHITECTURAL STYLE
+
+**Patrón Recomendado:** Arquitectura Híbrida Edge-Cloud con Comunicación Basada en Eventos y Mecanismos de Fallback Local.
+
+**Justificación:**
+- **Edge-Cloud Híbrido:** La necesidad de ejecutar reglas críticas localmente en menos de tres segundos (NFR-C01) durante desconexiones temporales (NFR-C02) exige descentralización controlada en el gateway. Simultáneamente, la predicción basada en datos históricos y la sincronización posterior requieren procesamiento centralizado para mantener coherencia y capacidad analítica.
+- **Comunicación Basada en Eventos:** Desacopla los subsistemas de predicción, recomendación y control, permitiendo flujos asíncronos de aprobación por operadores (REQ-C04) y evitando bloqueos en la cadena de comandos. Facilita la expansión a múltiples invernaderos sin reconfiguración profunda.
+- **Fallback Local y Sincronización:** El gateway actúa como punto de autoridad temporal durante interrupciones, ejecutando reglas de umbral y prioridad (REQ-C08) con buffering local. Al restablecerse la conexión, se activa un protocolo de reconciliación para evitar duplicidad de órdenes (REQ-C07) y consolidar el estado global.
+- **Preservación de la Base:** El estilo respeta la arquitectura centralizada original, evitando una metamorfosis completa. Solo se introduce descentralización donde es estrictamente necesario por restricciones temporales y de resiliencia.
+
+---
+
+# 3. SYSTEM SUBSYSTEMS
+
+Los subsistemas se clasifican por su estatus evolutivo (Conservado / Modificado / Agregado) y responsabilidad arquitectónica, con trazabilidad directa a los requisitos.
+
+### A. Subsistemas Conservados
+- **Sensor Management:** Gestión del ciclo de vida y calibración de sensores ambientales. *Trazabilidad: NFR-C03.*
+- **Data Acquisition:** Muestreo periódico y validación inicial de mediciones (temperatura, humedad suelo/aire, nivel agua). *Trazabilidad: REQ-C01, NFR-C02.*
+- **User Management:** Autenticación y autorización de operadores. *Trazabilidad: REQ-C04, NFR-C04.*
+- **Visualization:** Dashboards de monitoreo en tiempo real e históricos. *Trazabilidad: REQ-C03 (justificación/confianza).*
+- **Audit Logging:** Registro inmutable de eventos, decisiones y cambios de estado. *Trazabilidad: REQ-C09, NFR-C05.*
+
+### B. Subsistemas Modificados
+- **Data Storage:** Ampliado para persistir predicciones, recomendaciones, órdenes ejecutadas, reglas locales y metadatos de confianza. *Trazabilidad: REQ-C02, REQ-C03, REQ-C09.*
+- **Alert Management:** Enriquecido con umbrales de estrés hídrico, detección de fallas en válvulas y alertas de prioridad dinámica. *Trazabilidad: REQ-C01, REQ-C08.*
+- **Gateway Manager:** Incorpora motor de reglas locales, buffer de sincronización y gestión de estado offline. *Trazabilidad: REQ-C06, REQ-C07, NFR-C01, NFR-C02.*
+- **Device Communication:** Expandido para soportar comandos bidireccionales con válvulas y validación de integridad. *Trazabilidad: REQ-C05, NFR-C04.*
+
+### C. Subsistemas Agregados
+- **Water Stress Classifier:** Clasifica cada zona en 4 niveles (sin estrés, bajo, medio, alto) basado en mediciones actuales e históricas. *Trazabilidad: REQ-C01.*
+- **Irrigation Prediction Service:** Predice la necesidad de riego en intervalos configurables mediante modelos estadísticos/machine learning. *Trazabilidad: REQ-C02.*
+- **Recommendation Manager:** Genera recomendaciones estructuradas (zona, prioridad, momento, duración, justificación, confianza) y gestiona el ciclo de aprobación humana. *Trazabilidad: REQ-C03, REQ-C04.*
+- **Actuator Control Service:** Traduce recomendaciones aprobadas en comandos autenticados para válvulas autorizadas. *Trazabilidad: REQ-C05, NFR-C04.*
+- **Conflict Resolution Manager:** Aplica prioridades jerárquicas (parada emergencia > restricción seguridad > control manual > regla automática > orden programada) y resuelve colisiones durante sincronización. *Trazabilidad: REQ-C08, REQ-C07.*
+
+### D. Evaluación Arquitectónica de Candidatos Algorítmicos
+Se comparan cuatro candidatos para las tareas de clasificación y predicción, sin definir implementación interna:
+| Candidato | Entradas/Salidas | Complejidad | Ventajas / Limitaciones | Explicabilidad | Adecuación (Gateway vs Central) |
+|-----------|------------------|-------------|--------------------------|----------------|----------------------------------|
+| Regresión Logística | Datos normalizados → Probabilidad de estrés/riego | Baja | Rápido, ligero, interpretable. Limitado a relaciones lineales. | Alta (coeficientes ponderados) | Central: predicción probabilística. Gateway: no recomendado por rigidez. |
+| K-Nearest Neighbors | Vectores de características → Clase de estrés/riego | Media-Alta (inference) | Adaptable a patrones locales, no requiere entrenamiento complejo. Costoso en memoria y latencia con datos masivos. | Media (vecinos más cercanos) | Central: viable para análisis por zona. Gateway: limitado por NFR-C01. |
+| Árbol de Decisión | Condiciones umbral → Clase/Regla de riego | Baja-Media | Interpretable, maneja no-linealidades, rápido en inferencia. Riesgo de sobreajuste sin poda. | Alta (rutas lógicas) | Central y Gateway: adecuado para reglas híbridas y predicción ligera. |
+| Clasificador Basado en Reglas | Umbrales + prioridades → Acción/Clasificación | Baja | Determinista, cumple NFR-C01/NFR-C08, fácil auditoría. No generaliza fuera de reglas definidas. | Máxima (lógica explícita) | Gateway: ideal para reglas críticas y conflictos. Central: complementa modelos estadísticos. |
+
+*Decisión Arquitectónica:* Se adopta un modelo híbrido donde el Gateway ejecuta reglas basadas en umbral/prioridad para latencia crítica, mientras la Plataforma Central utiliza Árboles de Decisión o Regresión Logística para predicción y clasificación de estrés, garantizando explicabilidad (NFR-C05) y trazabilidad (REQ-C09).
+
+---
+
+# 4. SYSTEM BOUNDARIES
+
+**Dentro del Sistema:**
+- Gateway Manager (reglas locales, buffer, sincronización)
+- Device Communication (protocolos de control y telemetría)
+- Water Stress Classifier & Irrigation Prediction Service (procesamiento centralizado)
+- Recommendation Manager & Conflict Resolution Manager (lógica de negocio y prioridades)
+- Actuator Control Service (traducción y validación de comandos)
+- Data Storage, Alert Management, Audit Logging, User Management, Visualization, Sensor Management, Data Acquisition
+
+**Fuera del Sistema (Actores/Servicios Externos):**
+- Entorno Físico del Invernadero (sensores ambientales, válvulas de riego, infraestructura hidráulica)
+- Operador Humano (revisión, aprobación/modificación/rechazo de recomendaciones)
+- Infraestructura de Red (LAN/WAN, proveedores de conectividad, servicios de autenticación externa si aplica para NFR-C04)
+- Sistemas de Gestión Externos (si existen ERP/SCADA de invernaderos adyacentes o plataformas agrícolas corporativas)
+
+**Límites Claros:** El sistema no controla variables climáticas externas ni gestiona la logística de agua/fertilizantes. Solo opera sobre mediciones percibidas y comandos de válvulas autorizadas. La incertidumbre en mediciones y parámetros se maneja mediante márgenes de confianza y reglas de umbral, no mediante corrección física directa.
+
+---
+
+# 5. COMMUNICATION AND DATA FLOW
+
+El flujo de información se estructura en tres escenarios críticos:
+
+1. **Operación Normal (Conexión Estable):**
+   - Los sensores envían mediciones a través de `Device Communication` al `Gateway Manager`, que las valida y reenvía a la plataforma central vía `Data Acquisition`.
+   - `Water Stress Classifier` y `Irrigation Prediction Service` procesan datos históricos y actuales, generando predicciones con métricas de confianza.
+   - `Recommendation Manager` emite recomendaciones estructuradas. El flujo se pausa hasta que el operador interactúa con `Visualization` para aprobar/modificar/rechazar (REQ-C04).
+   - Tras aprobación, `Actuator Control Service` valida autenticación/autorización (NFR-C04), genera comandos y los envía a válvulas autorizadas. Todas las etapas registran metadatos en `Audit Logging` (REQ-C09, NFR-C05).
+
+2. **Desconexión y Fallback Local:**
+   - Al perder conectividad, el `Gateway Manager` activa reglas críticas locales (<3s, NFR-C01) basadas en umbrales de estrés y prioridades predefinidas (REQ-C08).
+   - Las mediciones se almacenan en buffer local. Los comandos ejecutados se marcan con IDs de transacción para evitar duplicidad.
+   - El sistema continúa monitoreando zonas activas (NFR-C02) sin depender de la plataforma central.
+
+3. **Sincronización y Resolución de Conflictos:**
+   - Al restablecerse la conexión, el `Gateway Manager` sincroniza estados y comandos pendientes con la plataforma central.
+   - `Conflict Resolution Manager` aplica la jerarquía: Parada de emergencia > Restricción de seguridad > Control manual > Regla automática > Orden programada (REQ-C08).
+   - Se detectan y eliminan órdenes duplicadas mediante comparación de timestamps y firmas de transacción (REQ-C07). Las discrepancias se registran en `Alert Management` y `Audit Logging`.
+
+La comunicación entre subsistemas utiliza mensajería asíncrona basada en eventos para desacoplar predicción, aprobación humana y ejecución física, garantizando escalabilidad (NFR-C03) y resiliencia.
+
+---
+
+# 6. ARCHITECTURE INTERACTION DIAGRAM
+
+```mermaid
+sequenceDiagram
+    participant S as Sensores Ambientales
+    participant G as Gateway Manager
+    participant P as Plataforma Central
+    participant WSC as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant OP as Operador Humano
+    participant ACS as Actuator Control Service
+    participant V as Válvulas de Riego
+    participant CRM as Conflict Resolution Manager
+
+    Note over S,V: Escenario Normal con Conexión Estable
+    S->>G: Mediciones (T, Hsuelo, Haire, Nivel)
+    G->>P: Flujo telemétrico validado
+    P->>WSC: Datos históricos + actuales
+    WSC-->>P: Clasificación estrés hídrico (REQ-C01)
+    P->>IPS: Predicción necesidad riego
+    IPS-->>P: Predicción + confianza (REQ-C02)
+    P->>RM: Generar recomendación estructurada
+    RM-->>OP: Notificación (zona, prioridad, duración, justificación)
+    OP-->>RM: Aceptar / Modificar / Rechazar (REQ-C04)
+    alt Recomendación Aceptada
+        RM->>ACS: Comando autorizado + metadatos
+        ACS->>V: Comandos apertura/cierre autenticados (REQ-C05, NFR-C04)
+        ACS-->>P: Confirmación ejecución
+        P->>Audit Logging: Registro explicauditable (REQ-C09, NFR-C05)
+    end
+
+    Note over S,V: Escenario Desconexión + Sincronización
+    G->>G: Ejecutar reglas críticas locales (<3s, REQ-C06, NFR-C01)
+    G->>V: Comandos fallback (buffer local)
+    G->>P: Reconciliación al restablecer conexión
+    P->>CRM: Resolver conflictos y duplicados (REQ-C07, REQ-C08)
+    CRM-->>G/P: Estado consolidado + alertas de discrepancia
+```
+
+----------------------------------------------------------------
+
+### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner - qwen3.6):
+# 1. COMPONENT OVERVIEW
+
+La descomposición del sistema evoluciona desde una topología centralizada de monitoreo hacia un modelo híbrido edge-cloud que preserva las capacidades originales mientras introduce subsistemas de predicción, control y resiliencia. La arquitectura se estructura en tres capas de componentes:
+- **Capa de Percepción y Adquisición:** Componentes conservados (`Sensor Management`, `Data Acquisition`) y modificados (`Device Communication`) que garantizan la captura física y el transporte telemétrico con validación inicial.
+- **Capa de Middleware y Persistencia:** Componentes modificados (`Gateway Manager`, `Data Storage`, `Alert Management`) que orquestan el flujo de datos, gestionan estados offline y consolidan la información histórica y de confianza.
+- **Capa de Aplicación Inteligente y Control:** Componentes agregados (`Water Stress Classifier`, `Irrigation Prediction Service`, `Recommendation Manager`, `Actuator Control Service`, `Conflict Resolution Manager`) que transforman mediciones en clasificaciones, predicen necesidades de riego, gestionan la aprobación humana, ejecutan comandos seguros y resuelven colisiones durante sincronización.
+
+La descomposición mantiene el desacoplamiento mediante mensajería asíncrona basada en eventos, introduce un gate de aprobación humana explícito y delega latencia crítica al gateway sin alterar la autoridad central para modelado y auditoría.
+
+# 2. COMPONENT SPECIFICATION
+
+### Sensor Management
+- **Responsibility:** Gestión del ciclo de vida, calibración y diagnóstico de sensores ambientales.
+- **Internal behavior:** Monitorea integridad física, aplica compensaciones de deriva, notifica fallos y sincroniza parámetros de muestreo.
+- **Dependencies:** Device Communication, Audit Logging.
+- **Inputs:** Señales eléctricas/físicas de campo, comandos de calibración.
+- **Outputs:** Datos calibrados, estados de salud del sensor, alertas de mantenimiento.
+
+### Data Acquisition
+- **Responsibility:** Muestreo periódico y validación inicial de mediciones ambientales.
+- **Internal behavior:** Agrupa lecturas por zona, valida rangos operativos, adjunta metadatos de timestamp y empaqueta telemetría para la plataforma.
+- **Dependencies:** Sensor Management, Gateway Manager, Data Storage.
+- **Inputs:** Datos calibrados por zona.
+- **Outputs:** Paquetes de medición validados y estructurados.
+
+### User Management
+- **Responsibility:** Autenticación y autorización de operadores y sistemas.
+- **Internal behavior:** Gestiona credenciales, roles y sesiones; valida permisos para aprobaciones de recomendaciones y ejecución de comandos.
+- **Dependencies:** Audit Logging, Actuator Control Service.
+- **Inputs:** Credenciales de usuario, solicitudes de acceso/autorización.
+- **Outputs:** Tokens/credenciales verificadas, perfiles de rol con privilegios.
+
+### Visualization
+- **Responsibility:** Presentación de dashboards de monitoreo e interacción humana.
+- **Internal behavior:** Renderiza estados en tiempo real, visualiza recomendaciones y métricas de confianza; captura respuestas del operador (aceptar/modificar/rechazar).
+- **Dependencies:** Data Storage, Recommendation Manager, Alert Management.
+- **Inputs:** Datos actualizados, recomendaciones pendientes, alertas activas.
+- **Outputs:** Interfaz gráfica, respuestas estructuradas del operador.
+
+### Audit Logging
+- **Responsibility:** Registro inmutable de eventos, decisiones y cambios de estado.
+- **Internal behavior:** Recibe eventos de todos los subsistemas, adjunta metadatos de trazabilidad, firma temporalmente y persiste registros con garantía de no repudio.
+- **Dependencies:** Todos los componentes del sistema.
+- **Inputs:** Eventos de sistema, decisiones algorítmicas, acciones humanas, confirmaciones de actuadores.
+- **Outputs:** Registros auditables estructurados con metadatos completos.
+
+### Data Storage
+- **Responsibility:** Persistencia centralizada de datos históricos, predicciones y estados operativos.
+- **Internal behavior:** Almacena mediciones, clasificaciones, recomendaciones, órdenes ejecutadas y métricas de confianza; soporta consultas para reentrenamiento y auditoría.
+- **Dependencies:** Data Acquisition, Water Stress Classifier, Irrigation Prediction Service, Recommendation Manager, Gateway Manager.
+- **Inputs:** Datos crudos, resultados de modelos, estados de válvulas, recomendaciones.
+- **Outputs:** Consultas estructuradas, snapshots de estado, historiales para análisis.
+
+### Alert Management
+- **Responsibility:** Generación y gestión de alertas enriquecidas por estrés hídrico y fallos de actuadores.
+- **Internal behavior:** Evalúa umbrales dinámicos, prioriza eventos críticos, correlaciona causas y notifica a Visualization y Audit Logging.
+- **Dependencies:** Water Stress Classifier, Actuator Control Service, Data Storage.
+- **Inputs:** Estados de estrés, fallos detectados, métricas de sistema.
+- **Outputs:** Alertas priorizadas, notificaciones de estado crítico, indicadores de degradación.
+
+### Gateway Manager
+- **Responsibility:** Orquestación local, ejecución de reglas críticas y sincronización edge-cloud.
+- **Internal behavior:** Gestiona buffer offline, ejecuta reglas de umbral/prioridad (<3s), valida integridad de comandos fallback, reconcilia estados al restablecerse la conexión y marca transacciones para evitar duplicidad.
+- **Dependencies:** Device Communication, Data Storage, Conflict Resolution Manager, Alert Management.
+- **Inputs:** Mediciones en tiempo real, comandos pendientes, estado de red, paquetes de sincronización.
+- **Outputs:** Comandos locales ejecutados, paquetes de reconciliación, estados consolidados del invernadero.
+
+### Device Communication
+- **Responsibility:** Canal bidireccional seguro con actuadores y sensores.
+- **Internal behavior:** Encapsula/desencapsula protocolos, valida integridad de comandos, gestiona reintentos y autenticación de dispositivos; confirma ejecución física.
+- **Dependencies:** Gateway Manager, Actuator Control Service, Sensor Management.
+- **Inputs:** Comandos de control, telemetría de válvulas/sensores.
+- **Outputs:** Mensajes protocolizados confirmados, respuestas de actuadores, estados de enlace.
+
+### Water Stress Classifier
+- **Responsibility:** Clasificación del estrés hídrico por zona en cuatro niveles.
+- **Internal behavior:** Aplica modelo híbrido sobre datos históricos y actuales para asignar nivel de estrés; calcula métricas de confianza y expone el vector de características utilizado.
+- **Dependencies:** Data Storage, Irrigation Prediction Service, Alert Management.
+- **Inputs:** Mediciones ambientales y humedad del suelo por zona.
+- **Outputs:** Clasificación de estrés (sin estrés/bajo/medio/alto), nivel de confianza, metadatos de inferencia.
+
+### Irrigation Prediction Service
+- **Responsibility:** Predicción de necesidad de riego en intervalos configurables.
+- **Internal behavior:** Procesa secuencias temporales y estados de estrés para estimar probabilidad de requerimiento; genera ventanas de tiempo óptimas y métricas de incertidumbre.
+- **Dependencies:** Data Storage, Water Stress Classifier, Recommendation Manager.
+- **Inputs:** Clasificación de estrés, tendencias históricas, parámetros climáticos/configurables.
+- **Outputs:** Predicción de necesidad, intervalo recomendado, métricas de incertidumbre y confianza.
+
+### Recommendation Manager
+- **Responsibility:** Generación y ciclo de vida de recomendaciones de riego.
+- **Internal behavior:** Estructura recomendaciones (zona, prioridad, momento, duración, justificación, confianza); gestiona cola de aprobación humana; actualiza estado según respuesta del operador y deriva a control si se acepta.
+- **Dependencies:** Irrigation Prediction Service, User Management, Visualization, Actuator Control Service, Audit Logging.
+- **Inputs:** Predicciones, perfiles de usuario, respuestas del operador.
+- **Outputs:** Recomendaciones estructuradas, órdenes aprobadas/modificadas, estados de recomendación.
+
+### Actuator Control Service
+- **Responsibility:** Traducción y envío seguro de comandos a válvulas autorizadas.
+- **Internal behavior:** Valida autenticación/autorización, traduce recomendaciones a comandos protocolizados, gestiona secuencias de apertura/cierre, registra confirmaciones y expone estados de ejecución.
+- **Dependencies:** Recommendation Manager, Device Communication, User Management, Audit Logging.
+- **Inputs:** Recomendaciones aprobadas, credenciales verificadas.
+- **Outputs:** Comandos autenticados para válvulas, estados de ejecución, logs de control.
+
+### Conflict Resolution Manager
+- **Responsibility:** Resolución de conflictos y reconciliación de estados tras sincronización.
+- **Internal behavior:** Aplica jerarquía de prioridades (emergencia > seguridad > manual > automática > programada); detecta duplicados mediante firmas/timestamps; consolida estados y notifica discrepancias.
+- **Dependencies:** Gateway Manager, Data Storage, Actuator Control Service, Alert Management.
+- **Inputs:** Comandos concurrentes, estados del gateway, paquetes de sincronización.
+- **Outputs:** Estado consolidado, órdenes priorizadas/descartadas, alertas de conflicto y reconciliación.
+
+# 3. COMPONENT RESPONSIBILITY BOUNDARIES
+
+- **Gestión de Dispositivos y Adquisición (`Sensor Management`, `Data Acquisition`, `Device Communication`):** Poseen la responsabilidad exclusiva de percibir el entorno físico, garantizar la integridad del canal y validar rangos operativos. Excluyen procesamiento analítico, toma de decisiones o control directo de actuadores.
+- **Persistencia y Auditoría (`Data Storage`, `Audit Logging`):** Son dueños exclusivos de la persistencia inmutable, el rastreo de metadatos y la consulta histórica. Excluyen lógica de negocio, predicción, ejecución de comandos o gestión de sesiones humanas.
+- **Inteligencia y Predicción (`Water Stress Classifier`, `Irrigation Prediction Service`):** Poseen la responsabilidad de transformar datos en clasificaciones y probabilidades con métricas de confianza. Excluyen la generación de órdenes ejecutables sin aprobación humana, el control físico directo y la gestión de conflictos de sincronización.
+- **Gestión de Recomendaciones y Control (`Recommendation Manager`, `Actuator Control Service`):** Son dueños del ciclo de vida de la recomendación, la validación de aprobaciones humanas y la traducción segura a comandos físicos. Excluyen la adquisición de datos crudos, el entrenamiento de modelos o la resolución de colisiones post-desconexión.
+- **Resiliencia y Sincronización (`Gateway Manager`, `Conflict Resolution Manager`):** Poseen la responsabilidad de garantizar operación local crítica (<3s), buffering offline y reconciliación determinista al restablecerse la conexión. Excluyen el modelado estadístico, la gestión de credenciales o la presentación visual.
+- **Interacción Humana y Alertas (`User Management`, `Visualization`, `Alert Management`):** Son dueños de la validación de acceso, la representación gráfica de estados y la notificación de eventos críticos. Excluyen la ejecución física de válvulas, el almacenamiento histórico de mediciones o la inferencia algorítmica.
+
+# 4. COMPONENT COMMUNICATION
+
+La colaboración entre componentes se rige por un flujo basado en eventos asíncronos que desacopla predicción, aprobación humana y ejecución física:
+- **Operación Normal:** `Data Acquisition` publica mediciones validadas; `Water Stress Classifier` y `Irrigation Prediction Service` consumen datos históricos y actuales para generar clasificaciones y probabilidades. `Recommendation Manager` emite recomendaciones estructuradas que se pausan en un gate de aprobación hasta que el operador interactúa con `Visualization`. Tras la respuesta, `Actuator Control Service` valida permisos vía `User Management`, traduce la orden y la envía a válvulas mediante `Device Communication`. Cada etapa registra metadatos en `Audit Logging`.
+- **Desconexión y Fallback Local:** Al perder conectividad, `Gateway Manager` activa reglas críticas locales (<3s) basadas en umbrales de estrés y prioridades predefinidas. Las mediciones se almacenan en buffer local y los comandos ejecutados se marcan con IDs de transacción. El sistema continúa monitoreando zonas activas sin depender de la plataforma central.
+- **Sincronización y Resolución de Conflictos:** Al restablecerse la conexión, `Gateway Manager` envía paquetes de reconciliación a la plataforma central. `Conflict Resolution Manager` aplica la jerarquía de prioridades, detecta órdenes duplicadas mediante comparación de timestamps y firmas, consolida estados y notifica discrepancias a `Alert Management`. La comunicación entre subsistemas utiliza mensajería asíncrona para garantizar escalabilidad (10 zonas/20 válvulas) y resiliencia ante incertidumbre de mediciones y parámetros.
+
+# 5. COMPONENT INTERACTION DIAGRAM
+
+```mermaid
+sequenceDiagram
+    participant SM as Sensor Management
+    participant DA as Data Acquisition
+    participant GWM as Gateway Manager
+    participant DCS as Device Communication
+    participant WSC as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant VIZ as Visualization
+    participant ACS as Actuator Control Service
+    participant CRM as Conflict Resolution Manager
+    participant AL as Audit Logging
+
+    Note over SM,AL: Flujo Normal con Conexión Estable
+    SM->>DA: Datos calibrados por zona
+    DA->>GWM: Telemetría validada + timestamp
+    GWM->>WSC: Mediciones actuales + historial (Data Storage)
+    WSC-->>IPS: Clasificación estrés + confianza
+    IPS-->>RM: Predicción necesidad riego + intervalo
+    RM->>VIZ: Recomendación estructurada (zona, prioridad, justificación)
+    VIZ-->>RM: Respuesta operador (Aceptar/Modificar/Rechazar)
+    alt Aceptado/Modificado
+        RM->>ACS: Orden aprobada + metadatos
+        ACS->>DCS: Comandos autenticados para válvulas
+        DCS-->>ACS: Confirmación ejecución física
+        ACS->>AL: Registro de control y confianza
+    end
+
+    Note over SM,AL: Desconexión + Sincronización
+    GWM->>GWM: Ejecutar reglas críticas locales (<3s)
+    GWM->>DCS: Comandos fallback (buffer local con ID transacción)
+    GWM->>CRM: Paquetes de reconciliación al restablecer conexión
+    CRM->>CRM: Aplicar prioridad y detectar duplicados
+    CRM-->>GWM/ACS: Estado consolidado + alertas de discrepancia
+    CRM->>AL: Registro de resolución y estado final
+```
+
+----------------------------------------------------------------
+
+### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner - qwen3.6):
+# 1. INTERFACE OVERVIEW
+
+La estrategia de comunicación se basa en un modelo híbrido edge-cloud que preserva los flujos originales de monitoreo y alertas, mientras introduce canales asíncronos para procesamiento analítico y canales síncronos seguros para control y aprobación humana. La arquitectura mantiene la responsabilidad original de cada componente y lo desacopla mediante contratos explícitos:
+- **Flujo de Telemetría y Predicción:** Basado en eventos asíncronos para evitar acoplamiento temporal entre adquisición, clasificación y predicción. Permite escalabilidad horizontal hacia las 10 zonas y 20 válvulas (NFR-C03).
+- **Flujo de Aprobación Humana:** Canal síncrono orientado a REST/WebSocket que pausa el ciclo de control hasta la interacción explícita del operador, garantizando trazabilidad y autoridad humana (REQ-C04).
+- **Flujo de Control y Actuación:** Canal seguro con validación criptográfica y de permisos antes de la traducción física. Desacoplado del motor de predicción para evitar ejecución automática no autorizada.
+- **Flujo de Resiliencia y Sincronización:** Mecanismo local determinista en el Gateway Manager que opera sin dependencia de red, complementado por un contrato de reconciliación centralizado al restablecerse la conectividad.
+
+Todas las interfaces conservan los metadatos de auditoría (REQ-C09, NFR-C05) y aplican validaciones estrictas en el borde para garantizar latencia crítica (<3s) y resiliencia ante incertidumbre de mediciones.
+
+# 2. INTERFACE CONTRACTS
+
+| Interface Name | Provider | Consumer | Operations | Input Parameters | Output Responses |
+|----------------|----------|----------|------------|------------------|------------------|
+| `TelemetryIngestionInterface` | Data Acquisition | Gateway Manager / Platform Core | `enviarMediciones`, `recibirValidacion` | `zonaId`, `timestamp`, `temperatura`, `humedadSuelo`, `humedadAire`, `nivelAgua`, `calibracionSensor` | `estadoValidacion`, `idSesionTelemetria`, `alertasIntegridad` |
+| `StressClassificationInterface` | Water Stress Classifier | Irrigation Prediction Service | `clasificarEstrésHídrico` | `vectorCaracteristicasZona`, `historialReciente`, `umbralConfigurable` | `nivelEstrés` (sin/bajo/medio/alto), `confianza`, `metadatosInferencia` |
+| `IrrigationPredictionInterface` | Irrigation Prediction Service | Recommendation Manager | `predecirNecesidadRiego` | `clasificacionEstrés`, `tendenciasTemporales`, `intervaloConfigurable` | `probabilidadRiego`, `ventanaTemporalOptima`, `metricaIncertidumbre` |
+| `RecommendationApprovalInterface` | Recommendation Manager | Visualization / User Management | `emitirRecomendacion`, `recibirRespuestaOperador` | `zonaId`, `prioridad`, `momento`, `duracion`, `justificacion`, `confianza` | `estadoAprobacion` (aceptar/modificar/rechazar), `comandosModificados`, `firmaOperador` |
+| `ActuatorCommandInterface` | Actuator Control Service | Device Communication | `validarYEnviarComando`, `confirmarEjecucion` | `ordenAprobada`, `credencialesOperador`, `valvulaId`, `timestampValidacion` | `estadoAutenticacion`, `comandoProtocolizado`, `confirmacionActuador`, `idTransaccion` |
+| `LocalFallbackInterface` | Gateway Manager (Motor Local) | Device Communication / Buffer Local | `ejecutarReglaCritica`, `bufferizarMedicion` | `medicionTiempoReal`, `reglasPrioridad`, `estadoConexion` | `comandoFallback`, `idTransaccionLocal`, `estadoBuffer`, `timestampEjecucion` |
+| `SyncReconciliationInterface` | Conflict Resolution Manager | Gateway Manager / Data Storage | `sincronizarEstados`, `resolverConflicto` | `paqueteReconciliacion`, `listaComandosConcurrentes`, `firmasTransaccion` | `estadoConsolidado`, `ordenPriorizada/descartada`, `alertaDiscrepancia`, `logReconciliacion` |
+
+# 3. COMMUNICATION PROTOCOLS
+
+- **Telemetría y Predicción:** MQTT 5.0 con QoS 1 para publicación de mediciones y suscripción a estados de validación. Mensajes estructurados en JSON/Protobuf con topicos jerárquicos (`invernadero/{id}/zona/{id}/telemetry`).
+- **Predicción y Clasificación:** gRPC bidireccional para consultas síncronas de alta eficiencia entre `Water Stress Classifier` e `Irrigation Prediction Service`. Contratos `.proto` definidos por contrato.
+- **Aprobación Humana:** RESTful API sobre HTTPS + WebSocket para actualizaciones en tiempo real del dashboard. Autenticación OAuth2/OIDC con scopes de rol (`operator:approve`, `operator:modify`).
+- **Control de Actuadores:** CoAP/DTLS o HTTP/2 con mTLS para canales de control. Payloads firmados digitalmente (JWS) que incluyen `idTransaccion`, `valvulaId`, `timestamp` y `firmaOperador`.
+- **Resiliencia Local (Fallback):** Motor de reglas determinista ejecutado localmente en el Gateway Manager (formato YAML/JSON). Sin dependencia de red. Protocolo interno basado en cola circular con versionado de estado.
+- **Sincronización y Reconciliación:** HTTPS POST con body JSON que contiene `listaComandos`, `firmas`, `timestamps` y `estadoBuffer`. Validación de integridad mediante SHA-256 y verificación de no duplicidad por `idTransaccion`.
+- **Auditoría:** Kafka/Pub-Sub asíncrono para eventos inmutables. Todos los componentes publican en topicos `/audit/{componente}` con esquema estricto y firma temporal.
+
+# 4. ERROR AND VALIDATION RULES
+
+- **Validación de Entradas:** 
+  - Rangos físicos obligatorios (ej. temperatura > -10°C y < 60°C). Valores fuera de rango se marcan como `NO ESPECIFICADO` y generan alerta en `Alert Management`.
+  - Firmas digitales y tokens OAuth2/mTLS requeridos en todas las interfaces de control y aprobación. Rechazo inmediato si expiran o son inválidas (NFR-C04).
+  - Metadatos de confianza obligatorios en predicción/clasificación. Si `confianza < umbralMinimo`, se deriva a `Alert Management` en lugar de generar recomendación ejecutable.
+- **Manejo de Fallos y Timeout:**
+  - Timeouts configurables por interfaz (ej. 2s para `LocalFallbackInterface`, 5s para `ActuatorCommandInterface`). Reintentos exponenciales con backoff máximo de 30s.
+  - Circuit Breaker activado si `Data Storage` o `Conflict Resolution Manager` presentan >3 fallos consecutivos en 60s. El sistema degrada a modo local seguro sin perder monitoreo (NFR-C02).
+- **Reglas de Conflicto y Sincronización:**
+  - Aplicación estricta de jerarquía REQ-C08: `ParadaEmergencia > RestriccionSeguridad > ControlManual > ReglaAutomatica > OrdenProgramada`.
+  - Detección de duplicados mediante comparación de `idTransaccion` y firma. Las órdenes duplicadas se descartan y registran en `Audit Logging`.
+  - Desconexión prolongada (>3s para reglas críticas) activa automáticamente `LocalFallbackInterface`. La reconexión dispara `SyncReconciliationInterface` sin intervención manual.
+- **Validación de Auditoría:**
+  - Cada interfaz debe adjuntar `idDecision`, `modeloReglaUsado`, `timestampOrigen` y `usuarioSistema`. Falta de metadatos invalida el registro y genera alerta de integridad.
+
+# 5. INTERFACE INTERACTION DIAGRAM
+
+```mermaid
+sequenceDiagram
+    participant DA as Data Acquisition
+    participant GWM as Gateway Manager
+    participant WSC as Water Stress Classifier
+    participant IPS as Irrigation Prediction Service
+    participant RM as Recommendation Manager
+    participant VIZ as Visualization
+    participant ACS as Actuator Control Service
+    participant DCS as Device Communication
+    participant CRM as Conflict Resolution Manager
+    participant AL as Audit Logging
+
+    Note over DA,AL: Flujo Normal y Aprobación
+    DA->>GWM: TelemetryIngestionInterface.enviarMediciones()
+    GWM->>WSC: StressClassificationInterface.clasificarEstrésHídrico()
+    WSC-->>IPS: IrrigationPredictionInterface.predecirNecesidadRiego()
+    IPS-->>RM: RecommendationApprovalInterface.emitirRecomendacion()
+    RM->>VIZ: Notificación visual (zona, prioridad, confianza)
+    VIZ-->>RM: RecommendationApprovalInterface.recibirRespuestaOperador()
+    alt Aceptado/Modificado
+        RM->>ACS: ActuatorCommandInterface.validarYEnviarComando()
+        ACS->>DCS: Comando protocolizado + firma
+        DCS-->>ACS: Confirmación ejecución física
+        ACS->>AL: Evento auditado (idDecision, modelo, timestamp)
+    end
+
+    Note over DA,AL: Desconexión y Sincronización
+    GWM->>GWM: LocalFallbackInterface.ejecutarReglaCritica()
+    GWM->>DCS: Comando fallback + idTransaccionLocal
+    GWM->>CRM: SyncReconciliationInterface.sincronizarEstados()
+    CRM->>CRM: ResolverConflictos (jerarquía REQ-C08)
+    CRM-->>GWM/ACS: EstadoConsolidado + AlertaDiscrepancia
+    CRM->>AL: Registro reconciliación y descarte duplicados
+```
+
+----------------------------------------------------------------
+
+### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner - qwen3.6):
+# 1. DATA MODEL OVERVIEW
+
+La estrategia de modelado de datos se basa en un enfoque híbrido orientado a la trazabilidad, la resiliencia y la compatibilidad estricta con los contratos de interfaz definidos. El modelo organiza la información en tres dominios lógicos:
+- **Dominio Operacional:** Mediciones telemétricas, estados de zonas y válvulas, y buffer local del gateway. Optimizado para escrituras frecuentes y consultas temporales.
+- **Dominio Analítico y Predictivo:** Clasificaciones de estrés hídrico, predicciones de riego y métricas de confianza/incertidumbre. Diseñado para alimentar a los servicios algorítmicos sin alterar sus interfaces de entrada/salida.
+- **Dominio Transaccional y de Auditoría:** Recomendaciones, órdenes de actuadores, registros de resolución de conflictos y eventos inmutables. Garantiza cumplimiento de REQ-C07 (deduplicación), REQ-C08 (prioridades) y REQ-C09/NFR-C05 (explicabilidad auditable).
+
+El modelo preserva la topología edge-cloud: los datos críticos para latencia (<3s) se estructuran para almacenamiento local ligero, mientras que la autoridad central consolida estados, predicciones y auditoría mediante relaciones referenciales estrictas. No se definen algoritmos ni lógica de inferencia; únicamente se especifican las estructuras de datos que habilitan el procesamiento descrito en los componentes y contratos existentes.
+
+---
+
+# 2. DOMAIN ENTITIES
+
+### Greenhouse (Invernadero)
+- **Attributes:** `id` (UUID), `nombre`, `ubicacion`, `maxZones` (10), `maxValves` (20), `estadoConexion` (online/offline/partial).
+- **Relationships:** 1..N Zones, 1..N Valves.
+- **Constraints:** `maxZones` y `maxValves` son invariantes de negocio (NFR-C03). No se permiten instancias duplicadas por ID.
+
+### Zone (Zona)
+- **Attributes:** `id`, `greenhouseId`, `nombre`, `coordenadas`, `umbralEstrésConfigurable`, `estadoActual`.
+- **Relationships:** 1..N SensorReadings, 1..1 WaterStressClassification (latest), 1..1 IrrigationPrediction (latest), 1..N Recommendations, 1..N ValveCommands.
+- **Constraints:** Pertenencia única a un invernadero. `umbralEstrésConfigurable` debe ser persistente y versionado.
+
+### SensorReading (Medición Ambiental)
+- **Attributes:** `id`, `zoneId`, `timestamp`, `temperatura`, `humedadSuelo`, `humedadAire`, `nivelAgua`, `saludSensor`, `confianzaMedicion`.
+- **Relationships:** Belongs to Zone.
+- **Constraints:** Rangos físicos validados por esquema. Valores fuera de rango se almacenan como `NO ESPECIFICADO` con flag `valido=false`. Timestamp obligatorio y monotónico.
+
+### WaterStressClassification (Clasificación Estrés Hídrico)
+- **Attributes:** `id`, `zoneId`, `timestamp`, `nivelEstrés` (enum: sin_estres, bajo, medio, alto), `confianza`, `modeloVersion`, `vectorCaracteristicasRef`.
+- **Relationships:** Belongs to Zone. References AuditEvent via `decisionId`.
+- **Constraints:** Un registro por zona por intervalo de inferencia. `nivelEstrés` restringido al enum definido en REQ-C01.
+
+### IrrigationPrediction (Predicción Riego)
+- **Attributes:** `id`, `zoneId`, `timestamp`, `probabilidadRiego`, `ventanaTemporalInicio`, `ventanaTemporalFin`, `metricaIncertidumbre`, `modeloUsado`.
+- **Relationships:** Belongs to Zone. Triggers Recommendation generation.
+- **Constraints:** `probabilidadRiego` ∈ [0.0, 1.0]. Ventanas temporales deben ser no superpuestas para la misma zona en el mismo ciclo.
+
+### Recommendation (Recomendación de Riego)
+- **Attributes:** `id`, `zoneId`, `timestamp`, `prioridad` (enum: emergencia, seguridad, manual, automatica, programada), `momentoEjecucion`, `duracionMinutos`, `justificacion`, `confianza`, `estado` (pending, approved, rejected, modified), `operatorId`, `comandosModificadosJSON`.
+- **Relationships:** Belongs to Zone. References IrrigationPrediction. Links to AuditEvent and ValveCommand upon approval.
+- **Constraints:** Ciclo de vida estricto: solo un estado activo por ID. `prioridad` debe coincidir con REQ-C08. Requiere `operatorId` si se modifica.
+
+### ValveCommand (Comando de Válvula)
+- **Attributes:** `id`, `valveId`, `zoneId`, `tipoComando` (open, close), `idTransaccion`, `origen` (human, local, auto), `timestampValidacion`, `estadoEjecucion`, `tokenAutenticacionRef`, `auditLogRef`.
+- **Relationships:** Belongs to Zone/Valve. Optional link to Recommendation. References AuditEvent.
+- **Constraints:** `idTransaccion` único global para deduplicación (REQ-C07). `origen` determina la ruta de prioridad en sincronización. Obligatorio `tokenAutenticacionRef` (NFR-C04).
+
+### LocalBufferEntry (Entrada Buffer Local)
+- **Attributes:** `id`, `gatewayId`, `timestamp`, `tipoPayload` (telemetry, command), `datosJSON`, `estadoSincronizacion` (pending, synced, failed), `prioridadLocal`.
+- **Relationships:** Belongs to Gateway Manager context. Links to ConflictResolutionLog upon sync.
+- **Constraints:** Solo se almacenan entradas críticas o pendientes de sincronización. Máximo 500 entradas activas por gateway para evitar desbordamiento.
+
+### ConflictResolutionLog (Registro Resolución Conflicto)
+- **Attributes:** `id`, `timestamp`, `comandosConcurrentesJSON`, `prioridadAplicada`, `resultadoResolucion`, `metodoReconciliacion`, `auditRef`.
+- **Relationships:** References multiple ValveCommands. Links to AuditEvent.
+- **Constraints:** Solo se genera durante sincronización post-desconexión. `prioridadAplicada` debe seguir estrictamente REQ-C08. Inmutable tras cierre.
+
+### AuditEvent (Evento Auditoría)
+- **Attributes:** `id`, `decisionId`, `componenteOrigen`, `modeloOReglaUsado`, `metadataJSON`, `timestampOrigen`, `firmaTemporal`.
+- **Relationships:** Referenced by all decision-making components (WSC, IPS, RM, ACS, CRM).
+- **Constraints:** Append-only. `firmaTemporal` garantiza no repudio. Obligatorio para cada decisión (REQ-C09, NFR-C05).
+
+---
+
+# 3. DATA STORAGE DESIGN
+
+- **Estrategia de Base de Datos (Híbrida):**
+  - **Central (Plataforma):** Relacional (PostgreSQL/MySQL) para datos transaccionales y estructurados: `Recommendation`, `ValveCommand`, `ConflictResolutionLog`, `AuditEvent`, `UserManagement`. Garantiza ACID, integridad referencial y consultas complejas de auditoría.
+  - **Telemetría y Predicción:** Almacén orientado a documentos o series temporales (MongoDB/TimescaleDB) para `SensorReading`, `WaterStressClassification` e `IrrigationPrediction`. Optimizado para ingestión masiva, retención configurable y consultas por rango temporal.
+  - **Edge Local (Gateway):** Motor embebido ligero (SQLite/RocksDB) para `LocalBufferEntry`, reglas de umbral locales y estado transitorio durante desconexiones. Cumple NFR-C01 (<3s) sin dependencia de red.
+
+- **Enfoque de Persistencia:**
+  - Los datos fluyen desde la capa de percepción hacia el buffer local del gateway, que actúa como punto de escritura primaria durante offline. Al restablecerse la conexión, se emiten paquetes de reconciliación mapeados a los contratos de `SyncReconciliationInterface`.
+  - La plataforma central consolida estados mediante procesamiento asíncrono basado en eventos. Las estructuras de datos están alineadas con los payloads definidos en las interfaces (JSON/Protobuf), sin modificar sus firmas.
+  - La retención y particionamiento se basan en `greenhouseId` y `timestamp`, facilitando escalabilidad horizontal hacia múltiples invernaderos bajo NFR-C03.
+
+---
+
+# 4. DATA CONSISTENCY RULES
+
+- **Transacciones:**
+  - Las operaciones de `Recommendation` y `ValveCommand` se ejecutan dentro de transacciones ACID. Se utiliza bloqueo optimista con versión (`versionNumber`) para evitar condiciones de carrera durante aprobación humana concurrente.
+  - La deduplicación (REQ-C07) se garantiza mediante índice único compuesto `(idTransaccion, valveId)`. Intentos duplicados generan `conflictCode=DUPLICATE_TRANSACTION` y se registran en `AuditEvent`.
+
+- **Validación:**
+  - Validación esquemática estricta: enums restringidos (`nivelEstrés`, `prioridad`, `estado`, `origen`). Rangos físicos para mediciones. Campos obligatorios: `decisionId`, `modeloOReglaUsado`, `timestampOrigen`.
+  - Si `confianza < umbralMinimo` (configurable), el sistema deriva la entrada a `AlertManagement` en lugar de generar recomendación ejecutable.
+  - Autenticación y autorización validadas antes de persistir comandos (NFR-C04). Tokens expirados o inválidos bloquean la escritura y generan alerta de integridad.
+
+- **Integridad Referencial e Histórica:**
+  - Relaciones padre-hijo (`Zone` → `SensorReading`, `Recommendation` → `ValveCommand`) protegen contra registros huérfanos. Eliminaciones en cascada están restringidas solo a datos temporales no auditados.
+  - `AuditEvent` es append-only y firma temporalmente. No se permiten actualizaciones ni borrados. La reconciliación post-desconexión aplica la jerarquía REQ-C08 directamente sobre los registros de `ConflictResolutionLog`, sobrescribiendo solo estados transitorios (`pending`) y consolidando `estadoEjecucion`.
+  - El buffer local mantiene consistencia eventual con la plataforma central mediante flags `estadoSincronizacion`. Los conflictos se resuelven deterministamente antes de la fusión.
+
+---
+
+# 5. DATA MODEL DIAGRAM
+
+```mermaid
+erDiagram
+    GREENHOUSE ||--o{ ZONE : contains
+    ZONE ||--o{ SENSOR_READING : records
+    ZONE ||--|| WATER_STRESS_CLASSIFICATION : latest_classification
+    ZONE ||--|| IRRIGATION_PREDICTION : latest_prediction
+    ZONE ||--o{ RECOMMENDATION : triggers
+    ZONE ||--o{ VALVE_COMMAND : executes
+    ZONE ||--o{ LOCAL_BUFFER_ENTRY : buffers
+
+    GREENHOUSE {
+        uuid id PK
+        string nombre
+        string ubicacion
+        int maxZones
+        int maxValves
+        string estadoConexion
+    }
+
+    ZONE {
+        uuid id PK
+        uuid greenhouseId FK
+        string nombre
+        float umbralEstrésConfigurable
+        string estadoActual
+    }
+
+    SENSOR_READING {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        float temperatura
+        float humedadSuelo
+        float humedadAire
+        float nivelAgua
+        boolean valido
+        float confianzaMedicion
+    }
+
+    WATER_STRESS_CLASSIFICATION {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        string nivelEstrés
+        float confianza
+        string modeloVersion
+        json vectorCaracteristicasRef
+    }
+
+    IRRIGATION_PREDICTION {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        float probabilidadRiego
+        timestamp ventanaTemporalInicio
+        timestamp ventanaTemporalFin
+        float metricaIncertidumbre
+        string modeloUsado
+    }
+
+    RECOMMENDATION {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        string prioridad
+        timestamp momentoEjecucion
+        int duracionMinutos
+        text justificacion
+        float confianza
+        string estado
+        uuid operatorId
+        json comandosModificadosJSON
+    }
+
+    VALVE_COMMAND {
+        uuid id PK
+        uuid valveId FK
+        uuid zoneId FK
+        string tipoComando
+        string idTransaccion UK
+        string origen
+        timestamp timestampValidacion
+        string estadoEjecucion
+        uuid tokenAutenticacionRef
+        uuid auditLogRef
+    }
+
+    LOCAL_BUFFER_ENTRY {
+        uuid id PK
+        string gatewayId
+        timestamp timestamp
+        string tipoPayload
+        json datosJSON
+        string estadoSincronizacion
+        string prioridadLocal
+    }
+
+    CONFLICT_RESOLUTION_LOG {
+        uuid id PK
+        timestamp timestamp
+        json comandosConcurrentesJSON
+        string prioridadAplicada
+        string resultadoResolucion
+        string metodoReconciliacion
+        uuid auditRef
+    }
+
+    AUDIT_EVENT {
+        uuid id PK
+        string decisionId
+        string componenteOrigen
+        string modeloOReglaUsado
+        json metadataJSON
+        timestamp timestampOrigen
+        string firmaTemporal
+    }
+
+    RECOMMENDATION ||--|| AUDIT_EVENT : generates
+    VALVE_COMMAND ||--|| AUDIT_EVENT : logs
+    WATER_STRESS_CLASSIFICATION ||--|| AUDIT_EVENT : logs
+    IRRIGATION_PREDICTION ||--|| AUDIT_EVENT : logs
+    CONFLICT_RESOLUTION_LOG ||--|| AUDIT_EVENT : resolves
+```
+
+----------------------------------------------------------------
+
+### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner - qwen3.6):
+# DISEÑO ALGORÍTMICO PARA EVOLUCIÓN DEL SISTEMA DE RIEGO IOT
+
+## 1. COMPUTATIONAL PROBLEM IDENTIFICATION
+Se identifican cuatro problemas computacionales críticos que requieren solución algorítmica dentro de la evolución del sistema:
+- **Clasificación del estrés hídrico (REQ-C01):** Problema de clasificación multiclase que mapea vectores de características ambientales a niveles discretos (`sin_estres`, `bajo`, `medio`, `alto`). Requiere manejo de umbrales no lineales y tolerancia a incertidumbre en mediciones.
+- **Predicción de necesidad de riego (REQ-C02):** Problema de estimación probabilística/binaria en ventanas temporales configurables. Depende de tendencias históricas, parámetros climáticos y estados actuales de estrés.
+- **Resolución de prioridades y condiciones críticas (REQ-C06, REQ-C08):** Problema de evaluación determinista con jerarquía estricta (`ParadaEmergencia > RestriccionSeguridad > ControlManual > ReglaAutomatica > OrdenProgramada`). Debe ejecutarse localmente en <3s sin conexión y detectar condiciones que impiden el riego (fallos de sensor, válvulas bloqueadas).
+- **Detección de condiciones que impiden el riego:** Problema de umbral lógico y validación de integridad. Requiere identificación rápida de valores `NO ESPECIFICADO` o fuera de rango físico para derivar a alertas en lugar de generar recomendaciones ejecutables.
+
+## 2. ALGORITHM CANDIDATES
+Se evalúan exclusivamente los cuatro candidatos especificados:
+- **Regresión Logística:** Modelo lineal para estimación probabilística. Adecuado para predicción binaria/multiclase suave, pero limitado a fronteras de decisión lineales. Requiere normalización estricta de entradas.
+- **K-Nearest Neighbors (KNN):** Algoritmo de instancias que clasifica por proximidad en el espacio de características. Flexible ante patrones locales, pero computacionalmente costoso en inferencia y sensible a la dimensionalidad y desbalance de clases.
+- **Árbol de Decisión:** Modelo de particionamiento recursivo basado en umbrales. Maneja relaciones no lineales, ofrece alta explicabilidad mediante rutas lógicas y es eficiente en inferencia. Requiere poda para evitar sobreajuste.
+- **Clasificador Basado en Reglas:** Motor lógico condicional explícito (`if-then-else`). Determinista, cumple estrictamente jerarquías de prioridad y umbrales críticos, pero carece de capacidad de generalización fuera del dominio codificado.
+
+## 3. MCTS SEARCH STRATEGY
+Conforme al requisito explícito del caso de estudio, **no se ejecutaron simulaciones ni se utilizó MCTS en runtime**. La estrategia se formaliza como un marco de exploración analítica en fase de diseño para estructurar la selección algorítmica:
+- **Nodo Raíz:** Representa el espacio de problemas computacionales (clasificación, predicción, reglas críticas).
+- **Expansión:** Generación de nodos hijos correspondientes a los cuatro candidatos. Cada nodo se ramifica según las restricciones duras del sistema (latencia <3s, explicabilidad REQ-C09, adecuación edge/cloud).
+- **Simulación Teórica:** Evaluación determinista de cada rama contra las métricas del sistema (NFR-C01, NFR-C05, REQ-C08) sin ejecución empírica. Se asignan pesos a latencia, complejidad computacional y trazabilidad. Los candidatos que violan límites de latencia o explicabilidad reciben penalizaciones deterministas.
+- **Retropropagación:** Actualización de valores de utilidad basados en la satisfacción de restricciones funcionales y no funcionales. La jerarquía de prioridades REQ-C08 se codifica como función de costo para el clasificador basado en reglas.
+- **Selección (Política UCB1 Adaptada):** Prioriza nodos con alta relación entre cumplimiento de requisitos y complejidad operativa. La política descarta automáticamente candidatos que no satisfacen restricciones duras (ej. KNN por latencia, Regresión Logística por rigidez en prioridades). El proceso converge a una selección híbrida determinista alineada con las reglas del sistema.
+
+## 4. SELECTED ALGORITHMS
+
+### A. Clasificador Basado en Reglas (Gateway Manager - Edge)
+- **Propósito:** Ejecución de reglas críticas locales, resolución de prioridades REQ-C08 y detección de condiciones que impiden el riego durante desconexiones.
+- **Entradas:** Mediciones en tiempo real (`temperatura`, `humedadSuelo`, `humedadAire`, `nivelAgua`), estado de conexión, prioridad de comando, umbrales configurados.
+- **Salidas:** Comando de válvula (`open`/`close`), flag de condición impedida, ID de transacción local, timestamp de ejecución.
+- **Complejidad:** Tiempo O(N) donde N es el número de reglas evaluadas en cascada; Espacio O(1) para estado transitorio. Garantiza latencia <3s (NFR-C01).
+- **Ventajas:** Determinista, latencia predecible, máxima explicabilidad, cumplimiento estricto de jerarquías (REQ-C08), operación offline nativa.
+- **Limitaciones:** No generaliza fuera de reglas codificadas; mantenimiento manual de umbrales; rigidez ante patrones emergentes no contemplados.
+- **Adecuación:** Ideal para Gateway por restricciones de latencia y resiliencia. No se recomienda en plataforma central para modelado predictivo complejo.
+
+### B. Árbol de Decisión (Plataforma Central)
+- **Propósito:** Clasificación del estrés hídrico (REQ-C01) y predicción de necesidad de riego (REQ-C02) mediante aprendizaje supervisado sobre datos históricos y actuales.
+- **Entradas:** Vector de características normalizado por zona (histórico, tendencias, parámetros climáticos), umbral de confianza mínimo.
+- **Salidas:** Nivel de estrés (`enum`), probabilidad de riego `[0,1]`, ventana temporal óptima, métrica de incertidumbre, ruta lógica explicativa.
+- **Complejidad:** Entrenamiento O(D·N·log(N)) donde D es dimensionalidad y N muestras; Inferencia O(depth) ≈ O(log N). Escalable para 10 zonas/20 válvulas (NFR-C03).
+- **Ventajas:** Maneja relaciones no lineales, alta explicabilidad mediante rutas de decisión, robusto a ruido moderado, fácil integración con pipelines de datos.
+- **Limitaciones:** Riesgo de sobreajuste sin poda; sensibilidad a desbalance de clases; requiere reentrenamiento ante cambios distribucionales.
+- **Adecuación:** Óptimo para Plataforma Central donde se dispone de capacidad computacional y almacenamiento histórico para modelado probabilístico y auditoría (REQ-C09, NFR-C05).
+
+*(Nota: Regresión Logística fue descartada por incapacidad de modelar umbrales no lineales críticos para estrés hídrico. KNN fue descartado por costo computacional en inferencia que viola NFR-C01 y escalabilidad limitada.)*
+
+## 5. ALGORITHM FLOW DIAGRAM
+```mermaid
+graph TD
+    A[Sensores Ambientales] -->|Mediciones Crudas| GWM[Gateway Manager<br/>Clasificador Basado en Reglas]
+    GWM --> B{¿Conexión Estable?}
+    
+    B -->|No| C[Ejecutar Reglas Críticas<br/>Prioridad REQ-C08]
+    C --> D[Buffer Local + ID Transacción]
+    D --> E{¿Conexión Restablecida?}
+    E -->|Sí| F[Conflict Resolution Manager<br/>Sincronización REQ-C07/REQ-C08]
+    
+    B -->|Sí| G[Plataforma Central<br/>Árbol de Decisión]
+    G --> H[Clasificación Estrés Hídrico REQ-C01]
+    H --> I[Predicción Necesidad Riego REQ-C02]
+    I --> J[Recommendation Manager]
+    J --> K[Aprobación Operador REQ-C04]
+    K -->|Aceptado/Modificado| L[Actuator Control Service<br/>Validación NFR-C04]
+    L --> M[Válvulas de Riego]
+    
+    F --> N[Estado Consolidado + Audit Logging REQ-C09]
+    M --> N
+    
+    style GWM fill:#e1f5fe,stroke:#01579b
+    style G fill:#fff3e0,stroke:#e65100
+    style C fill:#fff3e0,stroke:#e65100
+    style D fill:#fff3e0,stroke:#e65100
+    style F fill:#fff3e0,stroke:#e65100
+    style N fill:#e8f5e9,stroke:#2e7d32
+```
+
+----------------------------------------------------------------
+
+================================================================
+                      FIN DEL REPORTE                           
+================================================================

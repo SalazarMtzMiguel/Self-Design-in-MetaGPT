@@ -1,0 +1,60 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+erDiagram
+    USER ||--o{ SESSION_CONTEXT : "owns"
+    SESSION_CONTEXT ||--|{ MESSAGE_BUFFER : "contains ephemeral history"
+    SESSION_CONTEXT ||--o{ FILE_TRANSFER_SESSION : "coordinates"
+    PRESENCE_RECORD }|--|| USER : "tracks status"
+    AUDIT_EVENT }|--|| SESSION_CONTEXT : "logs lifecycle events"
+    AUDIT_EVENT }|--|| PRESENCE_RECORD : "records connection/disconnection"
+
+    USER {
+        string username PK "Unique LAN identifier"
+        bytes credentials_hash "Securely stored hash"
+        string roles "User/Admin privileges"
+        string status "online/offline"
+        datetime last_heartbeat_ts
+    }
+
+    SESSION_CONTEXT {
+        string session_token PK "Authenticated session ID"
+        string user_id FK "Linked user"
+        datetime expiry_timestamp "Session TTL"
+        long memory_usage_bytes "Current allocation"
+        boolean is_active "Lifecycle flag"
+    }
+
+    PRESENCE_RECORD {
+        string user_id PK/FK "User reference"
+        string username "Display name"
+        string status "online/offline"
+        datetime last_seen_timestamp "Heartbeat timestamp"
+        string connection_ip "LAN IPv4 address"
+    }
+
+    MESSAGE_BUFFER {
+        long message_id PK "Monotonic sequence ID"
+        string session_id FK "Parent session"
+        datetime timestamp "Message delivery time"
+        bytes encrypted_payload "AES-256-GCM ciphertext"
+        string integrity_hash "SHA-256 verification"
+        list recipient_ids "Target users/groups"
+        boolean is_locally_deleted "Client-side flag"
+    }
+
+    FILE_TRANSFER_SESSION {
+        string transfer_id PK "Unique transfer reference"
+        string sender_token FK "Initiating session"
+        string recipient_id FK "Target user"
+        object file_metadata "name, size, type"
+        string secure_endpoint_uri "Transfer channel"
+        string status "initiated/transferring/completed/failed"
+    }
+
+    AUDIT_EVENT {
+        long event_id PK "Monotonic log ID"
+        datetime timestamp "Event occurrence time"
+        string event_type "connection/disconnection/error/query"
+        string source_component "Originating subsystem"
+        object payload_snapshot "Structured context data"
+        string severity "info/warning/critical"
+    }

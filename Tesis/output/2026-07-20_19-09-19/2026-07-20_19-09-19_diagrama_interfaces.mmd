@@ -1,0 +1,11 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+sequenceDiagram
+    User ->> Client (GUI): Initiates login request
+    Client (GUI) ->> Authentication Component: Send username/password
+    Authentication Component ->> User Database: Validate credentials
+    User Database ->> Authentication Component: Return validation result
+    Authentication Component ->> Session Manager: Create session
+    Session Manager ->> AuthPresenceInterface: Update user status to online
+    AuthPresenceInterface ->> User Presence Component: Notify of status change
+    User Presence Component ->> AdminPresenceInterface: Update active users list
+    AdminPresenceInterface ->> Admin Interface: Display updated list

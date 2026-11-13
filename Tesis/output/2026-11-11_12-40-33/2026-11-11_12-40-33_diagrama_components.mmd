@@ -1,0 +1,51 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+graph TD
+    subgraph Capa_Borde [Capa de Borde (Gateway)]
+        GM[Gateway Manager]
+        DC[Device Communication]
+        V[Válvulas]
+    end
+
+    subgraph Capa_Central [Plataforma Central]
+        DS[Data Storage]
+        CLS[Water Stress Classifier]
+        IPS[Irrigation Prediction Service]
+        RM[Recommendation Manager]
+        ACS[Actuator Control Service]
+        CRM[Conflict Resolution Manager]
+        AL[Audit Logging]
+    end
+
+    subgraph Externo [Actores y Sensores]
+        S[Sensores Ambientales]
+        OP[Operador]
+    end
+
+    %% Flujo Normal
+    S -->|Mediciones| GM
+    GM -->|Telemetría segura| DS
+    DS -->|Contexto actual/histórico| CLS
+    DS -->|Contexto actual/histórico| IPS
+    CLS -->|Clasificación estrés hídrico| RM
+    IPS -->|Predicción necesidad riego| RM
+    RM -->|Recomendación estructurada| OP
+    OP -->|Acepta/Modifica/Rechaza| RM
+    alt Recomendación Aceptada
+        RM -->|Solicita comando| ACS
+        ACS -->|Valida permisos| CRM
+        CRM -->|Arbitra prioridades/fusiona| ACS
+        ACS -->|Comando validado| GM
+        GM -->|Ejecuta apertura/cierre| DC
+        DC -->|Estado/Confirmación| V
+    end
+
+    %% Sincronización y Auditoría
+    GM -.->|Cola local + logs| CRM
+    CRM -.->|Consolida estados| DS
+    AL -.->|Registra datos, reglas y modelos| DS
+    AL -.->|Registra decisiones| RM
+    AL -.->|Registra ejecuciones| ACS
+
+    style Capa_Borde fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style Capa_Central fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style Externo fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px

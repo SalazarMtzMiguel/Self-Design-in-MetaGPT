@@ -1,0 +1,424 @@
+================================================================
+REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-07-02_11-21-43)
+================================================================
+
+### 1. INITIAL REQUIREMENT:
+We are going to develop a university management platform.
+1. Functional Requirements (FR)
+1.1 User Management
+FR01: The system must allow registration of students, professors, administrators, and administrative staff.
+FR02: The system must support rolebased authentication (RBAC).
+FR03: The system must support login using institutional email and password.
+FR04: The system must allow password recovery via institutional email.
+FR05: The system must allow assigning multiple roles to a single user (e.g., professor + coordinator).
+1.2 Academic Management
+FR06: The system must allow creation, editing, and deletion of study programs.
+FR07: The system must allow defining courses with prerequisites.
+FR08: The system must allow assigning courses to semesters or modules.
+FR09: The system must allow assigning professors to specific courses.
+FR10: The system must allow a professor to teach multiple groups per course.
+1.3 Enrollment and Academic Control
+FR11: The system must allow student enrollment per academic period.
+FR12: The system must validate prerequisites before enrollment.
+FR13: The system must prevent overcapacity in course groups.
+FR14: The system must allow temporary or permanent course withdrawal.
+FR15: The system must maintain a complete academic history for each student.
+1.4 Evaluations and Grades
+FR16: The system must allow creation of course evaluations.
+FR17: The system must support different evaluation types (exam, assignment, project, participation).
+FR18: The system must calculate weighted final grades.
+FR19: The system must allow grade entry by professors.
+FR20: The system must allow students to review their grades.
+1.5 Scheduling and Resource Allocation
+FR21: The system must generate schedules while avoiding conflicts between classrooms, professors, and students.
+FR22: The system must allow assignment of physical or virtual classrooms.
+FR23: The system must support classroom reservations for academic events.
+FR24: The system must automatically detect scheduling conflicts.
+1.6 Communication
+FR25: The system must allow internal messaging between students and professors.
+FR26: The system must allow global institutional announcements.
+FR27: The system must send notifications via email or internal system.
+FR28: The system must allow classbased communication groups.
+1.7 Institutional Administration
+FR29: The system must generate academic reports by student, group, and program.
+FR30: The system must generate academic performance statistics.
+FR31: The system must allow auditing of grade changes.
+FR32: The system must allow management of academic periods.
+1.8 Payments (optional but useful for system stress testing)
+FR33: The system must record enrollment or tuition payments.
+FR34: The system must generate student account statements.
+FR35: The system must block enrollment if outstanding debts exist.
+2. NonFunctional Requirements (NFR)
+2.1 Performance
+NFR01: The system must support at least 50,000 concurrent users.
+NFR02: Academic history queries must respond in less than 2 seconds.
+NFR03: Schedule generation must not exceed 30 seconds per academic period.
+NFR04: The system must handle peak loads during enrollment periods without critical degradation.
+2.2 Scalability
+NFR05: The system must be horizontally scalable by modules (users, academics, payments).
+NFR06: The system must support domainbased service separation (microservicesready).
+NFR07: The system must handle data growth without requiring database restructuring.
+2.3 Security
+NFR08: All communications must be encrypted (TLS 1.2 or higher).
+NFR09: The system must implement rolebased access control (RBAC).
+NFR10: Passwords must be stored using secure hashing (bcrypt or equivalent).
+NFR11: The system must log audit trails for critical access and modifications.
+NFR12: The system must prevent SQL injection and common OWASP Top 10 attacks.
+2.4 Availability
+NFR13: The system must guarantee at least 99.5% uptime.
+NFR14: The system must provide fault tolerance for critical modules (users, enrollment).
+NFR15: The system must support disaster recovery with daily automatic backups.
+2.5 Maintainability
+NFR16: The system must be modularized by functional domains.
+NFR17: The code must follow clean architecture standards.
+NFR18: There must be a clear separation between business logic and persistence.
+NFR19: Changes in one module must not affect others (low coupling).
+2.6 Usability
+NFR20: The interface must be intuitive for nontechnical users.
+NFR21: The system must be accessible from mobile devices.
+NFR22: The system must comply with basic accessibility standards (WCAG 2.1 AA level).
+2.7 Interoperability
+NFR23: The system must expose REST or GraphQL APIs for external integration.
+NFR24: The system must support integration with external systems (library, payments, LMS).
+NFR25: The system must support data export in CSV, JSON, and PDF formats.
+2.8 Data Consistency
+NFR26: Critical operations (enrollment, grading) must be transactional.
+NFR27: The system must ensure strong consistency in academic data.
+NFR28: No data loss must occur under concurrent operations.
+
+----------------------------------------------------------------
+
+### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner - local):
+
+
+### System Architecture
+
+#### 1. **ARCHITECTURAL STYLE**
+- **Recommended Architecture Pattern**: Microservices  
+- **Justification**: The system is designed as a microservices architecture, where each functional requirement (e.g., user management, academic management) is encapsulated into its own service layer. This modular design allows for easier development, testing, and maintenance of individual components while enabling cross-domain communication through a unified interface.
+
+#### 2. **SYSTEM SUBSYSTEMS**
+- **User Management Service**: Manages registration, role-based authentication, login, password recovery, and assigning multiple roles to users.
+- **Academic Management Service**: Manages course creation, editing, deletion, defining prerequisites, assigning courses to semesters or modules, and managing professors-to-courses assignments.
+- **Enrollment and Academic Control Service**: Manages student enrollment per academic period, validates prerequisites, prevents overcapacity in course groups, and allows temporary or permanent course withdrawals.
+- **Evaluation and Grades Service**: Manages course evaluations, supports different evaluation types (exam, assignment, project, participation), calculates weighted final grades, and allows grade entry by professors.
+- **Scheduling and Resource Allocation Service**: Generates schedules while avoiding conflicts between classrooms, assigns physical or virtual classrooms, and automatically detects scheduling conflicts.
+
+#### 3. **SYSTEM BOUNDARIES**
+- **Internal System Boundary**: Students, faculty, staff (user domain).
+- **External Stakeholders Boundary**: Administrative staff, payments, external systems (e.g., LMS, payments system).
+
+#### 4. **COMMUNICATION AND DATA FLOW**
+- **Communication Strategy**:  
+  - Real-time messaging between students and professors via a unified communication interface.
+  - Global institutional announcements through email or internal system.
+  - Notifications via email or internal system for class-based communication groups.
+  - Automatic detection of scheduling conflicts.
+
+#### 5. **ARCHITECTURE INTERACTION DIAGRAM**
+```
+mermaid
+A --> [Students]
+A --> [Professors]
+A --> [Administrative Staff]
+A --> [Academic Control]
+B --> [Students]
+B --> [Professor]
+C --> [Course]
+D --> [Semester/Module]
+E --> [Assigns Prof to Course]
+F --> [Course] (Enrolled)
+G --> [Prerequisites]
+H --> [Overcrowded Check]
+I --> [Course Group Conflict]
+J --> [Course Withdrawal]
+K --> [Student] (Enrolled)
+L --> [Professor] (Grades Entry)
+M --> [Grade] (Review)
+N --> [Grade] (Update)
+O --> [Academic Period]
+P --> [Enrollment] (Enroll/Teach)
+Q --> [Enrollment] (Enroll/Teach)
+R --> [Enrollment] (Enroll/Teach)
+S --> [Enrollment] (Enroll/Teach)
+T --> [Enrollment] (Enroll/Teach)
+U --> [Enrollment] (Enroll/Teach)
+V --> [Enrollment] (Enroll/Teach)
+W --> [Enrollment] (Enroll/Teach)
+X --> [Enrollment] (Enroll/Teach)
+Y --> [Enrollment] (Enroll/Teach)
+Z --> [Enrollment] (Enroll/Teach)
+```
+
+#### 6. **ARCHITECTURE INTERACTION Diagram**:  
+This diagram shows how all microservices communicate through a central point, such as the unified communication interface or event queue. Each service is represented by a node, and their interactions are shown as arrows between nodes.
+
+---
+
+### Output Constraints
+- The architecture should be precise and technically rigorous.
+- No external requirements or inventories should be defined.
+- The design should preserve traceability with the original system requirements.
+- The architecture should follow best practices for modularization, communication, and data consistency.
+
+----------------------------------------------------------------
+
+### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner - local):
+
+
+### Component Design for User Management Service
+
+#### 1. **COMPONENT OVERVIEW:
+The User Management Service is responsible for managing user registration and role assignment across students, professors, and administrators.
+
+---
+
+#### 2. **COMPONENT SPECIFICATION:
+
+**Component Name**: User Management Service  
+**Responsibility**: Manages user registration, assigns roles, handles authentication, and manages multiple roles per user.
+
+**Internal Behavior**:
+- Registers new users with their details (student, faculty, admin).
+- Assigns roles to users based on permissions or predefined roles.
+- Manages login and password recovery for existing users.
+- Handles assigning multiple roles to a single user when necessary.
+
+**Dependencies**:  
+- **Input/Output**:  
+  - User ID, email, password (for initial registration).  
+  - Outputs: User details (name, role), status updates for roles assigned.
+
+---
+
+#### 3. **COMPONENT RESPONSIBILITY BOUNDARIES:
+- **Responsibility to Register Users**: Manages user registration with institutional email and password.
+- **Responsibility to Assign Roles**: Handles role assignment based on permissions or predefined roles.
+- **Responsibility to Recover Passwords**: Manages password recovery for existing users.
+
+---
+
+#### 4. **COMPONENT COMMUNICATION BOUNDARIES:
+The User Management Service communicates through a unified communication interface, such as email or internal system, ensuring seamless interactions between different services.
+
+**Interaction Diagram:**
+```
+A --> [Students] --> [User Details]
+A --> [Users] --> [Role Assignments]
+A --> [Users] --> [Authentications]
+B --> [Users] --> [Enroll/Teach]
+```
+
+---
+
+### Component Design Summary:
+The User Management Service is designed to handle core user registration and role assignment, ensuring secure authentication and multiple roles per user. It communicates with other services through a unified interface, maintaining data consistency and communication boundaries.
+
+This design adheres to the microservices architecture pattern, allowing each component to be developed independently while maintaining cross-domain collaboration through communication boundaries.
+
+----------------------------------------------------------------
+
+### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner - local):
+
+
+### Component Design Summary:
+
+The university management platform is designed using a microservices architecture, where each service handles specific responsibilities while communicating through a unified interface.
+
+---
+
+#### 1. **COMPONENT OVERVIEW:
+The User Management Service manages user registration and role assignment across students, faculty, and administrators.
+
+---
+
+#### 2. **COMPONENT SPECIFICATION:
+
+**Component Name**: User Management Service  
+**Responsibility**: Manages user registration, assigns roles, handles authentication, and manages multiple roles per user.
+
+**Internal Behavior**:
+- Registers new users with institutional email and password.
+- Assigns roles to users based on permissions or predefined roles.
+- Manages login and password recovery for existing users.
+- Handles assigning multiple roles to a single user when necessary.
+
+**Dependencies**:  
+- **Input/Output**:  
+  - User ID, email, password (for initial registration).  
+  - Outputs: User details (name, role), status updates for roles assigned.
+
+---
+
+#### 3. **COMPONENT RESPONSIBILITY BOUNDARIES:
+- **Responsibility to Register Users**: Manages user registration with institutional email and password.
+- **Responsibility to Assign Roles**: Handles role assignment based on permissions or predefined roles.
+- **Responsibility to Recover Passwords**: Manages password recovery for existing users.
+
+---
+
+#### 4. **COMPONENT COMMUNICATION BOUNDARIES:
+The User Management Service communicates through a unified communication interface, such as email or internal system, ensuring seamless interactions between different services.
+
+**Interaction Diagram:**
+```
+A --> [Students] --> [User Details]
+A --> [Users] --> [Role Assignments]
+A --> [Users] --> [Authentications]
+B --> [Users] --> [Enroll/Teach]
+```
+
+---
+
+### INTERFACE OVERVIEW:
+The communication strategy focuses on real-time messaging between users and institutions, ensuring seamless interactions without centralizing all communications.
+
+---
+
+### INTERFACE CONTRACTS:
+
+#### **User Management Service**
+- **Contract Name**: UserManagementService
+- **Provider**: University
+- **Consumer**: Students, Professors, Administrative Staff
+- **Operations**:
+  - Register new users.
+  - Assign roles to existing users.
+  - Handle login and password recovery.
+  - Manage multiple roles for a single user.
+- **Input Parameters**:
+  - User ID, email, password (for registration).
+  - Role assignments (existing or new).
+- **Output Responses**:
+  - User details (name, role) upon registration.
+  - Role assignments in a list format.
+
+---
+
+### COMMUNICATION PROTOCOLS:
+
+The communication protocol uses a unified interface for real-time messaging between services.
+
+---
+
+### ERROR AND VALIDATION RULES:
+
+- **Failure Conditions**:  
+  - No user registered with institutional email or account.  
+  - Invalid role assignment without the appropriate institutional email or account.
+- **Validation Rules**:
+  - Roles must be verified through institutional email before granting access.
+  - Role assignments are subject to institutional approval.
+
+---
+
+### INTERACTION Diagram:
+
+```
+A --> [Students] --> [User Details]
+A --> [Users] --> [Role Assignments]
+A --> [Users] --> [Authentications]
+B --> [Users] --> [Enroll/Teach]
+```
+
+----------------------------------------------------------------
+
+### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner - local):
+
+
+**Component Design Summary: User Management Service**
+
+---
+
+### Component Overview:
+The User Management Service manages user registration, role assignment, login, and password recovery across students, faculty, and administrators.
+
+---
+
+### **1. Component Specification:**
+- **Responsibility:** Manages user registration, assigns roles, handles authentication, and manages multiple roles per user.
+- **Internal Behavior:**
+  - Registers new users with institutional email and password.
+  - Assigns roles to existing users based on permissions or predefined roles.
+  - Manages login and password recovery for existing users.
+  - Handles assigning multiple roles to a single user when necessary.
+
+**Dependencies:**  
+- **Input/Output:**  
+  - User ID, email, password (for initial registration).  
+  - Outputs: User details (name, role), status updates for roles assigned.
+
+---
+
+### **2. Component Responsibilities Boundary:**
+- **Responsibility to Register Users:** Manages user registration with institutional email and password.
+- **Responsibility to Assign Roles:** Handles role assignment based on permissions or predefined roles.
+- **Responsibility to Recover Passwords:** Manages password recovery for existing users.
+
+---
+
+### **3. Component Communication Boundary:**
+The User Management Service communicates through a unified communication interface, such as email or internal system, ensuring seamless interactions between different services.
+
+**Interaction Diagram:**
+```
+A --> [Students] --> [User Details]
+A --> [Users] --> [Role Assignments]
+A --> [Users] --> [Authentications]
+B --> [Users] --> [Enroll/Teach]
+```
+
+---
+
+### **4. Component Design Summary:**
+The User Management Service is designed to handle core user registration and role assignment, ensuring secure authentication and multiple roles per user. It communicates with other services through a unified interface, maintaining data consistency and communication boundaries.
+
+This design adheres to the microservices architecture pattern, allowing each component to be developed independently while maintaining cross-domain collaboration through communication boundaries.
+
+----------------------------------------------------------------
+
+### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner - local):
+
+
+### Output Constraints
+- Do not redesign architecture.
+- Do not modify components.
+- Do not change data structures.
+- Focus only on algorithm selection and design.
+
+---
+
+### Component Design Summary:
+
+The User Management Service is responsible for managing user registration, role assignment, login, and password recovery. It communicates with other services through a unified interface to ensure seamless interactions between different domains.
+
+**Component Design Summary:**
+- **Responsibility:** Manages user registration, assigns roles, handles authentication, and manages multiple roles per user.
+- **Internal Behavior:**
+  - Registers new users with institutional email and password.
+  - Assigns roles to existing users based on permissions or predefined roles.
+  - Manages login and password recovery for existing users.
+  - Handles assigning multiple roles to a single user when necessary.
+- **Dependencies:**  
+  - **Input/Output:**  
+    - User ID, email, password (for initial registration).  
+    - Outputs: User details (name, role), status updates for roles assigned.
+
+---
+
+### Component Responsibilities Boundary:
+The User Management Service communicates through a unified communication interface, such as email or internal system, ensuring seamless interactions between different services.
+
+**Interaction Diagram:**
+```
+A --> [Students] --> [User Details]
+A --> [Users] --> [Role Assignments]
+A --> [Users] --> [Authentications]
+B --> [Users] --> [Enroll/Teach]
+```
+
+----------------------------------------------------------------
+
+================================================================
+                      FIN DEL REPORTE                           
+================================================================

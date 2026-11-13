@@ -1,0 +1,126 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+erDiagram
+    ZONE ||--o{ TELEMETRYMEASUREMENT : "genera"
+    ZONE ||--o{ VALVE : "contiene"
+    ZONE ||--o{ STRESSCLASSIFICATION : "clasifica"
+    ZONE ||--o{ IRRIGATIONPREDICTION : "predice"
+    ZONE ||--o{ RECOMMENDATION : "genera"
+    
+    VALVE ||--o{ ACTUATIONCOMMAND : "recibe"
+    VALVE ||--o{ RECOMMENDATION : "asociada_a"
+    
+    STRESSCLASSIFICATION ||--|| IRRIGATIONPREDICTION : "alimenta"
+    
+    RECOMMENDATION ||--o| ACTUATIONCOMMAND : "dispara"
+    
+    ACTUATIONCOMMAND }|--|| CONFLICTRESOLUTIONLOG : "arbitrado_por"
+    ACTUATIONCOMMAND }|--|| AUDITTRAILENTRY : "registrado_en"
+    STRESSCLASSIFICATION }|--|| AUDITTRAILENTRY : "registrado_en"
+    IRRIGATIONPREDICTION }|--|| AUDITTRAILENTRY : "registrado_en"
+    RECOMMENDATION }|--|| AUDITTRAILENTRY : "registrado_en"
+    
+    ZONE {
+        uuid zone_id PK
+        uuid greenhouse_id
+        int irrigation_capacity_liters
+        enum current_stress_level
+        timestamp last_prediction_timestamp
+        string operational_status
+    }
+    
+    TELEMETRYMEASUREMENT {
+        uuid measurement_id PK
+        uuid zone_id FK
+        uuid greenhouse_id
+        timestamp timestamp
+        float temperature_celsius
+        float soil_humidity_percent
+        float air_humidity_percent
+        float water_level_mm
+        string sensor_status_code
+        string correlation_id
+        string model_version_ref
+    }
+    
+    VALVE {
+        uuid valve_id PK
+        uuid zone_id FK
+        enum physical_state
+        int[] authorized_priority_levels
+        string sync_nonce
+        string vector_clock
+        uuid last_command_id
+    }
+    
+    STRESSCLASSIFICATION {
+        uuid classification_id PK
+        uuid zone_id FK
+        timestamp timestamp
+        enum stress_level
+        float confidence_score
+        string model_version
+        string rule_applied
+        string correlation_id
+    }
+    
+    IRRIGATIONPREDICTION {
+        uuid prediction_id PK
+        uuid zone_id FK
+        timestamp timestamp
+        float predicted_need_probability
+        timestamp time_window_start
+        timestamp time_window_end
+        float confidence_score
+        string model_version
+        string correlation_id
+    }
+    
+    RECOMMENDATION {
+        uuid recommendation_id PK
+        uuid zone_id FK
+        uuid valve_id FK
+        int priority_level
+        timestamp scheduled_time
+        int duration_seconds
+        text justification_text
+        enum operator_decision
+        json modification_details
+        string status
+        timestamp created_at
+    }
+    
+    ACTUATIONCOMMAND {
+        uuid command_id PK
+        uuid valve_id FK
+        enum type
+        int duration_override
+        enum initiator
+        int priority_applied
+        string validation_token
+        string sync_nonce
+        string vector_clock
+        string status
+        timestamp execution_timestamp
+    }
+    
+    CONFLICTRESOLUTIONLOG {
+        uuid log_id PK
+        uuid[] command_ids_involved
+        int resolution_priority
+        uuid merged_command_id
+        uuid[] discarded_commands
+        timestamp timestamp
+        string resolver_component
+    }
+    
+    AUDITTRAILENTRY {
+        uuid log_id PK
+        string correlation_id
+        string component_source
+        string data_snapshot_ref
+        string rule_applied
+        string model_used
+        text decision_context
+        timestamp timestamp
+        string immutable_hash
+    }

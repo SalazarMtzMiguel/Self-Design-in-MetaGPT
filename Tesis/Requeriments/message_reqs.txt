@@ -1,0 +1,35 @@
+ Functional Requirements
+
+1. The system shall allow users to register using a unique username within the local network.
+2. The system shall allow users to log in and log out of the application.
+3. The system shall display a list of currently connected users on the LAN.
+4. The system shall allow users to send text messages to other connected users.
+5. The system shall allow users to receive messages in real time.
+6. The system shall temporarily store the message history during an active session.
+7. The system shall allow users to create group chats.
+8. The system shall notify users when a new message is received.
+9. The system shall display the date and time associated with each message.
+10. The system shall allow users to search for connected users by username.
+11. The system shall indicate the connection status of users (online/offline).
+12. The system shall allow users to delete their local conversation history.
+13. The system shall allow users to share small files (e.g., images and documents) over the local network.
+14. The system shall record basic system events, such as user connections and disconnections.
+15. The system shall allow an administrator to view all active users in the application.
+
+ Non-Functional Requirements
+
+1. The application shall operate exclusively within an IPv4-based Local Area Network (LAN).
+2. Message delivery time shall not exceed two seconds under normal network conditions.
+3. The application shall support at least 50 concurrent users.
+4. The graphical user interface shall be intuitive and allow users to perform core functions within a maximum of three clicks.
+5. The system shall maintain an availability of at least 99% during operation.
+6. The application shall be compatible with Windows and Linux operating systems.
+7. The application's memory consumption shall not exceed 200 MB during normal operation.
+8. The system shall implement authentication mechanisms to prevent unauthorized access.
+9. The application shall encrypt transmitted messages using a standard encryption algorithm (e.g., AES).
+10. The system shall preserve the integrity of messages during transmission and reception.
+11. The application shall start in less than 10 seconds.
+12. The system shall automatically recover from temporary server connection failures.
+13. The source code shall be documented according to a documentation standard established by the development team.
+14. The system shall follow a client-server architecture to facilitate maintenance and scalability.
+15. The application shall generate logs to support monitoring and debugging activities.

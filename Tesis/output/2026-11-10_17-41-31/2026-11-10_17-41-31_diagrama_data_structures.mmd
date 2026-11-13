@@ -1,0 +1,122 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+erDiagram
+    GREENHOUSE ||--o{ ZONE : contains
+    ZONE ||--o{ SENSOR_READING : records
+    ZONE ||--|| WATER_STRESS_CLASSIFICATION : latest_classification
+    ZONE ||--|| IRRIGATION_PREDICTION : latest_prediction
+    ZONE ||--o{ RECOMMENDATION : triggers
+    ZONE ||--o{ VALVE_COMMAND : executes
+    ZONE ||--o{ LOCAL_BUFFER_ENTRY : buffers
+
+    GREENHOUSE {
+        uuid id PK
+        string nombre
+        string ubicacion
+        int maxZones
+        int maxValves
+        string estadoConexion
+    }
+
+    ZONE {
+        uuid id PK
+        uuid greenhouseId FK
+        string nombre
+        float umbralEstrésConfigurable
+        string estadoActual
+    }
+
+    SENSOR_READING {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        float temperatura
+        float humedadSuelo
+        float humedadAire
+        float nivelAgua
+        boolean valido
+        float confianzaMedicion
+    }
+
+    WATER_STRESS_CLASSIFICATION {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        string nivelEstrés
+        float confianza
+        string modeloVersion
+        json vectorCaracteristicasRef
+    }
+
+    IRRIGATION_PREDICTION {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        float probabilidadRiego
+        timestamp ventanaTemporalInicio
+        timestamp ventanaTemporalFin
+        float metricaIncertidumbre
+        string modeloUsado
+    }
+
+    RECOMMENDATION {
+        uuid id PK
+        uuid zoneId FK
+        timestamp timestamp
+        string prioridad
+        timestamp momentoEjecucion
+        int duracionMinutos
+        text justificacion
+        float confianza
+        string estado
+        uuid operatorId
+        json comandosModificadosJSON
+    }
+
+    VALVE_COMMAND {
+        uuid id PK
+        uuid valveId FK
+        uuid zoneId FK
+        string tipoComando
+        string idTransaccion UK
+        string origen
+        timestamp timestampValidacion
+        string estadoEjecucion
+        uuid tokenAutenticacionRef
+        uuid auditLogRef
+    }
+
+    LOCAL_BUFFER_ENTRY {
+        uuid id PK
+        string gatewayId
+        timestamp timestamp
+        string tipoPayload
+        json datosJSON
+        string estadoSincronizacion
+        string prioridadLocal
+    }
+
+    CONFLICT_RESOLUTION_LOG {
+        uuid id PK
+        timestamp timestamp
+        json comandosConcurrentesJSON
+        string prioridadAplicada
+        string resultadoResolucion
+        string metodoReconciliacion
+        uuid auditRef
+    }
+
+    AUDIT_EVENT {
+        uuid id PK
+        string decisionId
+        string componenteOrigen
+        string modeloOReglaUsado
+        json metadataJSON
+        timestamp timestampOrigen
+        string firmaTemporal
+    }
+
+    RECOMMENDATION ||--|| AUDIT_EVENT : generates
+    VALVE_COMMAND ||--|| AUDIT_EVENT : logs
+    WATER_STRESS_CLASSIFICATION ||--|| AUDIT_EVENT : logs
+    IRRIGATION_PREDICTION ||--|| AUDIT_EVENT : logs
+    CONFLICT_RESOLUTION_LOG ||--|| AUDIT_EVENT : resolves

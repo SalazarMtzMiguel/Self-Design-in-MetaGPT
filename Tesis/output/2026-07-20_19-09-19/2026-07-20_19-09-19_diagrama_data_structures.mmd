@@ -1,0 +1,62 @@
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'Inter' }}}%%
+erDiagram
+
+    User {
+        ++ username : string (PK)
+        password_hash : string
+        session_token : string
+        connection_status : enum
+        created_at : timestamp
+        last_active : timestamp
+    }
+
+    Message {
+        ++ message_id : UUID (PK)
+        content : text
+        timestamp : datetime
+        sender_id : string
+        is_group_message : boolean
+    }
+
+    Group_Chat {
+        ++ group_id : UUID (PK)
+        name : string
+        created_at : datetime
+    }
+
+    File_Transfer {
+        ++ transfer_id : UUID (PK)
+        file_name : string
+        file_size : integer
+        content_hash : string
+        transfer_timestamp : datetime
+    }
+
+    Event_Log {
+        ++ event_id : UUID (PK)
+        event_type : enum
+        timestamp : datetime
+        details : JSON
+    }
+
+    Session {
+        ++ session_id : UUID (PK)
+        user_id : string
+        token : string
+        start_time : datetime
+        expiration_time : datetime
+    }
+
+    User }o--|{ Message : sends
+    User }o--|{ Message : receives
+    User }o--|{ Group_Chat : creates
+    User }o--|{ Group_Chat : belongs_to
+    User }o--|{ File_Transfer : initiates
+    User }o--|{ File_Transfer : receives
+    User }o--|{ Event_Log : triggers
+    User }o--|{ Session : has
+
+    Message }o--|{ Group_Chat : part_of
+    Message }o--|{ User : sent_to
+
+    Group_Chat }o--|{ User : includes
