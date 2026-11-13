@@ -409,6 +409,35 @@ sequenceDiagram
     ResponsableInfraestructura->>SupervisionPlatform: Monitor network status
 ```
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Sensores as Sensores Ambientales
+    participant Gateway as Gateway IoT
+    participant Plataforma as Plataforma Central
+    participant Almacenamiento as Almacenamiento
+    participant Clasificador as Módulo de Clasificación
+    participant Alertas as Módulo de Alertas
+    participant Externo as Modulo configuración de parámetros
+
+    Sensores->>Gateway: Envía lecturas ambientales (temperatura, humedad, humo, luz)
+    Gateway->>Plataforma: Reenvía datos normalizados
+    Plataforma->>Almacenamiento: Persiste mediciones históricas/actuales
+    Plataforma->>Clasificador: Evalúa estado ambiental frente a umbrales base
+
+    
+    Clasificador->>Alertas: Notifica evento fuera de límite
+    
+
+    %% Nuevo flujo: ajuste de parámetros desde el exterior
+    Externo->>Plataforma: Solicitud de ajuste de parámetros (umbrales, frecuencias, etc.)
+    Plataforma->>Almacenamiento: Actualiza configuración / umbrales
+    Plataforma->>Clasificador: Aplica nuevos parámetros
+    Plataforma-->>Externo: Confirma actualización de parámetros
+
+
+```
+
 This architecture ensures that the system is highly scalable, fault-tolerant, and capable of making autonomous decisions at different levels of the infrastructure, while also providing a centralized interface for human operators to monitor and intervene as needed.
 
 ----------------------------------------------------------------

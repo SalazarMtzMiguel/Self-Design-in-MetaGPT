@@ -76,8 +76,8 @@ class DataStructuresDesigner(Role):
     
     def __init__(self, **data):
         super().__init__(**data)
-        #self.target_model_id = "qwen3.6"
-        self.target_model_id = "local"
+        self.target_model_id = "qwen3.6"
+        #self.target_model_id = "local"
         #self.target_model_id = "gemmaOnline"
         selected_llm_config = None
         

@@ -8,7 +8,7 @@ from loguru import logger
 from metagpt.configs.llm_config import LLMConfig
 
 
-DEFAULT_LLM_NAME = "local"
+DEFAULT_LLM_NAME = "qwen3.6"
 CONFIG_PATH = Path(__file__).resolve().parents[1] / "config2.yaml"
 
 

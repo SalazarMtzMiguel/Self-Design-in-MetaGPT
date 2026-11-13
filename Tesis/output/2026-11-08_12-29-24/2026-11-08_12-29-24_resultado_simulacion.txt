@@ -1,100 +1,112 @@
 ================================================================
-REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-11-08_12-29-24)
+REPORT OF MULTI-AGENT EXECUTION - MASTER'S THESIS (2026-11-13)
 ================================================================
 
 ### 1. INITIAL REQUIREMENT:
 Caso de estudio 1: Evolución por mantenimiento
 
- Documento: Sistema IoT de monitoreo ambiental con mantenimiento incremental
+Documento: Sistema IoT de monitoreo ambiental en un parque nacional con mantenimiento correctivo incremental
 
- 1. Contexto del sistema
+1. Contexto del sistema
 
-Se requiere diseñar un sistema IoT para monitorear las condiciones ambientales de un invernadero experimental. El sistema recibe datos de sensores de temperatura, humedad relativa, humedad del suelo e intensidad luminosa.
+Se considera un sistema IoT de monitoreo ambiental desplegado en un parque nacional. Su propósito es monitorear de forma continua las condiciones ambientales mediante sensores distribuidos, con el fin de detectar oportunamente condiciones asociadas a incendios forestales y generar alertas que apoyen la toma de decisiones de los responsables de conservación del área protegida.
 
-La arquitectura existente está compuesta por:
+El sistema cuenta con el Ether propio de un Sistema SES, extendido mediante la propuesta del capítulo.
 
-- Sensores ambientales.
-- Un gateway IoT.
-- Una plataforma central.
-- Un almacenamiento de mediciones.
-- Un módulo de visualización.
-- Un módulo de generación de alertas.
-- Un módulo de clasificación de condiciones ambientales.
+La arquitectura existente sigue un esquema centralizado de adquisición, procesamiento y análisis de datos. Está compuesta por:
+
+- Sensores ambientales: gases (humo), anemómetro (velocidad del viento), veleta (dirección del viento), luminosidad (intensidad de luz), temperatura y humedad relativa.
+- Un gateway IoT que facilita la comunicación entre los componentes del sistema.
+- Una plataforma central, núcleo de procesamiento responsable del análisis de la información recopilada.
+- Un almacenamiento de mediciones (base de datos de mediciones históricas y actuales).
+- Un módulo de clasificación de alertas, que evalúa el estado ambiental frente a umbrales.
+- Un módulo de generación de alertas, que notifica los eventos fuera de límite.
 
 El sistema ya se encuentra operativo. El objetivo de este caso de estudio no es rediseñar la arquitectura, sino realizar modificaciones limitadas de mantenimiento.
 
- 2. Objetivo del sistema
+2. Detonante del mantenimiento
+
+Durante la operación del sistema se observó un incremento en la cantidad de alertas de incendio clasificadas posteriormente como falsas alarmas. La validación, realizada mediante un sistema externo basado en drones (fotografías aéreas), evidenció que múltiples alertas habían sido generadas por fluctuaciones temporales, particularmente incrementos de temperatura y ráfagas de viento observadas durante el verano, y no por incendios reales. Esta situación redujo la confianza en el sistema de monitoreo.
+
+Como consecuencia, los propios drones de monitoreo elaboraron una solicitud de mantenimiento correctivo orientada a reducir la tasa de falsos positivos sin comprometer la capacidad de detección temprana de incendios.
+
+A partir de la solicitud, el agente analizador del Ether definió nuevos requisitos funcionales (sección 6) destinados a incorporar mecanismos de validación, clasificación y filtrado de alertas ambientales, y determinó que la arquitectura tiene la suficiente elasticidad para llevar a cabo la evolución.
+
+3. Objetivo del sistema
 
 El sistema debe:
 
-- Monitorear las condiciones ambientales del invernadero.
-- Detectar condiciones ambientales normales y anómalas.
+- Monitorear las condiciones ambientales del parque nacional.
+- Detectar condiciones normales y anómalas asociadas a riesgo de incendio.
 - Generar alertas cuando una variable se encuentre fuera de los límites configurados.
-- Clasificar el riesgo ambiental de cada zona.
+- Clasificar la severidad de cada evento ambiental.
+- Reducir las falsas alarmas sin perder capacidad de detección temprana.
 - Permitir modificar parámetros de configuración sin modificar la arquitectura base.
 
- 3. Clasificación ontológica
+4. Clasificación ontológica
 
- Objetivo
+Objetivo
 
-- Predicción de la clase de riesgo ambiental.
-- Detección de condiciones anómalas.
+- Predicción/clasificación de la severidad del evento ambiental.
+- Detección de condiciones anómalas (riesgo de incendio).
 - Generación de alertas.
 
- Procesamiento
+Procesamiento
 
 - Procesamiento centralizado en la plataforma IoT.
 - El gateway únicamente recopila y reenvía los datos.
 
- Capa de procesamiento
+Capa de procesamiento
 
 - Percepción: adquisición de mediciones de sensores.
 - Middleware: comunicación, normalización y almacenamiento.
 - Aplicación: clasificación de condiciones y generación de alertas.
 
- Interacción
+Interacción
 
-- Sistema-sistema: sensores, gateway y plataforma central.
-- Sistema-humano: operador que consulta mediciones y alertas.
+- Sistema-sistema: sensores, gateway, plataforma central, módulo externo de configuración de parámetros y sistema de drones (validación externa).
+- Sistema-humano: responsables de conservación que consultan mediciones y alertas.
 
- Incertidumbre
+Incertidumbre
 
 - Incertidumbre en las mediciones debido al ruido de los sensores.
 - Incertidumbre en los parámetros de los umbrales.
-- Incertidumbre del modelo de clasificación ambiental.
+- Incertidumbre del modelo de clasificación (fluctuaciones transitorias de temperatura y viento confundidas con incendios).
 
- Representación del conocimiento
+Representación del conocimiento
 
 - Datos: mediciones históricas y actuales.
 - Simbólica: reglas y umbrales ambientales.
 - Matemática: valores de sensores, promedios y rangos.
 - Híbrida: combinación de datos históricos y reglas de clasificación.
 
- 4. Evolución solicitada
+5. Evolución solicitada
 
 Se han identificado los siguientes problemas de mantenimiento:
 
-1. El sistema genera demasiadas alertas cuando la humedad relativa fluctúa alrededor del umbral.
-2. Las alertas no diferencian entre una condición de advertencia y una condición crítica.
-3. El sistema no permite modificar los umbrales por zona.
-4. Algunos sensores producen mediciones temporalmente inválidas.
-5. El operador necesita consultar la razón por la que se generó cada alerta.
+1. Aumento de falsas alarmas por fluctuaciones temporales de temperatura y ráfagas de viento.
+2. El sistema genera alertas repetidas cuando una medición oscila alrededor de un umbral.
+3. Las alertas no diferencian entre una condición de advertencia y una condición crítica.
+4. El sistema no permite modificar los umbrales por zona del parque.
+5. Algunos sensores producen mediciones inválidas.
+6. Los responsables no pueden consultar la razón por la que se generó cada alerta.
+7. Los parámetros no pueden ajustarse desde un módulo externo de configuración.
 
- 5. Requisitos funcionales
+6. Requisitos funcionales
 
- REQ-M01: Configuración de umbrales
+REQ-M01: Configuración de umbrales
 
-El sistema debe permitir configurar umbrales mínimos y máximos para temperatura, humedad relativa, humedad del suelo e intensidad luminosa.
+El sistema debe permitir configurar umbrales mínimos y máximos para temperatura, humedad relativa, cantidad de partículas de humo e intensidad luminosa.
 
- REQ-M02: Configuración por zona
+REQ-M02: Configuración por zona
 
-El sistema debe permitir definir umbrales diferentes para cada zona del invernadero.
+El sistema debe permitir definir umbrales diferentes para cada zona del parque nacional.
 
- REQ-M03: Histéresis de alertas
+REQ-M03: Histéresis de alertas
 
 El sistema debe evitar generar alertas repetidas cuando una medición fluctúe alrededor de un umbral.
 
- REQ-M04: Clasificación de severidad
+REQ-M04: Clasificación de severidad
 
 El sistema debe clasificar cada evento ambiental como:
 
@@ -102,11 +114,11 @@ El sistema debe clasificar cada evento ambiental como:
 - Advertencia.
 - Crítico.
 
- REQ-M05: Validación de mediciones
+REQ-M05: Validación de mediciones
 
 El sistema debe identificar mediciones fuera del rango físico permitido y marcarlas como inválidas.
 
- REQ-M06: Registro de justificación
+REQ-M06: Registro de justificación
 
 Cada alerta debe incluir:
 
@@ -118,7 +130,7 @@ Cada alerta debe incluir:
 - Regla o criterio que provocó la alerta.
 - Nivel de severidad.
 
- REQ-M07: Conservación de la arquitectura
+REQ-M07: Conservación de la arquitectura
 
 Los cambios deben limitarse a:
 
@@ -129,41 +141,92 @@ Los cambios deben limitarse a:
 
 No se deben crear nuevos subsistemas principales ni cambiar el estilo arquitectónico.
 
- 6. Requisitos no funcionales
+7. Requisitos no funcionales
 
- NFR-M01: Tiempo de respuesta
+NFR-M01: Tiempo de respuesta
 
 Una alerta debe generarse en menos de cinco segundos después de recibir una medición válida.
 
- NFR-M02: Disponibilidad
+NFR-M02: Disponibilidad
 
 El sistema debe conservar la disponibilidad de la arquitectura existente.
 
- NFR-M03: Compatibilidad
+NFR-M03: Compatibilidad
 
 Los cambios deben ser compatibles con los sensores y gateways existentes.
 
- NFR-M04: Trazabilidad
+NFR-M04: Trazabilidad
 
 Toda alerta debe poder relacionarse con la medición que la originó.
 
- NFR-M05: Configurabilidad
+NFR-M05: Configurabilidad
 
 Los umbrales y reglas deben poder modificarse sin recompilar la plataforma central.
 
- 7. Cambios esperados en los artefactos
+NFR-M06: Reducción de falsos positivos
+
+La tasa de falsas alarmas, validada contra el sistema de drones, debe disminuir sin reducir la detección temprana de incendios reales.
+
+8. Cambios esperados en los artefactos
 
 El sistema multiagente debe actualizar únicamente los artefactos afectados:
 
-- Reglas del componente de alertas.
-- Contrato de configuración de umbrales.
+- Reglas del módulo de clasificación y del módulo de alertas.
+- Contrato de configuración de umbrales (incluyendo el flujo de ajuste desde el módulo externo de configuración de parámetros).
 - Entidad o estructura de datos de alertas.
 - Algoritmo de clasificación de severidad.
-- Diagramas relacionados con el flujo de alertas.
+- Diagramas relacionados con el flujo de alertas y de configuración.
 
 La arquitectura general, el gateway, la comunicación principal y el almacenamiento central deben conservarse.
 
- 8. Candidatos algorítmicos permitidos
+9. Diagramas
+
+9.1 Flujo base (antes de la modificación)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Sensores as Sensores Ambientales
+    participant Gateway as Gateway IoT
+    participant Plataforma as Plataforma Central
+    participant Almacenamiento as Almacenamiento
+    participant Clasificador as Módulo de Clasificación
+    participant Alertas as Módulo de Alertas
+
+    Sensores->>Gateway: Envía lecturas ambientales (temperatura, humedad, humo, luz)
+    Gateway->>Plataforma: Reenvía datos normalizados
+    Plataforma->>Almacenamiento: Persiste mediciones históricas/actuales
+    Plataforma->>Clasificador: Evalúa estado ambiental frente a umbrales base
+    Clasificador->>Alertas: Notifica evento fuera de límite
+```
+
+9.2 Flujo evolucionado (después de la modificación)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Sensores as Sensores Ambientales
+    participant Gateway as Gateway IoT
+    participant Plataforma as Plataforma Central
+    participant Almacenamiento as Almacenamiento
+    participant Clasificador as Módulo de Clasificación
+    participant Alertas as Módulo de Alertas
+    participant Externo as Módulo de configuración de parámetros
+
+    Sensores->>Gateway: Envía lecturas ambientales (temperatura, humedad, humo, luz)
+    Gateway->>Plataforma: Reenvía datos normalizados
+    Plataforma->>Almacenamiento: Persiste mediciones históricas/actuales
+    Plataforma->>Clasificador: Evalúa estado ambiental frente a umbrales base
+    Clasificador->>Alertas: Notifica evento fuera de límite
+
+    %% Nuevo flujo: ajuste de parámetros desde el exterior
+    Externo->>Plataforma: Solicitud de ajuste de parámetros (umbrales, frecuencias, etc.)
+    Plataforma->>Almacenamiento: Actualiza configuración / umbrales
+    Plataforma->>Clasificador: Aplica nuevos parámetros
+    Plataforma-->>Externo: Confirma actualización de parámetros
+```
+
+10. Candidatos algorítmicos permitidos
 
 El agente de algoritmos debe analizar, sin seleccionar automáticamente, los siguientes candidatos:
 
@@ -174,711 +237,377 @@ El agente de algoritmos debe analizar, sin seleccionar automáticamente, los sig
 
 El agente debe explicar cuál podría utilizarse para clasificar la severidad de las alertas y cuáles serían sus ventajas, limitaciones, entradas, salidas y complejidad.
 
-También debe indicar si un clasificador basado en reglas resulta suficiente para este escenario debido a que los criterios de severidad se expresan mediante umbrales explícitos.
+También debe indicar si un clasificador basado en reglas resulta suficiente para este escenario debido a que los criterios de severidad se expresan mediante umbrales explícitos, considerando además el filtrado de fluctuaciones transitorias de temperatura y viento.
 
- 9. Resultado esperado
+11. Resultado esperado
 
-El resultado debe representar una evolución por mantenimiento. No debe generar un SDD completamente nuevo. Debe conservar la arquitectura base y actualizar solamente los artefactos relacionados con la generación y clasificación de alertas.
+El resultado debe representar una evolución por mantenimiento correctivo. No debe generar un SDD completamente nuevo. Debe conservar la arquitectura base y actualizar solamente los artefactos relacionados con la validación, clasificación y generación de alertas, reduciendo los falsos positivos sin comprometer la detección temprana de incendios.
 
 
 ----------------------------------------------------------------
 
-### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner - gemmaOnline):
+### 2. DESIGN OF ARCHITECTURE (Generated by ArchitectDesigner):
 ### 1. SYSTEM OVERVIEW:
-The main objective of this system is to enhance the existing IoT system for monitoring environmental conditions in an experimental greenhouse. The system will focus on refining the alert generation and classification processes to improve their accuracy and usability. The scope includes modifying the existing architecture to address specific maintenance issues without introducing new subsystems or changing the overall architectural style.
+This is a corrective maintenance evolution of an operational IoT environmental monitoring system deployed in a national park for early wildfire detection. The system produces too many false fire alerts caused by transient fluctuations (temperature spikes and wind gusts in summer), as confirmed by the external drone-based validation system. The goal is to reduce the false positive rate without compromising early detection. The existing architecture is preserved (REQ-M07); only configuration, classification rules, measurement validation and the directly affected interfaces are modified.
 
 ### 2. ARCHITECTURAL STYLE:
-The recommended architectural style for this system is **Layered Architecture**. This style is chosen because it provides a clear separation of concerns, making it easier to manage and maintain the system. The layered architecture will help in isolating the concerns related to data processing, alert generation, and user interaction, thereby simplifying the development and maintenance process.
+The existing **centralized acquisition, processing and analysis architecture** is preserved. Processing remains centralized in the Central Platform; the gateway only collects and forwards data. No architectural style change and no new main subsystem is introduced.
 
-### 3. SYSTEM SUBSYSTEMS:
-- **Sensor Layer**: Responsible for collecting data from environmental sensors.
-- **Gateway Layer**: Acts as an intermediary between the sensor layer and the platform central, handling data transmission and normalization.
-- **Platform Central**: Central processing unit where data is processed, alerts are generated, and user interactions are managed.
-- **Alert Generation Module**: Handles the logic for generating alerts based on the processed data.
-- **Alert Classification Module**: Classifies alerts into different severities (Normal, Advertencia, Crítico).
-- **Configuration Management Module**: Manages the configuration settings for thresholds and rules.
-- **User Interface Module**: Provides a user interface for operators to view data and alerts.
-- **Logging and Audit Module**: Records the generation of alerts for audit and traceability purposes.
+### 3. SYSTEM SUBSYSTEMS (status after the evolution):
+- **Environmental Sensors** (UNCHANGED): temperature, relative humidity, smoke (gas), light intensity, wind speed (anemometer) and wind direction (wind vane).
+- **IoT Gateway** (UNCHANGED): collects, normalizes and forwards data. Compatible with existing sensors and gateways (NFR-M03).
+- **Central Platform** (MODIFIED - internal): orchestrates the flow; now applies measurement validation (REQ-M05) before classification and handles parameter update requests.
+- **Measurement Storage** (UNCHANGED as a subsystem, extended content): additionally stores the threshold configuration per zone, the hysteresis state and the alert justification records.
+- **Classification Module** (MODIFIED - rules): severity classification (Normal / Advertencia / Crítico), per-zone thresholds, transient fluctuation filtering.
+- **Alert Module** (MODIFIED - rules and data structure): hysteresis, de-duplication and alert records with justification.
+- **Parameter Configuration Module** (EXTERNAL actor): external module that submits parameter adjustment requests (thresholds, frequencies, etc.).
+- **Drone Validation System** (EXTERNAL actor): validates alerts with aerial photographs and is the reference to measure the false positive rate (NFR-M06).
 
 ### 4. SYSTEM BOUNDARIES:
-- **Internal**: Sensor Layer, Gateway Layer, Platform Central, Alert Generation Module, Alert Classification Module, Configuration Management Module, User Interface Module, Logging and Audit Module.
-- **External**: Sensors, Gateway, Operators.
+- **Internal**: Central Platform, Measurement Storage, Classification Module, Alert Module.
+- **External**: Environmental Sensors, IoT Gateway, Parameter Configuration Module, Drone Validation System, conservation personnel (human operators).
 
 ### 5. COMMUNICATION AND DATA FLOW:
-During critical operations, data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
+Sensors send readings to the Gateway, which forwards normalized data to the Central Platform. The Platform validates each measurement (range check) and persists it, marking invalid ones. Valid measurements are sent to the Classification Module, which loads the thresholds of the measurement's zone, filters transient fluctuations and assigns a severity. If the event is relevant, the Alert Module applies hysteresis and, if not suppressed, creates an alert with its justification. Parameter changes arrive from the external configuration module, are persisted and applied to the Classification Module without recompiling the platform (NFR-M05). Drone validation results are used outside the system to tune parameters.
 
-### 6. ARCHITECTURE INTERACTION DIAGRAM:
+### 6. CHANGE IMPACT SUMMARY:
+| Element                      | Status    | Reason                                              |
+|------------------------------|-----------|-----------------------------------------------------|
+| Sensors                      | Unchanged | Compatibility (NFR-M03)                             |
+| Gateway                      | Unchanged | REQ-M07                                             |
+| Central Platform             | Modified  | Measurement validation, config requests             |
+| Measurement Storage          | Extended  | Config, hysteresis state, alert justification       |
+| Classification Module        | Modified  | Per-zone thresholds, severity, transient filtering  |
+| Alert Module                 | Modified  | Hysteresis, alert structure                         |
+| External config module       | Interface | Already present in the evolved flow                 |
+
+### 7. ARCHITECTURE INTERACTION DIAGRAM:
 ```mermaid
 sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
+    autonumber
+    participant Sensores as Sensores Ambientales
+    participant Gateway as Gateway IoT
+    participant Plataforma as Plataforma Central
+    participant Almacenamiento as Almacenamiento
+    participant Clasificador as Módulo de Clasificación
+    participant Alertas as Módulo de Alertas
+    participant Externo as Módulo de configuración de parámetros
 
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
+    Sensores->>Gateway: Envía lecturas ambientales (temperatura, humedad, humo, luz, viento)
+    Gateway->>Plataforma: Reenvía datos normalizados
+    Plataforma->>Plataforma: Valida rango físico (REQ-M05)
+    Plataforma->>Almacenamiento: Persiste medición (válida o inválida)
+    Plataforma->>Clasificador: Evalúa medición válida (zona, umbrales de la zona)
+    Clasificador->>Almacenamiento: Consulta umbrales por zona y ventana de lecturas recientes
+    Clasificador->>Clasificador: Filtra fluctuaciones transitorias y asigna severidad
+    Clasificador->>Alertas: Notifica evento (severidad, regla, umbral)
+    Alertas->>Alertas: Aplica histéresis (REQ-M03)
+    Alertas->>Almacenamiento: Registra alerta con justificación (REQ-M06)
+
+    %% Flujo de ajuste de parámetros desde el exterior
+    Externo->>Plataforma: Solicitud de ajuste de parámetros (umbrales por zona, frecuencias, etc.)
+    Plataforma->>Almacenamiento: Actualiza configuración / umbrales
+    Plataforma->>Clasificador: Aplica nuevos parámetros
+    Plataforma-->>Externo: Confirma actualización de parámetros
 ```
-
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
 
 ----------------------------------------------------------------
 
-### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner - gemmaOnline):
+### 3. DESIGN OF COMPONENTS (Generated by ComponentsDesigner):
 ### 1. COMPONENT OVERVIEW:
-The system is decomposed into several components, each with a specific responsibility. These components are designed to work together to enhance the alert generation and classification processes in the existing IoT system for monitoring environmental conditions in an experimental greenhouse.
+Only the components directly affected by the maintenance request are specified in detail. Unchanged components are listed for completeness. No new components are created.
 
 ### 2. COMPONENT SPECIFICATION:
 
-#### 2.1 Sensor Layer
-- **Name**: Sensor Layer
-- **Responsibility**: Collect data from environmental sensors.
-- **Internal Behavior**: Reads sensor data and sends it to the Gateway Layer.
-- **Dependencies**: Sensors
-- **Inputs**: Raw sensor data
-- **Outputs**: Normalized data to Gateway Layer
+#### 2.1 Environmental Sensors (UNCHANGED)
+- **Responsibility**: Capture temperature, relative humidity, smoke particles, light intensity, wind speed and wind direction.
+- **Outputs**: Raw readings sent to the Gateway.
 
-#### 2.2 Gateway Layer
-- **Name**: Gateway Layer
-- **Responsibility**: Handle data transmission and normalization.
-- **Internal Behavior**: Receives data from the Sensor Layer, normalizes it, and forwards it to the Platform Central.
-- **Dependencies**: Sensor Layer, Platform Central
-- **Inputs**: Normalized data from Sensor Layer
-- **Outputs**: Normalized data to Platform Central
+#### 2.2 IoT Gateway (UNCHANGED)
+- **Responsibility**: Normalize and forward readings. It does not process, validate or classify data.
+- **Inputs**: Raw readings. **Outputs**: Normalized data to the Central Platform.
 
-#### 2.3 Platform Central
-- **Name**: Platform Central
-- **Responsibility**: Central processing unit where data is processed, alerts are generated, and user interactions are managed.
-- **Internal Behavior**: Receives normalized data, processes it, generates alerts, and classifies them.
-- **Dependencies**: Gateway Layer, Alert Generation Module, Alert Classification Module, Configuration Management Module, User Interface Module, Logging and Audit Module
-- **Inputs**: Normalized data from Gateway Layer
-- **Outputs**: Alerts to User Interface Module, Alert details to Logging and Audit Module
+#### 2.3 Central Platform (MODIFIED)
+- **Responsibility**: Orchestrate the processing flow and manage parameter updates.
+- **Changes**:
+  - Measurement validation against physical ranges; invalid measurements are marked and not sent to classification (REQ-M05).
+  - Receives parameter adjustment requests from the external configuration module, persists them and applies them to the Classification Module (REQ-M01, REQ-M02, NFR-M05).
+  - Assigns a `measurementId` to each measurement for traceability (NFR-M04).
+- **Inputs**: Normalized data, parameter adjustment requests.
+- **Outputs**: Validated measurements to Classification, updates to Storage, confirmation to the external module.
 
-#### 2.4 Alert Generation Module
-- **Name**: Alert Generation Module
-- **Responsibility**: Handles the logic for generating alerts based on the processed data.
-- **Internal Behavior**: Receives processed data, compares it with thresholds, and generates alerts.
-- **Dependencies**: Platform Central, Configuration Management Module
-- **Inputs**: Processed data from Platform Central, Configuration settings from Configuration Management Module
-- **Outputs**: Alerts to Platform Central
+#### 2.4 Measurement Storage (EXTENDED)
+- **Responsibility**: Persist historical and current measurements.
+- **Changes**: also stores the threshold configuration per zone (with versions), the hysteresis state per zone/variable and the alert records with justification.
+- **Note**: it is the same central storage; no new storage subsystem is created.
 
-#### 2.5 Alert Classification Module
-- **Name**: Alert Classification Module
-- **Responsibility**: Classifies alerts into different severities (Normal, Advertencia, Crítico).
-- **Internal Behavior**: Receives alerts, classifies them based on predefined rules, and returns the classified alerts.
-- **Dependencies**: Alert Generation Module
-- **Inputs**: Alerts from Alert Generation Module
-- **Outputs**: Classified alerts to Platform Central
+#### 2.5 Classification Module (MODIFIED)
+- **Responsibility**: Evaluate the environmental state of each zone and assign a severity.
+- **Changes**:
+  - Loads thresholds by zone, with a default configuration when a zone has no override (REQ-M02).
+  - Assigns severity Normal / Advertencia / Crítico from explicit rules (REQ-M04).
+  - Filters transient fluctuations: a warning-level excursion must persist for a configurable number of consecutive readings or time window, and combined evidence (e.g. smoke plus high temperature plus low humidity, considering wind) raises confidence. A critical excursion (e.g. smoke above the critical limit) is not delayed, to preserve early detection (NFR-M06).
+- **Inputs**: Valid measurement, zone thresholds, recent readings window.
+- **Outputs**: Classified event (severity, rule, threshold used) to the Alert Module.
 
-#### 2.6 Configuration Management Module
-- **Name**: Configuration Management Module
-- **Responsibility**: Manages the configuration settings for thresholds and rules.
-- **Internal Behavior**: Stores and manages configuration settings, providing an interface for updating thresholds and rules.
-- **Dependencies**: Platform Central
-- **Inputs**: Configuration updates from Platform Central
-- **Outputs**: Updated configuration settings to Platform Central
+#### 2.6 Alert Module (MODIFIED)
+- **Responsibility**: Generate alerts from classified events.
+- **Changes**:
+  - Hysteresis: an active alert is cleared only when the value returns past the threshold by a margin; repeated alerts for the same zone/variable/severity are suppressed (REQ-M03).
+  - Creates the alert record with full justification and reference to the originating measurement (REQ-M06, NFR-M04).
+- **Inputs**: Classified event, hysteresis state.
+- **Outputs**: Alert (for conservation personnel) and alert record in Storage.
 
-#### 2.7 User Interface Module
-- **Name**: User Interface Module
-- **Responsibility**: Provides a user interface for operators to view data and alerts.
-- **Internal Behavior**: Displays data and alerts to operators.
-- **Dependencies**: Platform Central
-- **Inputs**: Alerts and data from Platform Central
-- **Outputs**: User interactions (e.g., configuration updates)
+#### 2.7 Parameter Configuration Module (EXTERNAL)
+- **Responsibility**: Submit parameter adjustment requests (thresholds per zone, frequencies, hysteresis margins, persistence windows).
+- **Outputs**: Update requests. **Inputs**: Update confirmation.
 
-#### 2.8 Logging and Audit Module
-- **Name**: Logging and Audit Module
-- **Responsibility**: Records the generation of alerts for audit and traceability purposes.
-- **Internal Behavior**: Receives alert details, logs them, and provides an interface for querying logs.
-- **Dependencies**: Platform Central
-- **Inputs**: Alert details from Platform Central
-- **Outputs**: Logged alert details
+#### 2.8 Drone Validation System (EXTERNAL)
+- **Responsibility**: Confirm or reject fire alerts with aerial photographs. Its results are the reference to evaluate the false positive rate; it does not interact directly with the alert flow.
 
 ### 3. COMPONENT RESPONSIBILITY BOUNDARIES:
-- **Sensor Layer**: Focuses on data collection. It does not process data or generate alerts.
-- **Gateway Layer**: Handles data transmission and normalization. It does not process data or generate alerts.
-- **Platform Central**: Orchestrates the data processing, alert generation, and user interactions. It does not process data or generate alerts.
-- **Alert Generation Module**: Generates alerts based on processed data. It does not classify alerts.
-- **Alert Classification Module**: Classifies alerts into different severities. It does not generate alerts.
-- **Configuration Management Module**: Manages configuration settings. It does not process data or generate alerts.
-- **User Interface Module**: Provides a user interface for operators. It does not process data or generate alerts.
-- **Logging and Audit Module**: Records alert details for audit and traceability. It does not process data or generate alerts.
+- **Gateway**: forwards data only; does not validate or classify.
+- **Central Platform**: validates ranges and orchestrates; does not assign severity or generate alerts.
+- **Classification Module**: assigns severity; does not persist alerts nor apply hysteresis.
+- **Alert Module**: applies hysteresis and creates alerts; does not decide severity.
+- **Storage**: persists data; contains no business rules.
+- **External modules**: interact only through the Central Platform.
 
 ### 4. COMPONENT COMMUNICATION:
-Components communicate through well-defined interfaces. Data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
+Components communicate through the Central Platform, as in the existing architecture. The Classification Module reads configuration and recent readings from Storage; the Alert Module reads and writes the hysteresis state and alert records in Storage.
 
 ### 5. COMPONENT INTERACTION DIAGRAM:
 ```mermaid
 sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
+    participant Gateway as Gateway IoT
+    participant Plataforma as Plataforma Central
+    participant Almacenamiento as Almacenamiento
+    participant Clasificador as Módulo de Clasificación
+    participant Alertas as Módulo de Alertas
 
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
+    Gateway->>Plataforma: Datos normalizados
+    alt Medición fuera del rango físico
+        Plataforma->>Almacenamiento: Persiste medición marcada INVALIDA
+    else Medición válida
+        Plataforma->>Almacenamiento: Persiste medición VALIDA (measurementId)
+        Plataforma->>Clasificador: classifyMeasurement(measurement)
+        Clasificador->>Almacenamiento: Umbrales de la zona + ventana reciente
+        Clasificador-->>Plataforma: classifiedEvent (severidad, regla, umbral)
+        Plataforma->>Alertas: raiseAlert(classifiedEvent)
+        Alertas->>Almacenamiento: Lee/actualiza estado de histéresis
+        alt Evento suprimido por histéresis o normal
+            Alertas-->>Plataforma: Sin alerta nueva
+        else Evento nuevo o cambio de severidad
+            Alertas->>Almacenamiento: Registra alerta con justificación
+        end
+    end
 ```
-
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
 
 ----------------------------------------------------------------
 
-### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner - gemmaOnline):
+### 4. DESIGN OF INTERFACES (Generated by InterfacesDesigner):
 ### 1. INTERFACE OVERVIEW:
-The communication strategy between components in this system is based on a Layered Architecture. Each component communicates with other components through well-defined interfaces, ensuring a clear separation of concerns and making the system easier to manage and maintain.
+Existing interfaces (Sensors-Gateway and Gateway-Platform) are kept unchanged (NFR-M03). Only the interfaces directly affected are modified or extended. All payloads are JSON.
 
 ### 2. INTERFACE CONTRACTS:
 
-#### 2.1 Sensor Layer Interface
-- **Interface Name**: SensorDataInterface
-- **Provider**: Sensor Layer
-- **Consumer**: Gateway Layer
-- **Operations**: `sendData`
-- **Input Parameters**:
-  - `sensorData`: Raw sensor data (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the data was sent successfully
-  - `message`: String message (optional)
+#### 2.1 Gateway -> Central Platform: forwardData (UNCHANGED)
+- **Input**: `normalizedData` (zoneId, sensorId, variable, value, unit, timestamp).
+- **Output**: `success`, `message`.
 
-#### 2.2 Gateway Layer Interface
-- **Interface Name**: GatewayDataInterface
-- **Provider**: Gateway Layer
-- **Consumer**: Platform Central
-- **Operations**: `forwardData`
-- **Input Parameters**:
-  - `normalizedData`: Normalized sensor data (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the data was forwarded successfully
-  - `message`: String message (optional)
+#### 2.2 External Configuration Module -> Central Platform: updateParameters (NEW OPERATION on the existing platform interface)
+- **Input**: `configurationUpdates`:
+  - `zoneId` (or `DEFAULT`)
+  - per variable (temperature, relativeHumidity, smokeParticles, lightIntensity):
+    - `physicalRange` {min, max}
+    - `warning` {min, max}
+    - `critical` {min, max}
+    - `hysteresisMargin`
+    - `persistenceReadings` (or `persistenceSeconds`)
+  - `requestedBy`, `requestedAt`
+- **Output**: `success`, `configVersion`, `appliedAt`, `message`.
+- **Errors**: `InvalidThresholdException` (e.g. warning limits outside critical limits, or limits outside the physical range), `UnknownZoneException`.
+- **Related**: REQ-M01, REQ-M02, NFR-M05.
 
-#### 2.3 Platform Central Interface
-- **Interface Name**: PlatformDataInterface
-- **Provider**: Platform Central
-- **Consumer**: Alert Generation Module, Alert Classification Module, Configuration Management Module, User Interface Module, Logging and Audit Module
-- **Operations**:
-  - `processData`
-  - `generateAlert`
-  - `classifyAlert`
-  - `updateConfiguration`
-  - `displayAlert`
-  - `logAlert`
-- **Input Parameters**:
-  - `data`: Processed data or configuration updates (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the operation was successful
-  - `message`: String message (optional)
-  - `alertDetails`: Alert details (JSON format) for `generateAlert` and `classifyAlert`
-  - `configuration`: Updated configuration settings (JSON format) for `updateConfiguration`
+#### 2.3 External Configuration Module -> Central Platform: getParameters (NEW OPERATION)
+- **Input**: `zoneId`. **Output**: effective configuration (zone override merged with default) and `configVersion`.
 
-#### 2.4 Alert Generation Module Interface
-- **Interface Name**: AlertGenerationInterface
-- **Provider**: Alert Generation Module
-- **Consumer**: Platform Central
-- **Operations**: `generateAlert`
-- **Input Parameters**:
-  - `data`: Processed data (JSON format)
-  - `configuration`: Configuration settings (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was generated successfully
-  - `message`: String message (optional)
-  - `alertDetails`: Alert details (JSON format)
+#### 2.4 Central Platform -> Classification Module: classifyMeasurement (MODIFIED)
+- **Input**: `measurement` (measurementId, zoneId, variable, value, timestamp, valid=true).
+- **Output**: `classifiedEvent`:
+  - `measurementId`, `zoneId`, `variable`, `value`
+  - `severity` (Normal | Advertencia | Crítico)
+  - `ruleId`, `thresholdUsed`, `timestamp`
+  - `filteredAsTransient` (boolean)
+- **Related**: REQ-M02, REQ-M04, NFR-M06.
 
-#### 2.5 Alert Classification Module Interface
-- **Interface Name**: AlertClassificationInterface
-- **Provider**: Alert Classification Module
-- **Consumer**: Platform Central
-- **Operations**: `classifyAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was classified successfully
-  - `message`: String message (optional)
-  - `classifiedAlert`: Classified alert (JSON format)
+#### 2.5 Central Platform -> Alert Module: raiseAlert (MODIFIED)
+- **Input**: `classifiedEvent`.
+- **Output**: `alertCreated` (boolean), `suppressedByHysteresis` (boolean), `alert` (see data structure Alert).
+- **Related**: REQ-M03, REQ-M06, NFR-M04.
 
-#### 2.6 Configuration Management Module Interface
-- **Interface Name**: ConfigurationManagementInterface
-- **Provider**: Configuration Management Module
-- **Consumer**: Platform Central
-- **Operations**: `updateConfiguration`
-- **Input Parameters**:
-  - `configurationUpdates`: Configuration updates (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the configuration was updated successfully
-  - `message`: String message (optional)
-  - `updatedConfiguration`: Updated configuration settings (JSON format)
+#### 2.6 Storage access (EXTENDED)
+- Operations: `saveMeasurement`, `getRecentMeasurements(zoneId, variable, window)`, `getConfiguration(zoneId)`, `saveConfiguration`, `getHysteresisState`, `saveHysteresisState`, `saveAlert`, `getAlertByMeasurement(measurementId)`.
 
-#### 2.7 User Interface Module Interface
-- **Interface Name**: UserInterfaceInterface
-- **Provider**: User Interface Module
-- **Consumer**: Platform Central
-- **Operations**: `displayAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was displayed successfully
-  - `message`: String message (optional)
+### 3. ERROR HANDLING AND EXCEPTIONS:
+- Invalid measurement: not an exception; it is stored with `valid=false` and excluded from classification.
+- Missing zone configuration: the `DEFAULT` configuration is used and the event is logged.
+- Invalid configuration update: rejected without changing the active configuration (atomic update).
+- Storage failure when saving an alert: retried; failure reported to the Platform without losing the classified event.
 
-#### 2.8 Logging and Audit Module Interface
-- **Interface Name**: LoggingAuditInterface
-- **Provider**: Logging and Audit Module
-- **Consumer**: Platform Central
-- **Operations**: `logAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was logged successfully
-  - `message`: String message (optional)
-
-### 3. COMMUNICATION AND DATA FLOW:
-During critical operations, data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
-
-### 4. COMMUNICATION AND DATA FLOW DIAGRAM:
-```mermaid
-sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
-
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
-```
-
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
-
-### 5. ERROR HANDLING AND EXCEPTIONS:
-- Each interface method should include error handling and exception handling to ensure robustness.
-- Common exceptions to handle include `DataProcessingException`, `ConfigurationUpdateException`, `AlertGenerationException`, `AlertClassificationException`, `UserInterfaceException`, and `LoggingAuditException`.
-
-### 6. SECURITY AND AUTHENTICATION:
-- Implement secure communication protocols (e.g., HTTPS) to protect data in transit.
-- Use authentication and authorization mechanisms to ensure that only authorized components can access and modify system resources.
-
-### 7. TESTING AND QUALITY ASSURANCE:
-- Develop unit tests and integration tests for each component to ensure that each component works as expected.
-- Conduct system testing to ensure that the entire system works together seamlessly.
-- Implement continuous integration and continuous deployment (CI/CD) pipelines to automate testing and deployment processes.
-
-### 8. MONITORING AND LOGGING:
-- Implement monitoring and logging mechanisms to track the performance and health of the system.
-- Use logging frameworks (e.g., Log4j, SLF4J) to log important events and errors.
-- Set up alerts and notifications for critical events and errors.
-
-### 9. SCALABILITY AND PERFORMANCE:
-- Design the system to be scalable and performant, considering factors such as load balancing, caching, and distributed computing.
-- Implement caching mechanisms to reduce the load on the system and improve response times.
-- Use load balancers to distribute incoming traffic across multiple instances of the system.
-
-### 10. DOCUMENTATION AND SUPPORT:
-- Document the system architecture, interfaces, and components to ensure that developers and stakeholders understand how the system works.
-- Provide support and training for developers and users to ensure that they can effectively use and maintain the system.
+### 4. NON-FUNCTIONAL CONSIDERATIONS:
+- **NFR-M01**: the 5-second limit counts from the reception of the measurement that satisfies the persistence condition; critical events are evaluated immediately.
+- **NFR-M02**: configuration updates are applied without stopping the platform.
+- **NFR-M03**: no change in the sensor-gateway contract.
+- **NFR-M04**: every alert stores the `measurementId` that originated it.
+- **NFR-M05**: thresholds and rules live in configuration data, not in compiled code.
 
 ----------------------------------------------------------------
 
-### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner - gemmaOnline):
-### 1. COMPONENT RESPONSIBILITY BOUNDARIES:
-- **Sensor Layer**: Focuses on data collection. It does not process data or generate alerts.
-- **Gateway Layer**: Handles data transmission and normalization. It does not process data or generate alerts.
-- **Platform Central**: Orchestrates the data processing, alert generation, and user interactions. It does not process data or generate alerts.
-- **Alert Generation Module**: Generates alerts based on processed data. It does not classify alerts.
-- **Alert Classification Module**: Classifies alerts into different severities. It does not generate alerts.
-- **Configuration Management Module**: Manages configuration settings. It does not process data or generate alerts.
-- **User Interface Module**: Provides a user interface for operators. It does not process data or generate alerts.
-- **Logging and Audit Module**: Records alert details for audit and traceability. It does not process data or generate alerts.
+### 5. DESIGN OF DATA STRUCTURES (Generated by DataStructuresDesigner):
+### 1. MEASUREMENT (EXTENDED):
+- `measurementId`: unique identifier
+- `zoneId`, `sensorId`
+- `variable`: temperature | relativeHumidity | smokeParticles | lightIntensity | windSpeed | windDirection
+- `value`, `unit`, `timestamp`
+- `valid`: boolean; `invalidReason`: e.g. OUT_OF_PHYSICAL_RANGE (REQ-M05)
 
-### 2. COMPONENT COMMUNICATION:
-Components communicate through well-defined interfaces. Data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
-
-### 3. COMPONENT INTERACTION DIAGRAM:
-```mermaid
-sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
-
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
+### 2. ZONE THRESHOLD CONFIGURATION (NEW):
+```json
+{
+  "zoneId": "ZONA-NORTE",
+  "configVersion": 7,
+  "variables": {
+    "temperature": {
+      "physicalRange": {"min": -20, "max": 70},
+      "warning":  {"min": null, "max": 35},
+      "critical": {"min": null, "max": 45},
+      "hysteresisMargin": 2,
+      "persistenceReadings": 3
+    },
+    "smokeParticles": {
+      "physicalRange": {"min": 0, "max": 1000},
+      "warning":  {"min": null, "max": 150},
+      "critical": {"min": null, "max": 300},
+      "hysteresisMargin": 20,
+      "persistenceReadings": 1
+    }
+  },
+  "updatedBy": "ParameterConfigurationModule",
+  "updatedAt": "2026-11-13T10:00:00Z"
+}
 ```
+(Example values are illustrative and not field-calibrated.) A configuration with `zoneId = DEFAULT` is used when a zone has no override.
 
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
+### 3. HYSTERESIS STATE (NEW):
+- `zoneId`, `variable`
+- `activeSeverity`: Normal | Advertencia | Crítico
+- `activeSince`, `lastAlertTimestamp`, `lastMeasurementId`
 
-### 4. INTERFACE CONTRACTS:
+### 4. SEVERITY RULE (NEW):
+- `ruleId`, `description`
+- `variables` involved, `condition` (threshold crossing, persistence, combined evidence)
+- `resultingSeverity`
 
-#### 2.1 Sensor Layer Interface
-- **Interface Name**: SensorDataInterface
-- **Provider**: Sensor Layer
-- **Consumer**: Gateway Layer
-- **Operations**: `sendData`
-- **Input Parameters**:
-  - `sensorData`: Raw sensor data (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the data was sent successfully
-  - `message`: String message (optional)
-
-#### 2.2 Gateway Layer Interface
-- **Interface Name**: GatewayDataInterface
-- **Provider**: Gateway Layer
-- **Consumer**: Platform Central
-- **Operations**: `forwardData`
-- **Input Parameters**:
-  - `normalizedData`: Normalized sensor data (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the data was forwarded successfully
-  - `message`: String message (optional)
-
-#### 2.3 Platform Central Interface
-- **Interface Name**: PlatformDataInterface
-- **Provider**: Platform Central
-- **Consumer**: Alert Generation Module, Alert Classification Module, Configuration Management Module, User Interface Module, Logging and Audit Module
-- **Operations**:
-  - `processData`
-  - `generateAlert`
-  - `classifyAlert`
-  - `updateConfiguration`
-  - `displayAlert`
-  - `logAlert`
-- **Input Parameters**:
-  - `data`: Processed data or configuration updates (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the operation was successful
-  - `message`: String message (optional)
-  - `alertDetails`: Alert details (JSON format) for `generateAlert` and `classifyAlert`
-  - `configuration`: Updated configuration settings (JSON format) for `updateConfiguration`
-
-#### 2.4 Alert Generation Module Interface
-- **Interface Name**: AlertGenerationInterface
-- **Provider**: Alert Generation Module
-- **Consumer**: Platform Central
-- **Operations**: `generateAlert`
-- **Input Parameters**:
-  - `data`: Processed data (JSON format)
-  - `configuration`: Configuration settings (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was generated successfully
-  - `message`: String message (optional)
-  - `alertDetails`: Alert details (JSON format)
-
-#### 2.5 Alert Classification Module Interface
-- **Interface Name**: AlertClassificationInterface
-- **Provider**: Alert Classification Module
-- **Consumer**: Platform Central
-- **Operations**: `classifyAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was classified successfully
-  - `message`: String message (optional)
-  - `classifiedAlert`: Classified alert (JSON format)
-
-#### 2.6 Configuration Management Module Interface
-- **Interface Name**: ConfigurationManagementInterface
-- **Provider**: Configuration Management Module
-- **Consumer**: Platform Central
-- **Operations**: `updateConfiguration`
-- **Input Parameters**:
-  - `configurationUpdates`: Configuration updates (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the configuration was updated successfully
-  - `message`: String message (optional)
-  - `updatedConfiguration`: Updated configuration settings (JSON format)
-
-#### 2.7 User Interface Module Interface
-- **Interface Name**: UserInterfaceInterface
-- **Provider**: User Interface Module
-- **Consumer**: Platform Central
-- **Operations**: `displayAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was displayed successfully
-  - `message`: String message (optional)
-
-#### 2.8 Logging and Audit Module Interface
-- **Interface Name**: LoggingAuditInterface
-- **Provider**: Logging and Audit Module
-- **Consumer**: Platform Central
-- **Operations**: `logAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was logged successfully
-  - `message`: String message (optional)
-
-### 5. COMMUNICATION AND DATA FLOW:
-During critical operations, data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
-
-### 6. COMMUNICATION AND DATA FLOW DIAGRAM:
-```mermaid
-sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
-
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
-```
-
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
-
-### 7. ERROR HANDLING AND EXCEPTIONS:
-- Each interface method should include error handling and exception handling to ensure robustness.
-- Common exceptions to handle include `DataProcessingException`, `ConfigurationUpdateException`, `AlertGenerationException`, `AlertClassificationException`, `UserInterfaceException`, and `LoggingAuditException`.
-
-### 8. SECURITY AND AUTHENTICATION:
-- Implement secure communication protocols (e.g., HTTPS) to protect data in transit.
-- Use authentication and authorization mechanisms to ensure that only authorized components can access and modify system resources.
-
-### 9. TESTING AND QUALITY ASSURANCE:
-- Develop unit tests and integration tests for each component to ensure that each component works as expected.
-- Conduct system testing to ensure that the entire system works together seamlessly.
-- Implement continuous integration and continuous deployment (CI/CD) pipelines to automate testing and deployment processes.
-
-### 10. MONITORING AND LOGGING:
-- Implement monitoring and logging mechanisms to track the performance and health of the system.
-- Use logging frameworks (e.g., Log4j, SLF4J) to log important events and errors.
-- Set up alerts and notifications for critical events and errors.
-
-### 11. SCALABILITY AND PERFORMANCE:
-- Design the system to be scalable and performant, considering factors such as load balancing, caching, and distributed computing.
-- Implement caching mechanisms to reduce the load on the system and improve response times.
-- Use load balancers to distribute incoming traffic across multiple instances of the system.
-
-### 12. DOCUMENTATION AND SUPPORT:
-- Document the system architecture, interfaces, and components to ensure that developers and stakeholders understand how the system works.
-- Provide support and training for developers and users to ensure that they can effectively use and maintain the system.
+### 5. ALERT (MODIFIED):
+- `alertId`
+- `measurementId` (traceability, NFR-M04)
+- `variable` (related variable)
+- `value` (received value)
+- `thresholdUsed`
+- `zoneId`
+- `timestamp`
+- `ruleId` and `ruleDescription` (rule or criterion that triggered the alert)
+- `severity`: Advertencia | Crítico
+- `configVersion` (configuration in force when the alert was generated)
+- `droneValidation`: optional field (CONFIRMED | FALSE_ALARM | PENDING), filled externally to measure false positives (NFR-M06)
+(All fields required by REQ-M06 are present.)
 
 ----------------------------------------------------------------
 
-### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner - gemmaOnline):
-### 1. COMPONENT RESPONSIBILITY BOUNDARIES:
-- **Sensor Layer**: Focuses on data collection. It does not process data or generate alerts.
-- **Gateway Layer**: Handles data transmission and normalization. It does not process data or generate alerts.
-- **Platform Central**: Orchestrates the data processing, alert generation, and user interactions. It does not process data or generate alerts.
-- **Alert Generation Module**: Generates alerts based on processed data. It does not classify alerts.
-- **Alert Classification Module**: Classifies alerts into different severities. It does not generate alerts.
-- **Configuration Management Module**: Manages configuration settings. It does not process data or generate alerts.
-- **User Interface Module**: Provides a user interface for operators. It does not process data or generate alerts.
-- **Logging and Audit Module**: Records alert details for audit and traceability. It does not process data or generate alerts.
+### 6. DESIGN OF ALGORITHMS (Generated by AlgorithmsDesigner):
+### 1. CANDIDATE ANALYSIS (no automatic selection):
 
-### 2. COMPONENT COMMUNICATION:
-Components communicate through well-defined interfaces. Data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
+#### 1.1 Logistic Regression
+- **Use**: estimate the probability of a Crítico event from measurements.
+- **Inputs**: temperature, humidity, smoke, light, wind, trends. **Outputs**: class probability.
+- **Advantages**: probabilistic output, low inference cost, can combine variables.
+- **Limitations**: requires labeled historical data (the drone validations could provide them); linear decision boundary; the probability does not directly explain which threshold was used, which conflicts with REQ-M06.
+- **Complexity**: inference O(n) in number of features; training O(n*m) per iteration.
 
-### 3. COMPONENT INTERACTION DIAGRAM:
-```mermaid
-sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
+#### 1.2 K-Nearest Neighbors
+- **Use**: classify a reading by similarity to labeled historical readings.
+- **Inputs**: feature vector, labeled history. **Outputs**: severity class.
+- **Advantages**: no training phase; captures non-linear patterns.
+- **Limitations**: needs a large labeled history stored and queried; sensitive to scale and noisy sensors; poor explainability; higher latency as history grows (NFR-M01).
+- **Complexity**: O(m*n) per classification (m samples, n features).
 
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
+#### 1.3 Decision Tree
+- **Use**: learn severity splits from labeled data.
+- **Inputs**: feature vector. **Outputs**: severity class and decision path.
+- **Advantages**: interpretable path, can be translated into rules, fast inference.
+- **Limitations**: learned thresholds may not match the configured per-zone thresholds; requires retraining when zone parameters change, which conflicts with NFR-M05 unless the model is externalized as data; may overfit.
+- **Complexity**: inference O(depth); training O(n*m log m).
+
+#### 1.4 Rule-Based Classifier
+- **Use**: apply explicit thresholds per zone, persistence, combined conditions and hysteresis.
+- **Inputs**: measurement, zone thresholds, recent readings window. **Outputs**: severity, rule id, threshold used.
+- **Advantages**: fully explainable (direct support for REQ-M06), rules and thresholds editable as configuration (REQ-M01, REQ-M02, NFR-M05), no training data required, very low latency (NFR-M01), minimal impact on the architecture (REQ-M07).
+- **Limitations**: depends on well chosen thresholds; does not learn automatically; rules can grow in number and need maintenance.
+- **Complexity**: O(r) per measurement (r rules), plus O(w) for the persistence window.
+
+### 2. SUFFICIENCY OF A RULE-BASED CLASSIFIER:
+Severity criteria are expressed through explicit thresholds, per-zone configuration and traceable justification, so a rule-based classifier appears sufficient for this maintenance scope. The false positives come from transient fluctuations, which can be addressed with persistence windows, combined evidence and hysteresis, all expressible as rules. Learning-based candidates (logistic regression, decision tree) could be considered later as a complement to tune thresholds using drone-validated history, but they would add data and retraining needs outside this maintenance scope. The final decision is left to the designer.
+
+### 3. REFERENCE PROCEDURE (illustrative, if the rule-based candidate is adopted):
 ```
+for each measurement received:
+    assign measurementId
+    if value outside physicalRange:
+        store as INVALID (OUT_OF_PHYSICAL_RANGE); continue
+    store as VALID
+    cfg = configuration(zone) or configuration(DEFAULT)
+    window = last cfg.persistenceReadings valid readings of (zone, variable)
 
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
+    if value beyond cfg.critical:
+        severity = Crítico                       # no persistence delay
+    else if value beyond cfg.warning
+         and all readings in window beyond cfg.warning:
+        severity = Advertencia                   # persistent excursion
+        if combined evidence rule holds (e.g. smoke and temperature elevated, low humidity):
+            severity = Crítico
+    else:
+        severity = Normal
 
-### 4. INTERFACE CONTRACTS:
-
-#### 2.1 Sensor Layer Interface
-- **Interface Name**: SensorDataInterface
-- **Provider**: Sensor Layer
-- **Consumer**: Gateway Layer
-- **Operations**: `sendData`
-- **Input Parameters**:
-  - `sensorData`: Raw sensor data (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the data was sent successfully
-  - `message`: String message (optional)
-
-#### 2.2 Gateway Layer Interface
-- **Interface Name**: GatewayDataInterface
-- **Provider**: Gateway Layer
-- **Consumer**: Platform Central
-- **Operations**: `forwardData`
-- **Input Parameters**:
-  - `normalizedData`: Normalized sensor data (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the data was forwarded successfully
-  - `message`: String message (optional)
-
-#### 2.3 Platform Central Interface
-- **Interface Name**: PlatformDataInterface
-- **Provider**: Platform Central
-- **Consumer**: Alert Generation Module, Alert Classification Module, Configuration Management Module, User Interface Module, Logging and Audit Module
-- **Operations**:
-  - `processData`
-  - `generateAlert`
-  - `classifyAlert`
-  - `updateConfiguration`
-  - `displayAlert`
-  - `logAlert`
-- **Input Parameters**:
-  - `data`: Processed data or configuration updates (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the operation was successful
-  - `message`: String message (optional)
-  - `alertDetails`: Alert details (JSON format) for `generateAlert` and `classifyAlert`
-  - `configuration`: Updated configuration settings (JSON format) for `updateConfiguration`
-
-#### 2.4 Alert Generation Module Interface
-- **Interface Name**: AlertGenerationInterface
-- **Provider**: Alert Generation Module
-- **Consumer**: Platform Central
-- **Operations**: `generateAlert`
-- **Input Parameters**:
-  - `data`: Processed data (JSON format)
-  - `configuration`: Configuration settings (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was generated successfully
-  - `message`: String message (optional)
-  - `alertDetails`: Alert details (JSON format)
-
-#### 2.5 Alert Classification Module Interface
-- **Interface Name**: AlertClassificationInterface
-- **Provider**: Alert Classification Module
-- **Consumer**: Platform Central
-- **Operations**: `classifyAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was classified successfully
-  - `message`: String message (optional)
-  - `classifiedAlert`: Classified alert (JSON format)
-
-#### 2.6 Configuration Management Module Interface
-- **Interface Name**: ConfigurationManagementInterface
-- **Provider**: Configuration Management Module
-- **Consumer**: Platform Central
-- **Operations**: `updateConfiguration`
-- **Input Parameters**:
-  - `configurationUpdates`: Configuration updates (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the configuration was updated successfully
-  - `message`: String message (optional)
-  - `updatedConfiguration`: Updated configuration settings (JSON format)
-
-#### 2.7 User Interface Module Interface
-- **Interface Name**: UserInterfaceInterface
-- **Provider**: User Interface Module
-- **Consumer**: Platform Central
-- **Operations**: `displayAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was displayed successfully
-  - `message`: String message (optional)
-
-#### 2.8 Logging and Audit Module Interface
-- **Interface Name**: LoggingAuditInterface
-- **Provider**: Logging and Audit Module
-- **Consumer**: Platform Central
-- **Operations**: `logAlert`
-- **Input Parameters**:
-  - `alertDetails`: Alert details (JSON format)
-- **Output Responses**:
-  - `success`: Boolean indicating if the alert was logged successfully
-  - `message`: String message (optional)
-
-### 5. COMMUNICATION AND DATA FLOW:
-During critical operations, data flows from the Sensor Layer to the Gateway Layer, which then forwards the normalized data to the Platform Central. The Platform Central processes the data, generates alerts, and classifies them. The alerts are then communicated to the User Interface Module for display, and the logging and audit module records the details of each alert.
-
-### 6. COMMUNICATION AND DATA FLOW DIAGRAM:
-```mermaid
-sequenceDiagram
-    participant Sensor
-    participant Gateway
-    participant PlatformCentral
-    participant AlertGeneration
-    participant AlertClassification
-    participant UserInterface
-    participant LoggingAudit
-
-    Sensor->>Gateway: Send Data
-    Gateway->>PlatformCentral: Forward Data
-    PlatformCentral->>AlertGeneration: Process Data
-    AlertGeneration->>AlertClassification: Classify Alert
-    AlertClassification->>PlatformCentral: Return Alert
-    PlatformCentral->>UserInterface: Display Alert
-    PlatformCentral->>LoggingAudit: Log Alert
+    state = hysteresisState(zone, variable)
+    if severity == Normal:
+        clear state only if value is back inside the threshold by hysteresisMargin
+    else if severity != state.activeSeverity (new or escalated):
+        create alert with justification (variable, value, threshold, zone,
+                                         timestamp, rule, severity, measurementId)
+        update state
+    else:
+        suppress (repeated alert)
 ```
+Hysteresis and persistence parameters are read from configuration, so they can be tuned from the external configuration module using the false alarm results validated by the drones.
 
-This diagram illustrates the flow of data and interactions within the system, ensuring that each component performs its designated function effectively.
+----------------------------------------------------------------
 
-### 7. ERROR HANDLING AND EXCEPTIONS:
-- Each interface method should include error handling and exception handling to ensure robustness.
-- Common exceptions to handle include `DataProcessingException`, `ConfigurationUpdateException`, `AlertGenerationException`, `AlertClassificationException`, `UserInterfaceException`, and `LoggingAuditException`.
-
-### 8. SECURITY AND AUTHENTICATION:
-- Implement secure communication protocols (e.g., HTTPS) to protect data in transit.
-- Use authentication and authorization mechanisms to ensure that only authorized components can access and modify system resources.
-
-### 9. TESTING AND QUALITY ASSURANCE:
-- Develop unit tests and integration tests for each component to ensure that each component works as expected.
-- Conduct system testing to ensure that the entire system works together seamlessly.
-- Implement continuous integration and continuous deployment (CI/CD) pipelines to automate testing and deployment processes.
-
-### 10. MONITORING AND LOGGING:
-- Implement monitoring and logging mechanisms to track the performance and health of the system.
-- Use logging frameworks (e.g., Log4j, SLF4J) to log important events and errors.
-- Set up alerts and notifications for critical events and errors.
-
-### 11. SCALABILITY AND PERFORMANCE:
-- Design the system to be scalable and performant, considering factors such as load balancing, caching, and distributed computing.
-- Implement caching mechanisms to reduce the load on the system and improve response times.
-- Use load balancers to distribute incoming traffic across multiple instances of the system.
-
-### 12. DOCUMENTATION AND SUPPORT:
-- Document the system architecture, interfaces, and components to ensure that developers and stakeholders understand how the system works.
-- Provide support and training for developers and users to ensure that they can effectively use and maintain the system.
+### 7. TRACEABILITY MATRIX:
+| Requirement | Addressed by                                                       |
+|-------------|--------------------------------------------------------------------|
+| REQ-M01     | Threshold configuration structure; updateParameters                |
+| REQ-M02     | Per-zone configuration with DEFAULT fallback                       |
+| REQ-M03     | Hysteresis state and Alert Module rules                            |
+| REQ-M04     | Classification Module severity rules                               |
+| REQ-M05     | Range validation in Central Platform; `valid` flag                 |
+| REQ-M06     | Alert data structure with justification fields                     |
+| REQ-M07     | Unchanged gateway/sensors/storage; changes limited to rules, config |
+| NFR-M01     | Critical events evaluated immediately; low-cost rule evaluation    |
+| NFR-M03     | Sensor-gateway contract unchanged                                  |
+| NFR-M04     | `measurementId` stored in each alert                               |
+| NFR-M05     | Thresholds and rules stored as configuration data                  |
+| NFR-M06     | Persistence window, combined evidence, `droneValidation` field     |
 
 ----------------------------------------------------------------
 

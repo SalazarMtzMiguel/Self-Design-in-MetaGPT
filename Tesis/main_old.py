@@ -89,7 +89,7 @@ async def run_thesis_pipeline():
     algorithms = AlgorithmsDesigner()
 
     #file_path = Path("Requeriments/school_reqs.txt")
-    file_path = Path("Requeriments/caso2.txt")
+    file_path = Path("Requeriments/parquenacinal.txt")
     #file_path = Path("test.txt")
     
     requerimiento_tesis = file_path.read_text(encoding="utf-8") if file_path.exists() else "NOT EXIST REQUIREMENTS FILE"
